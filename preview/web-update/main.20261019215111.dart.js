@@ -32155,7 +32155,7 @@ m=n.b
 if(m!==200)throw A.f(A.dE("version.json: "+m))
 p=A.a_(t.P.a(B.a0.iO(A.j1(A.j_(n.e)).bD(n.w),null)).h(0,"stamp"))
 if(p==null)p=""
-o=B.c.aR(p,"20261019214624")>0
+o=B.c.aR(p,"20261019215111")>0
 if(o)$.a5M().sp(p)
 q=o?p:null
 s=1
@@ -108221,7 +108221,7 @@ LY(a,b,c,d){return this.LZ(a,b,c,d,null)},
 aut(a,b,c){return this.LZ(a,b,c,!1,null)},
 auu(a,b,c,d){return this.LZ(a,b,c,!1,d)}}
 A.aqN.prototype={
-$2(a,b){var s,r,q,p,o,n,m,l,k=null,j="20261019214624",i=this.a,h=i.d,g=A.L("tab_settings"),f=i.ah1(a),e=i.Dn(B.Ny,A.L("set_lead")),d=t.zT,c=A.b([],d)
+$2(a,b){var s,r,q,p,o,n,m,l,k=null,j="20261019215111",i=this.a,h=i.d,g=A.L("tab_settings"),f=i.ah1(a),e=i.Dn(B.Ny,A.L("set_lead")),d=t.zT,c=A.b([],d)
 for(s=0;s<6;++s){r=B.Rs[s]
 if(r==null)q=A.L("lead_off")
 else q=r===0?A.L("lead_now"):A.k(r)
