@@ -113,7 +113,7 @@ body{background:var(--app);color:var(--ink);font:16px/1.45 var(--body);
     <button role="tab" data-tab="open" aria-selected="false">פתיחה</button>
     <button role="tab" data-tab="feat" aria-selected="false">פיצ'רים</button>
     <button role="tab" data-tab="city" aria-selected="false">העיר</button>
-    <button role="tab" data-tab="dev" aria-selected="false">מכשירים</button>
+    <button role="tab" data-tab="dev" aria-selected="false">מי משתמש</button>
   </div>
 
   <section data-panel="ret" class="panel">
@@ -149,9 +149,13 @@ body{background:var(--app);color:var(--ink);font:16px/1.45 var(--body);
     <div class="card" id="districts"><p class="hs">משימות שבוצעו לפי שכונה</p></div>
   </section>
   <section data-panel="dev" class="panel" hidden>
-    <div class="card"><p class="hs">מכשירים, 30 יום</p><div class="chips" id="platforms"></div></div>
-    <div class="card"><p class="hs">גרסאות, 30 יום</p><div class="chips" id="versions"></div>
-      <p class="small" id="oldNote"></p></div>
+    <p class="small">מי שנכנס ב־30 הימים האחרונים, יחד עם כל מי שעדיין בגרסה ישנה.</p>
+    <div class="card" id="pCountry"></div>
+    <div class="card" id="pDevice"></div>
+    <div class="card" id="pPlatform"></div>
+    <div class="card" id="pLang"></div>
+    <div class="card" id="pAccount"></div>
+    <div class="card" id="pVersion"></div>
   </section>
 
   <div class="foot">
@@ -174,7 +178,10 @@ body{background:var(--app);color:var(--ink);font:16px/1.45 var(--body);
 <script>
 const API = 'https://wlsvwtvinopzuodpmqsj.supabase.co/functions/v1/stats';
 const DISTRICTS = {work:'עבודה', home:'בית', family:'משפחה', health:'בריאות', study:'לימודים', money:'כסף'};
-const PLATFORMS = {android:'אנדרואיד', iOS:'אייפון', web:'דפדפן', windows:'Windows', macOS:'Mac'};
+const PLATFORMS = {android:'אפליקציה באנדרואיד', iOS:'אפליקציה באייפון', web:'דפדפן'};
+const DEVICES = {phone:'טלפון', tablet:'טאבלט', desktop:'מחשב'};
+const LANGS = {he:'עברית', en:'אנגלית'};
+const REGIONS = new Intl.DisplayNames(['he'], {type: 'region'});
 const $ = (id) => document.getElementById(id);
 const fmt = (v) => Number(v || 0).toLocaleString('he-IL');
 const pct = (part, all) => all ? Math.round(100 * part / all) + '%' : '–';
@@ -237,10 +244,18 @@ function render(d) {
   rows($('city'), 'העיר והמשימות, 30 יום', [['בוצעו בזמן', pct(c.on_time, c.done)], ['בוצעו אחרי דחייה', pct(c.was_postponed, c.done)],
     ['בניינים שעלו רמה', fmt(c.level_ups)], ['פרויקטים שהושלמו', fmt(c.projects_done)]]);
   bars($('districts'), 'משימות שבוצעו לפי שכונה', c.districts.map(([k, v]) => [DISTRICTS[k] || k, v]), 0, true);
-  const all = d.devices.platform.reduce((s, x) => s + x[1], 0);
-  $('platforms').innerHTML = d.devices.platform.map(([k, v]) => `<span class="chip">${PLATFORMS[k] || k} ${pct(v, all)}</span>`).join('') || '<span class="small">עוד אין נתונים.</span>';
-  $('versions').innerHTML = d.devices.version.map(([k, v]) => `<span class="chip">${k} · ${fmt(v)}</span>`).join('') || '<span class="small">עוד אין נתונים.</span>';
-  $('oldNote').textContent = `חשבונות שעדיין בגרסה ישנה: ${fmt(d.devices.old_accounts)}`;
+  const p = d.devices;
+  const share = (el, title, list, name) => {
+    const all = list.reduce((s, x) => s + x[1], 0);
+    bars(el, title, list.map(([k, v]) => [k ? name(k) : 'לא ידוע', v]), all, true);
+    el.querySelectorAll('.f b').forEach((b, i) => { b.textContent = pct(list[i][1], all); b.title = fmt(list[i][1]); });
+  };
+  share($('pCountry'), 'מדינה', p.country, (k) => { try { return REGIONS.of(k.toUpperCase()); } catch { return k; } });
+  share($('pDevice'), 'סוג מכשיר', p.device, (k) => DEVICES[k] || k);
+  share($('pPlatform'), 'מערכת', p.platform, (k) => PLATFORMS[k] || k);
+  share($('pLang'), 'שפת האפליקציה', p.lang, (k) => LANGS[k] || k);
+  share($('pAccount'), 'חשבון', p.account, (k) => k === 'true' ? 'עם חשבון' : 'בלי חשבון');
+  share($('pVersion'), 'גרסה', p.version, (k) => k);
   $('updated').textContent = 'עודכן ' + new Date(d.updated).toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'}) + ' · PostHog ו־Supabase';
 }
 
