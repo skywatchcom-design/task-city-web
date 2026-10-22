@@ -177,12 +177,16 @@ body{background:var(--app);color:var(--ink);font:16px/1.45 var(--body);
 
 <script>
 const API = 'https://wlsvwtvinopzuodpmqsj.supabase.co/functions/v1/stats';
-const DISTRICTS = {work:'עבודה', home:'בית', family:'משפחה', health:'בריאות', study:'לימודים', money:'כסף'};
+const DISTRICTS = {work:'עבודה', home:'בית', family:'משפחה', health:'בריאות', study:'לימודים', money:'כסף', shopping:'קניות'};
+// Neighbourhoods people make themselves have random ids (c_...); their names never leave the phone.
+const hoodName = (k) => DISTRICTS[k] || (k.startsWith('c_') ? 'שכונות משלהם' : k);
 const PLATFORMS = {android:'אפליקציה באנדרואיד', iOS:'אפליקציה באייפון', web:'דפדפן'};
 const DEVICES = {phone:'טלפון', tablet:'טאבלט', desktop:'מחשב'};
 const LANGS = {he:'עברית', en:'אנגלית'};
 const REGIONS = new Intl.DisplayNames(['he'], {type: 'region'});
 const $ = (id) => document.getElementById(id);
+// Names in the data come from PostHog, where anyone holding the app's public key can send events: never trust them as HTML.
+const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const fmt = (v) => Number(v || 0).toLocaleString('he-IL');
 const pct = (part, all) => all ? Math.round(100 * part / all) + '%' : '–';
 const hours = (s) => { const h = (s || 0) / 3600; return h >= 10 ? fmt(Math.round(h)) : (Math.round(h * 10) / 10).toLocaleString('he-IL'); };
@@ -202,13 +206,13 @@ function change(now, before) {
 }
 
 function rows(el, title, list) {
-  el.innerHTML = `<p class="hs">${title}</p>` + list.map(([k, v]) => `<div class="row"><span>${k}</span><b>${v}</b></div>`).join('');
+  el.innerHTML = `<p class="hs">${title}</p>` + list.map(([k, v]) => `<div class="row"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('');
 }
 
 function bars(el, title, list, total, sun) {
   const max = Math.max(1, ...list.map((x) => x[1]));
   el.innerHTML = `<p class="hs">${title}</p>` + (list.length ? list.map(([k, v]) =>
-    `<div class="f"><span>${k}</span><div class="bar${sun ? ' sun' : ''}"><i style="width:${100 * v / (total || max)}%"></i></div><b>${fmt(v)}</b></div>`).join('')
+    `<div class="f"><span>${esc(k)}</span><div class="bar${sun ? ' sun' : ''}"><i style="width:${100 * v / (total || max)}%"></i></div><b>${fmt(v)}</b></div>`).join('')
     : '<p class="small">עוד אין נתונים.</p>');
 }
 
@@ -229,7 +233,7 @@ function render(d) {
   $('r1').textContent = pct(r.r1, r.c1); $('r7').textContent = pct(r.r7, r.c7); $('r30').textContent = pct(r.r30, r.c30);
   $('quiet').textContent = fmt(r.quiet);
   const last14 = days.slice(-14), m = Math.max(1, ...last14.map((x) => x.users));
-  $('cols').innerHTML = last14.map((x) => `<div title="${x.day}"><span>${x.users || ''}</span><i style="height:${Math.max(3, 82 * x.users / m)}%"></i></div>`).join('');
+  $('cols').innerHTML = last14.map((x) => `<div title="${esc(x.day)}"><span>${x.users || ''}</span><i style="height:${Math.max(3, 82 * x.users / m)}%"></i></div>`).join('');
   $('axFrom').textContent = new Date(last14[0].day).toLocaleDateString('he-IL', {day:'numeric', month:'numeric'});
   $('taskDays').innerHTML = last14.slice().reverse().slice(0, 7).map((x) =>
     `<div class="row"><span>${new Date(x.day).toLocaleDateString('he-IL', {weekday:'short', day:'numeric', month:'numeric'})}</span><b>${fmt(x.added)} נוספו · ${fmt(x.done)} בוצעו</b></div>`).join('');
@@ -243,7 +247,7 @@ function render(d) {
   const c = d.city;
   rows($('city'), 'העיר והמשימות, 30 יום', [['בוצעו בזמן', pct(c.on_time, c.done)], ['בוצעו אחרי דחייה', pct(c.was_postponed, c.done)],
     ['בניינים שעלו רמה', fmt(c.level_ups)], ['פרויקטים שהושלמו', fmt(c.projects_done)]]);
-  bars($('districts'), 'משימות שבוצעו לפי שכונה', c.districts.map(([k, v]) => [DISTRICTS[k] || k, v]), 0, true);
+  bars($('districts'), 'משימות שבוצעו לפי שכונה', Object.entries(c.districts.reduce((m, [k, v]) => { const h = hoodName(k); m[h] = (m[h] || 0) + v; return m; }, {})).sort((x, y) => y[1] - x[1]), 0, true);
   const p = d.devices;
   const share = (el, title, list, name) => {
     const all = list.reduce((s, x) => s + x[1], 0);
