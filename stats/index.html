@@ -80,6 +80,7 @@ body{background:var(--app);color:var(--ink);font:16px/1.45 var(--body);
 .lock .go{all:unset;cursor:pointer;text-align:center;background:var(--primary);color:var(--on);font:700 16px var(--head);padding:13px;border-radius:4px;border-end-end-radius:16px}
 .err{color:var(--down);font-weight:600}
 .loading .num,.loading b{opacity:.35}
+.closed{border-color:var(--sun)}.closed .ch{display:flex;justify-content:space-between;align-items:center;gap:8px}
 </style>
 </head>
 <body>
@@ -96,6 +97,14 @@ body{background:var(--app);color:var(--ink);font:16px/1.45 var(--body);
     <div class="rail"><i></i><i></i><i></i></div>
   </div>
   <p class="err" id="err" hidden></p>
+
+  <div class="card closed" id="closed" hidden>
+    <div class="ch"><p class="hs">בדיקה סגורה בגוגל פליי</p><span class="chip" id="cDay"></span></div>
+    <div class="f"><span>בודקי אנדרואיד פעילים</span><div class="bar sun"><i id="cBar"></i></div><b id="cAndroid"></b></div>
+    <div class="row"><span id="cVerLabel"></span><b id="cVer"></b></div>
+    <div class="row"><span>דיווחי באג</span><b id="cBugs"></b></div>
+    <p class="small">היעד של גוגל: 12 בודקים רשומים, 14 יום ברצף. המספר הרשמי ב־Play Console, וכאן מי שבאמת פתח את האפליקציה ב־14 הימים האחרונים.</p>
+  </div>
 
   <div class="tiles loading" id="tiles">
     <div class="tile big">
@@ -219,6 +228,16 @@ function bars(el, title, list, total, sun) {
 function render(d) {
   const days = d.days, t = days[days.length - 1], y = days[days.length - 2] || {users:0, added:0, done:0, seconds:0};
   $('tiles').classList.remove('loading');
+  const ct = d.closed;
+  $('closed').hidden = !ct || ct.day > 21;
+  if (ct) {
+    $('cDay').textContent = ct.day <= 14 ? `יום ${ct.day} מתוך 14` : 'עברו 14 יום';
+    $('cAndroid').textContent = `${fmt(ct.android)}/${ct.goal}`;
+    $('cBar').style.width = `${Math.min(100, 100 * ct.android / ct.goal)}%`;
+    $('cVerLabel').textContent = `עדכנו לגרסה ${ct.version}`;
+    $('cVer').textContent = fmt(ct.on_version);
+    $('cBugs').textContent = `${fmt(ct.bugs_day)} ב־24 שעות · ${fmt(ct.bugs_all)} מאז ההתחלה`;
+  }
   $('usersTotal').textContent = fmt(d.total.users);
   $('usersToday').textContent = `${fmt(t.users)} היום · ${fmt(t.new_users)} חדשים`;
   const week = days.slice(-7), top = Math.max(1, ...week.map((x) => x.users));
