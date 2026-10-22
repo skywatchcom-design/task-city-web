@@ -1,5 +1,10 @@
 [
  {
+  "name": "own-analytics",
+  "title": "מדידה משלנו",
+  "stamp": "20261022152933"
+ },
+ {
   "name": "notifications",
   "title": "התראות וחגיגות",
   "stamp": "20261022145500"
