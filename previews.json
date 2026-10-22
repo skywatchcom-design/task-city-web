@@ -1,5 +1,10 @@
 [
  {
+  "name": "notifications",
+  "title": "התראות וחגיגות",
+  "stamp": "20261022145500"
+ },
+ {
   "name": "task-flow",
   "title": "משימות ושכונות",
   "stamp": "20261021225507"
