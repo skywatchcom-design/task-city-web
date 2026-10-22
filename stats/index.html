@@ -8,9 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800&family=Assistant:wght@400;600;700&display=swap">
 <style>
-/* The owner's numbers page (sketch "stats-2", A on a phone and B on an iPad). Sign in with the owner's account; the
-   stats Edge Function answers only the account the server marked as the owner. Data: our own analytics_events plus
-   older builds' accounts (supabase/functions/stats). Tokens follow lib/ui/look.dart. */
+/* The owner's numbers page, sketch 15 direction B ("the city certificate"). Live data from the stats Edge Function
+   (supabase/functions/stats), which adds PostHog (new builds) and Supabase (accounts on older builds).
+   Tokens follow lib/ui/look.dart (design A+E). */
 :root{
   --app:#F7F7F4; --card:#FFFFFF; --ink:#17181A; --sub:#6A6D72; --line:#E3E3DE; --chip:#ECECE8;
   --primary:#1D2B55; --on:#FFFFFF; --sun:#E0A63A; --up:#2F7D5B; --down:#C43C27; --sky:#E3EAF3; --logo:#1D2B55;
@@ -22,11 +22,11 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0}
+.panel{display:grid;gap:14px}
 body{background:var(--app);color:var(--ink);font:16px/1.45 var(--body);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   padding-block:max(14px,env(safe-area-inset-top,0px)) max(28px,env(safe-area-inset-bottom,0px))}
 .page{max-width:720px;margin:0 auto;display:grid;gap:14px}
-body.wide .page{max-width:1180px}
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .logo{display:flex;align-items:flex-end;gap:7px;font:800 italic 21px/1 var(--head);color:var(--logo);direction:ltr}
 .logo .mk{display:flex;align-items:flex-end;gap:2px}.logo .mk i{display:block;width:6px;background:currentColor}
@@ -38,10 +38,7 @@ body.wide .page{max-width:1180px}
 .seg{display:flex;background:var(--chip);border-radius:7px;padding:3px;font:600 14px var(--head)}
 .seg button{all:unset;cursor:pointer;padding:6px 12px;border-radius:5px;color:var(--sub);white-space:nowrap}
 .seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.1)}
-.range{display:flex;gap:6px;flex-wrap:wrap}
-.range button{all:unset;cursor:pointer;font:600 14px var(--head);padding:6px 13px;border-radius:999px;border:1px solid var(--line);color:var(--sub)}
-.range button[aria-pressed="true"]{background:var(--primary);color:var(--on);border-color:var(--primary)}
-button:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.seg button:focus-visible,.tabs button:focus-visible,.btn:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
 .num{font:800 30px/1 var(--head);font-variant-numeric:tabular-nums;letter-spacing:-.5px}
 .lbl{font-size:14px;color:var(--sub);margin-top:5px}
 .chg{font:700 13px var(--head);font-variant-numeric:tabular-nums;margin-top:6px;color:var(--sub)}.chg .up{color:var(--up)}.chg .dn{color:var(--down)}
@@ -50,29 +47,23 @@ button:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
 .tile{position:relative;background:var(--card);border:1px solid var(--line);border-radius:4px;border-end-end-radius:18px;padding:14px 14px 12px;min-width:0}
 .tile .win{position:absolute;top:12px;inset-inline-end:12px;width:8px;height:8px;background:var(--sun)}
 .tile.big{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;background:var(--primary);color:var(--on);border:0;padding:18px}
-.tile.big .num{font-size:46px}.tile.big .lbl,.tile.big .chg{color:color-mix(in srgb,var(--on) 80%,transparent)}
+.tile.big .num{font-size:46px}.tile.big .lbl{color:color-mix(in srgb,var(--on) 75%,transparent)}
 .sky{display:flex;align-items:flex-end;gap:4px;height:66px;flex:none}
 .sky i{width:14px;background:var(--sun);border-radius:99px 99px 0 0;min-height:3px}
 .tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
 .tabs button{all:unset;cursor:pointer;padding:8px 0;font:700 15px var(--head);color:var(--sub);white-space:nowrap}
 .tabs button[aria-selected="true"]{color:var(--ink);box-shadow:inset 0 -2px 0 var(--sun)}
-body.wide .tabs{display:none}
-.panels{display:grid;gap:14px}
-body.wide .panels{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
-.panel{display:grid;gap:14px;min-width:0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:4px;border-end-end-radius:18px;padding:14px 16px;display:grid;gap:8px;min-width:0}
-.card.sunc{border-color:var(--sun)}
-.ch{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .hs{font:700 16px var(--head);margin:0}
 .small{font-size:13px;color:var(--sub);margin:0}
 .ret{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;text-align:center}
 .ret div{background:var(--sky);border-radius:4px;border-end-end-radius:12px;padding:10px 2px}
 .ret b{display:block;font:800 22px var(--head);font-variant-numeric:tabular-nums}.ret span{font-size:12.5px;color:var(--sub)}
-.cols{display:flex;align-items:flex-end;gap:4px;height:110px}
+.cols{display:flex;align-items:flex-end;gap:5px;height:110px}
 .cols div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;height:100%;min-width:0}
 .cols i{display:block;width:100%;background:var(--primary);border-radius:99px 99px 0 0;min-height:3px}
 .cols div:last-child i{background:var(--sun)}
-.cols span{font:600 10.5px var(--head);color:var(--sub);font-variant-numeric:tabular-nums}
+.cols span{font:600 11px var(--head);color:var(--sub);font-variant-numeric:tabular-nums}
 .axis{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);font-variant-numeric:tabular-nums}
 .f{display:grid;grid-template-columns:8.5em minmax(0,1fr) 3em;gap:10px;align-items:center;font-size:15px}
 .bar{height:12px;background:var(--chip);border-radius:2px;border-end-end-radius:8px;overflow:hidden}
@@ -80,19 +71,20 @@ body.wide .panels{grid-template-columns:repeat(2,minmax(0,1fr));align-items:star
 .f b{font:700 14px var(--head);text-align:left;font-variant-numeric:tabular-nums}
 .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:15.5px}
 .row:last-child{border-bottom:0}.row b{font:700 16px var(--head);font-variant-numeric:tabular-nums;white-space:nowrap}
-.chip{background:var(--chip);border-radius:6px;padding:4px 10px;font:600 13px var(--head);border-bottom:2px solid var(--sun);white-space:nowrap}
-.ok{color:var(--up)}.bad{color:var(--down)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--chip);border-radius:6px;padding:4px 10px;font:600 14px var(--head);border-bottom:2px solid var(--sun);font-variant-numeric:tabular-nums}
 .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .btn{all:unset;cursor:pointer;font:700 14px var(--head);color:var(--primary);padding:6px 2px}
-.lock{max-width:420px;margin:10vh auto 0;display:grid;gap:12px}
+.lock{max-width:420px;margin:12vh auto 0;display:grid;gap:12px}
 .lock input{font:600 17px var(--body);padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);width:100%;direction:ltr}
 .lock .go{all:unset;cursor:pointer;text-align:center;background:var(--primary);color:var(--on);font:700 16px var(--head);padding:13px;border-radius:4px;border-end-end-radius:16px}
-.err{color:var(--down);font-weight:600;margin:0}
+.err{color:var(--down);font-weight:600}
 .loading .num,.loading b{opacity:.35}
+.closed{border-color:var(--sun)}.closed .ch{display:flex;justify-content:space-between;align-items:center;gap:8px}
 </style>
 </head>
 <body>
-<div class="page" id="app" hidden>
+<div class="page" id="app">
   <div class="top">
     <div class="logo"><span class="mk"><i></i><i></i><i></i></span><span>SkyTasks<b>.</b></span></div>
     <div class="seg" role="group" aria-label="מי נספר">
@@ -100,210 +92,203 @@ body.wide .panels{grid-template-columns:repeat(2,minmax(0,1fr));align-items:star
       <button id="real0" aria-pressed="false">הכול</button>
     </div>
   </div>
-  <div><h1 class="ttl">המספרים</h1><div class="rail"><i></i><i></i><i></i></div></div>
-  <div class="range" role="group" aria-label="טווח">
-    <button data-days="1">היום</button><button data-days="7">7 ימים</button><button data-days="30">30 יום</button><button data-days="0">הכול</button>
+  <div>
+    <h1 class="ttl">המספרים</h1>
+    <div class="rail"><i></i><i></i><i></i></div>
   </div>
   <p class="err" id="err" hidden></p>
 
-  <div class="card sunc" id="closed" hidden>
+  <div class="card closed" id="closed" hidden>
     <div class="ch"><p class="hs">בדיקה סגורה בגוגל פליי</p><span class="chip" id="cDay"></span></div>
-    <div class="f"><span>בודקי אנדרואיד</span><div class="bar sun"><i id="cBar"></i></div><b id="cAndroid"></b></div>
+    <div class="f"><span>בודקי אנדרואיד פעילים</span><div class="bar sun"><i id="cBar"></i></div><b id="cAndroid"></b></div>
     <div class="row"><span id="cVerLabel"></span><b id="cVer"></b></div>
     <div class="row"><span>דיווחי באג</span><b id="cBugs"></b></div>
+    <p class="small">היעד של גוגל: 12 בודקים רשומים, 14 יום ברצף. המספר הרשמי ב־Play Console, וכאן מי שבאמת פתח את האפליקציה ב־14 הימים האחרונים.</p>
   </div>
 
   <div class="tiles loading" id="tiles">
     <div class="tile big">
-      <div><div class="lbl" id="usersLbl">משתמשים</div><div class="num" id="users">–</div><div class="chg" id="usersChg">טוען…</div></div>
+      <div><div class="lbl">משתמשים מההתחלה</div><div class="num" id="usersTotal">–</div><div class="lbl" id="usersToday">טוען…</div></div>
       <div class="sky" id="sky" aria-hidden="true"></div>
     </div>
-    <div class="tile"><span class="win"></span><div class="num" id="added">–</div><div class="lbl">משימות נוספו</div><div class="chg" id="addedChg"></div></div>
-    <div class="tile"><span class="win"></span><div class="num" id="done">–</div><div class="lbl">משימות בוצעו</div><div class="chg" id="doneChg"></div></div>
-    <div class="tile"><span class="win"></span><div class="num" id="hours">–</div><div class="lbl">שעות שימוש</div><div class="chg" id="hoursChg"></div></div>
-    <div class="tile"><span class="win"></span><div class="num" id="avg">–</div><div class="lbl">דקות ליום לאדם</div><div class="chg" id="avgChg"></div></div>
+    <div class="tile"><span class="win"></span><div class="num" id="added">–</div><div class="lbl">משימות נוספו</div><div class="chg" id="addedToday"></div></div>
+    <div class="tile"><span class="win"></span><div class="num" id="done">–</div><div class="lbl">משימות בוצעו</div><div class="chg" id="doneToday"></div></div>
+    <div class="tile"><span class="win"></span><div class="num" id="time">–</div><div class="lbl">שעות שימוש של כולם</div><div class="chg" id="timeToday"></div></div>
+    <div class="tile"><span class="win"></span><div class="num" id="avg">–</div><div class="lbl">דקות בממוצע לאדם, היום</div><div class="chg" id="avgChg"></div></div>
   </div>
-  <p class="small" id="ever"></p>
 
   <div class="tabs" role="tablist">
     <button role="tab" data-tab="ret" aria-selected="true">חזרה</button>
     <button role="tab" data-tab="open" aria-selected="false">פתיחה</button>
     <button role="tab" data-tab="feat" aria-selected="false">פיצ'רים</button>
     <button role="tab" data-tab="city" aria-selected="false">העיר</button>
-    <button role="tab" data-tab="who" aria-selected="false">מי משתמש</button>
-    <button role="tab" data-tab="server" aria-selected="false">השרת</button>
+    <button role="tab" data-tab="dev" aria-selected="false">מי משתמש</button>
   </div>
 
-  <div class="panels">
-    <section data-panel="ret" class="panel">
-      <div class="card">
-        <p class="hs">מי חוזר</p>
-        <div class="ret">
-          <div><b id="r1">–</b><span>למחרת</span></div><div><b id="r7">–</b><span>אחרי שבוע</span></div>
-          <div><b id="r30">–</b><span>אחרי חודש</span></div><div><b id="quiet">–</b><span>שקטים 7 ימים</span></div>
-        </div>
-        <p class="small">מתוך מי שהצטרף בגרסה עם מדידה. "–" עד שיש מספיק ימים.</p>
+  <section data-panel="ret" class="panel">
+    <div class="card">
+      <p class="hs">מי חוזר</p>
+      <div class="ret">
+        <div><b id="r1">–</b><span>למחרת</span></div>
+        <div><b id="r7">–</b><span>אחרי שבוע</span></div>
+        <div><b id="r30">–</b><span>אחרי חודש</span></div>
+        <div><b id="quiet">–</b><span>שקטים 7 ימים</span></div>
       </div>
-      <div class="card"><p class="hs">משתמשים בכל יום</p><div class="cols" id="cols"></div><div class="axis"><span id="axFrom"></span><span>היום</span></div></div>
-    </section>
-    <section data-panel="open" class="panel"><div class="card" id="funnel"></div></section>
-    <section data-panel="feat" class="panel"><div class="card" id="features"></div></section>
-    <section data-panel="city" class="panel"><div class="card" id="city"></div><div class="card" id="districts"></div></section>
-    <section data-panel="who" class="panel">
-      <div class="card" id="pCountry"></div><div class="card" id="pDevice"></div><div class="card" id="pPlatform"></div>
-      <div class="card" id="pLang"></div><div class="card" id="pAccount"></div><div class="card" id="pVersion"></div>
-    </section>
-    <section data-panel="server" class="panel">
-      <div class="card" id="source"></div>
-      <div class="card"><p class="hs">מקום בשרת</p><div class="bar"><i id="dbBar"></i></div><p class="small" id="dbText"></p></div>
-    </section>
-  </div>
+      <p class="small">מתוך מי שהצטרף בגרסה עם מדידה. "–" עד שיש מספיק ימים.</p>
+    </div>
+    <div class="card">
+      <p class="hs">משתמשים בכל יום</p>
+      <div class="cols" id="cols"></div>
+      <div class="axis"><span id="axFrom"></span><span>היום</span></div>
+    </div>
+    <div class="card">
+      <p class="hs">משימות בכל יום</p>
+      <div id="taskDays"></div>
+    </div>
+  </section>
+
+  <section data-panel="open" class="panel" hidden>
+    <div class="card" id="funnel"><p class="hs">מסכי הפתיחה, 30 יום</p></div>
+  </section>
+  <section data-panel="feat" class="panel" hidden>
+    <div class="card" id="features"><p class="hs">כמה אנשים השתמשו, 30 יום</p></div>
+  </section>
+  <section data-panel="city" class="panel" hidden>
+    <div class="card" id="city"><p class="hs">העיר והמשימות, 30 יום</p></div>
+    <div class="card" id="districts"><p class="hs">משימות שבוצעו לפי שכונה</p></div>
+  </section>
+  <section data-panel="dev" class="panel" hidden>
+    <p class="small">מי שנכנס ב־30 הימים האחרונים, יחד עם כל מי שעדיין בגרסה ישנה.</p>
+    <div class="card" id="pCountry"></div>
+    <div class="card" id="pDevice"></div>
+    <div class="card" id="pPlatform"></div>
+    <div class="card" id="pLang"></div>
+    <div class="card" id="pAccount"></div>
+    <div class="card" id="pVersion"></div>
+  </section>
 
   <div class="foot">
     <p class="small" id="updated"></p>
-    <div><button class="btn" id="refresh">לרענן</button> · <button class="btn" id="signout">יציאה</button></div>
+    <button class="btn" id="refresh">לרענן</button>
   </div>
-  <p class="small">גרסאות עד 0.1.0+4 נספרות רק אצל מי שיש לו חשבון. אדם עם שני מכשירים נספר פעמיים.</p>
+  <p class="small">גרסאות ישנות (עד 0.1.0+4) נספרות רק אצל מי שיש לו חשבון. מי שבלי חשבון יופיע מהרגע שיעדכן.
+    אדם עם שני מכשירים נספר פעמיים.</p>
 </div>
 
-<form class="lock" id="lock" hidden>
+<div class="lock" id="lock" hidden>
   <div class="logo"><span class="mk"><i></i><i></i><i></i></span><span>SkyTasks<b>.</b></span></div>
   <h1 class="ttl">המספרים</h1>
-  <p class="small">כניסה עם החשבון של SkyTasks שמורשה לראות את המספרים.</p>
-  <label for="email" class="small">מייל</label>
-  <input id="email" type="email" autocomplete="username" spellcheck="false">
-  <label for="password" class="small">סיסמה</label>
-  <input id="password" type="password" autocomplete="current-password">
-  <button class="go" id="go" type="submit">כניסה</button>
-  <p class="err" id="lockErr" hidden></p>
-</form>
+  <label for="key" class="small">קוד הגישה לדף</label>
+  <input id="key" autocomplete="off" spellcheck="false">
+  <button class="go" id="go">לפתוח</button>
+  <p class="err" id="lockErr" hidden>הקוד לא נכון.</p>
+</div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
-// Filled in by tools/publish_web.sh from tmp/ (the URL and the public key the app itself ships with).
-const SUPABASE_URL = 'https://wlsvwtvinopzuodpmqsj.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_4OvvqiYTH1VsWdLjl-3eeg_CVxF_zyf';
-const API = SUPABASE_URL + '/functions/v1/stats';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+const API = 'https://wlsvwtvinopzuodpmqsj.supabase.co/functions/v1/stats';
 const DISTRICTS = {work:'עבודה', home:'בית', family:'משפחה', health:'בריאות', study:'לימודים', money:'כסף', shopping:'קניות'};
+// Neighbourhoods people make themselves have random ids (c_...); their names never leave the phone.
+const hoodName = (k) => DISTRICTS[k] || (k.startsWith('c_') ? 'שכונות משלהם' : k);
 const PLATFORMS = {android:'אפליקציה באנדרואיד', iOS:'אפליקציה באייפון', web:'דפדפן'};
 const DEVICES = {phone:'טלפון', tablet:'טאבלט', desktop:'מחשב'};
 const LANGS = {he:'עברית', en:'אנגלית'};
 const REGIONS = new Intl.DisplayNames(['he'], {type: 'region'});
 const $ = (id) => document.getElementById(id);
-// Names in the data come from the app, and anyone with the app can send events: never trust them as HTML.
+// Names in the data come from PostHog, where anyone holding the app's public key can send events: never trust them as HTML.
 const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const fmt = (v) => Number(v || 0).toLocaleString('he-IL');
 const pct = (part, all) => all ? Math.round(100 * part / all) + '%' : '–';
 const hours = (s) => { const h = (s || 0) / 3600; return h >= 10 ? fmt(Math.round(h)) : (Math.round(h * 10) / 10).toLocaleString('he-IL'); };
-const hoodName = (k) => DISTRICTS[k] || (k.startsWith('c_') ? 'שכונות משלהם' : k);
+const hm = (s) => `${Math.floor((s || 0) / 3600)}:${String(Math.floor(((s || 0) % 3600) / 60)).padStart(2, '0')}`;
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch {} } };
 
+// The key comes once from the link (#k=...) or the lock screen, then stays on this device.
+let key = store.get('stats_key');
+const fromLink = location.hash.match(/k=([\w-]+)/);
+if (fromLink) { key = fromLink[1]; store.set('stats_key', key); history.replaceState(null, '', location.pathname); }
 let real = store.get('stats_real') !== '0';
-let days = Number(store.get('stats_days') ?? '7');
-let tab = store.get('stats_tab') || 'ret';
 
-/** "▲ 18% מול 7 הימים הקודמים", or nothing when there is no earlier period to compare to. */
-function versus(now, before) {
-  if (before == null || !days) return '';
-  const span = days === 1 ? 'אתמול' : `${days} הימים הקודמים`;
-  if (!before) return ''; // nothing to compare to yet (the data starts on 21.10)
-  const d = Math.round(100 * (now - before) / before);
-  if (!d) return `כמו ${span}`;
-  return `<span class="${d > 0 ? 'up' : 'dn'}">${d > 0 ? '▲' : '▼'} ${Math.abs(d)}%</span> מול ${span}`;
+function change(now, before) {
+  const d = Math.round((now - before) * 10) / 10;
+  if (!d) return `היום ${fmt(now)} · כמו אתמול`;
+  return `היום ${fmt(now)} · <span class="${d > 0 ? 'up' : 'dn'}">${d > 0 ? '▲' : '▼'} ${fmt(Math.abs(d))} מאתמול</span>`;
 }
 
 function rows(el, title, list) {
-  el.innerHTML = `<p class="hs">${esc(title)}</p>` + list.map(([k, v]) => `<div class="row"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('');
+  el.innerHTML = `<p class="hs">${title}</p>` + list.map(([k, v]) => `<div class="row"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('');
 }
+
 function bars(el, title, list, total, sun) {
   const max = Math.max(1, ...list.map((x) => x[1]));
-  el.innerHTML = `<p class="hs">${esc(title)}</p>` + (list.length ? list.map(([k, v, label]) =>
-    `<div class="f"><span>${esc(k)}</span><div class="bar${sun ? ' sun' : ''}"><i style="width:${100 * v / (total || max)}%"></i></div><b>${esc(label ?? fmt(v))}</b></div>`).join('')
-    : '<p class="small">עוד אין נתונים בטווח הזה.</p>');
+  el.innerHTML = `<p class="hs">${title}</p>` + (list.length ? list.map(([k, v]) =>
+    `<div class="f"><span>${esc(k)}</span><div class="bar${sun ? ' sun' : ''}"><i style="width:${100 * v / (total || max)}%"></i></div><b>${fmt(v)}</b></div>`).join('')
+    : '<p class="small">עוד אין נתונים.</p>');
 }
-const share = (el, title, list, name) => {
-  const all = list.reduce((s, x) => s + x[1], 0);
-  bars(el, title, list.map(([k, v]) => [k ? name(k) : 'לא ידוע', v, pct(v, all)]), all, true);
-};
 
 function render(d) {
-  const r = d.range, p = r.prev;
+  const days = d.days, t = days[days.length - 1], y = days[days.length - 2] || {users:0, added:0, done:0, seconds:0};
   $('tiles').classList.remove('loading');
-  const span = days === 1 ? 'היום' : days ? `ב־${days} ימים` : 'מההתחלה';
-  $('usersLbl').textContent = `משתמשים ${span}`;
-  $('users').textContent = fmt(r.users);
-  const vs = p ? versus(r.users, p.users) : '';
-  $('usersChg').innerHTML = `${fmt(r.new_users)} חדשים` + (vs ? ' · ' + vs : '');
-  const week = d.days.slice(-7), top = Math.max(1, ...week.map((x) => x.users));
-  $('sky').innerHTML = week.map((x) => `<i style="height:${Math.max(4, 100 * x.users / top)}%"></i>`).join('');
-  $('added').textContent = fmt(r.added); $('addedChg').innerHTML = p ? versus(r.added, p.added) : '';
-  $('done').textContent = fmt(r.done); $('doneChg').innerHTML = p ? versus(r.done, p.done) : '';
-  $('hours').textContent = hours(r.seconds); $('hoursChg').innerHTML = p ? versus(r.seconds, p.seconds) : '';
-  const avg = (s, n) => n ? Math.round(10 * s / 60 / n) / 10 : 0;
-  $('avg').textContent = avg(r.seconds, r.active_days).toLocaleString('he-IL');
-  $('avgChg').innerHTML = p ? versus(avg(r.seconds, r.active_days), avg(p.seconds, p.active_days)) : '';
-  $('ever').textContent = `מההתחלה: ${fmt(d.total.users)} משתמשים · ${fmt(d.total.added)} משימות נוספו · ${fmt(d.total.done)} בוצעו · ${hours(d.total.seconds)} שעות`;
-
-  const c = d.closed;
-  $('closed').hidden = !c || c.day > 21;
-  if (c) {
-    $('cDay').textContent = c.day <= 14 ? `יום ${c.day} מתוך 14` : 'עברו 14 יום';
-    $('cAndroid').textContent = `${fmt(c.android)}/${c.goal}`;
-    $('cBar').style.width = `${Math.min(100, 100 * c.android / c.goal)}%`;
-    $('cVerLabel').textContent = `בגרסה ${c.version || 'החדשה'}`;
-    $('cVer').textContent = fmt(c.on_version);
-    $('cBugs').textContent = `${fmt(c.bugs_day)} ב־24 שעות · ${fmt(c.bugs_all)} מאז ההתחלה`;
+  const ct = d.closed;
+  $('closed').hidden = !ct || ct.day > 21;
+  if (ct) {
+    $('cDay').textContent = ct.day <= 14 ? `יום ${ct.day} מתוך 14` : 'עברו 14 יום';
+    $('cAndroid').textContent = `${fmt(ct.android)}/${ct.goal}`;
+    $('cBar').style.width = `${Math.min(100, 100 * ct.android / ct.goal)}%`;
+    $('cVerLabel').textContent = `עדכנו לגרסה ${ct.version}`;
+    $('cVer').textContent = fmt(ct.on_version);
+    $('cBugs').textContent = `${fmt(ct.bugs_day)} ב־24 שעות · ${fmt(ct.bugs_all)} מאז ההתחלה`;
   }
+  $('usersTotal').textContent = fmt(d.total.users);
+  $('usersToday').textContent = `${fmt(t.users)} היום · ${fmt(t.new_users)} חדשים`;
+  const week = days.slice(-7), top = Math.max(1, ...week.map((x) => x.users));
+  $('sky').innerHTML = week.map((x) => `<i style="height:${Math.max(4, 100 * x.users / top)}%"></i>`).join('');
+  $('added').textContent = fmt(d.total.added); $('addedToday').innerHTML = change(t.added, y.added);
+  $('done').textContent = fmt(d.total.done); $('doneToday').innerHTML = change(t.done, y.done);
+  $('time').textContent = hours(d.total.seconds); $('timeToday').textContent = `היום ${hm(t.seconds)}`;
+  const avg = (x) => x.timed_users ? Math.round(10 * x.seconds / 60 / x.timed_users) / 10 : 0;
+  $('avg').textContent = avg(t).toLocaleString('he-IL'); $('avgChg').textContent = `אתמול ${avg(y).toLocaleString('he-IL')}`;
 
-  const t = d.retention;
-  $('r1').textContent = pct(t.r1, t.c1); $('r7').textContent = pct(t.r7, t.c7); $('r30').textContent = pct(t.r30, t.c30); $('quiet').textContent = fmt(t.quiet);
-  const shown = d.days.slice(-Math.min(31, Math.max(days || d.days.length, 14))), m = Math.max(1, ...shown.map((x) => x.users));
-  $('cols').innerHTML = shown.map((x) => `<div title="${esc(x.day)}"><span>${x.users || ''}</span><i style="height:${Math.max(3, 82 * x.users / m)}%"></i></div>`).join('');
-  $('axFrom').textContent = new Date(shown[0].day).toLocaleDateString('he-IL', {day:'numeric', month:'numeric'});
+  const r = d.retention;
+  $('r1').textContent = pct(r.r1, r.c1); $('r7').textContent = pct(r.r7, r.c7); $('r30').textContent = pct(r.r30, r.c30);
+  $('quiet').textContent = fmt(r.quiet);
+  const last14 = days.slice(-14), m = Math.max(1, ...last14.map((x) => x.users));
+  $('cols').innerHTML = last14.map((x) => `<div title="${esc(x.day)}"><span>${x.users || ''}</span><i style="height:${Math.max(3, 82 * x.users / m)}%"></i></div>`).join('');
+  $('axFrom').textContent = new Date(last14[0].day).toLocaleDateString('he-IL', {day:'numeric', month:'numeric'});
+  $('taskDays').innerHTML = last14.slice().reverse().slice(0, 7).map((x) =>
+    `<div class="row"><span>${new Date(x.day).toLocaleDateString('he-IL', {weekday:'short', day:'numeric', month:'numeric'})}</span><b>${fmt(x.added)} נוספו · ${fmt(x.done)} בוצעו</b></div>`).join('');
 
   const f = d.funnel;
-  bars($('funnel'), `מסכי הפתיחה ${span}`, [['התחילו', f.welcome], ['מי גר בעיר', f.mode], ['שם העיר', f.city_name], ['משימה ראשונה', f.first_task], ['סיימו', f.done], ['נכנסו לחשבון', f.account]].map(([k, v]) => [k, v || 0]), f.welcome);
+  bars($('funnel'), 'מסכי הפתיחה, 30 יום', [['התחילו', f.welcome], ['מי גר בעיר', f.mode], ['שם העיר', f.city_name], ['משימה ראשונה', f.first_task], ['סיימו', f.done], ['נכנסו לחשבון', f.account]].map(([k, v]) => [k, v || 0]), f.welcome);
   const ft = d.features;
-  rows($('features'), `כמה אנשים השתמשו ${span}`, [['תכנון בוקר', ft.morning], ['סיכום ערב', ft.evening], ['סיכום שבועי', ft.weekly], ['הוספה בקול', ft.voice],
+  rows($('features'), 'כמה אנשים השתמשו, 30 יום', [['תכנון בוקר', ft.morning], ['סיכום ערב', ft.evening], ['סיכום שבועי', ft.weekly], ['הוספה בקול', ft.voice],
     ['כמה משימות במשפט אחד', ft.split], ['ווידג\'ט', ft.widget], ['שיתוף מאפליקציה אחרת', ft.shared], ['יומן גוגל', ft.gcal], ['פגישות מיומן גוגל', ft.meetings], ['פרויקטים', ft.projects]]
     .map(([k, v]) => [k, fmt(v)]));
-  const ci = d.city;
-  rows($('city'), `העיר והמשימות ${span}`, [['בוצעו בזמן', pct(ci.on_time, ci.done)], ['בוצעו אחרי דחייה', pct(ci.was_postponed, ci.done)], ['בניינים שעלו רמה', fmt(ci.level_ups)], ['פרויקטים שהושלמו', fmt(ci.projects_done)]]);
-  bars($('districts'), 'משימות שבוצעו לפי שכונה', Object.entries(ci.districts.reduce((acc, [k, v]) => { const h = hoodName(k); acc[h] = (acc[h] || 0) + v; return acc; }, {})).sort((x, y) => y[1] - x[1]), 0, true);
-
-  const w = d.devices;
-  share($('pCountry'), 'מדינה', w.country, (k) => { try { return REGIONS.of(k.toUpperCase()); } catch { return k; } });
-  share($('pDevice'), 'סוג מכשיר', w.device, (k) => DEVICES[k] || k);
-  share($('pPlatform'), 'מערכת', w.platform, (k) => PLATFORMS[k] || k);
-  share($('pLang'), 'שפת האפליקציה', w.lang, (k) => LANGS[k] || k);
-  share($('pAccount'), 'חשבון', w.account, (k) => k === 'true' ? 'עם חשבון' : 'בלי חשבון');
-  share($('pVersion'), 'גרסה', w.version, (k) => k);
-
-  const s = d.server, check = s.last_check && s.last_check.result;
-  rows($('source'), 'מקור הנתונים', [
-    ['הגיעו ישר אלינו', fmt(s.from_app)],
-    ['הועתקו מ־PostHog', fmt(s.from_posthog)],
-    ['בדיקת התאמה', check ? (check.ok ? `זהה ✓ (${new Date(s.last_check.at).toLocaleDateString('he-IL')})` : `${check.diffs.length} ימים שונים`) : 'עוד לא נבדק'],
-    ['עדיין שולחים ל־PostHog (גרסה 5)', fmt(s.still_on_posthog)],
-  ]);
-  if (check && !check.ok) $('source').lastElementChild.querySelector('b').classList.add('bad');
-  const used = s.db_bytes / s.db_limit;
-  $('dbBar').style.width = `${Math.max(1, Math.min(100, 100 * used))}%`;
-  $('dbBar').style.background = used >= 0.8 ? 'var(--down)' : 'var(--primary)';
-  $('dbText').textContent = `${Math.round(s.db_bytes / 1048576)}MB מתוך ${Math.round(s.db_limit / 1048576)}MB (${Math.round(100 * used)}%). כשנגיע ל־80% המייל היומי יתריע.`;
-  $('updated').textContent = 'עודכן ' + new Date(d.updated).toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'});
+  const c = d.city;
+  rows($('city'), 'העיר והמשימות, 30 יום', [['בוצעו בזמן', pct(c.on_time, c.done)], ['בוצעו אחרי דחייה', pct(c.was_postponed, c.done)],
+    ['בניינים שעלו רמה', fmt(c.level_ups)], ['פרויקטים שהושלמו', fmt(c.projects_done)]]);
+  bars($('districts'), 'משימות שבוצעו לפי שכונה', Object.entries(c.districts.reduce((m, [k, v]) => { const h = hoodName(k); m[h] = (m[h] || 0) + v; return m; }, {})).sort((x, y) => y[1] - x[1]), 0, true);
+  const p = d.devices;
+  const share = (el, title, list, name) => {
+    const all = list.reduce((s, x) => s + x[1], 0);
+    bars(el, title, list.map(([k, v]) => [k ? name(k) : 'לא ידוע', v]), all, true);
+    el.querySelectorAll('.f b').forEach((b, i) => { b.textContent = pct(list[i][1], all); b.title = fmt(list[i][1]); });
+  };
+  share($('pCountry'), 'מדינה', p.country, (k) => { try { return REGIONS.of(k.toUpperCase()); } catch { return k; } });
+  share($('pDevice'), 'סוג מכשיר', p.device, (k) => DEVICES[k] || k);
+  share($('pPlatform'), 'מערכת', p.platform, (k) => PLATFORMS[k] || k);
+  share($('pLang'), 'שפת האפליקציה', p.lang, (k) => LANGS[k] || k);
+  share($('pAccount'), 'חשבון', p.account, (k) => k === 'true' ? 'עם חשבון' : 'בלי חשבון');
+  share($('pVersion'), 'גרסה', p.version, (k) => k);
+  $('updated').textContent = 'עודכן ' + new Date(d.updated).toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'}) + ' · PostHog ו־Supabase';
 }
 
 async function load() {
-  const { data } = await sb.auth.getSession();
-  if (!data.session) return showLock();
-  $('lock').hidden = true; $('app').hidden = false; $('err').hidden = true;
+  if (!key) { showLock(); return; }
+  $('err').hidden = true;
   $('tiles').classList.add('loading');
   try {
-    const r = await fetch(`${API}?real=${real ? 1 : 0}&days=${days}`, { headers: { Authorization: `Bearer ${data.session.access_token}`, apikey: SUPABASE_KEY } });
-    if (r.status === 401) { await sb.auth.signOut(); return showLock('החשבון הזה לא מורשה לראות את המספרים.'); }
+    const r = await fetch(`${API}?real=${real ? 1 : 0}`, { headers: { 'x-stats-key': key } });
+    if (r.status === 401) { store.set('stats_key', ''); key = null; showLock(true); return; }
     if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.status);
     render(await r.json());
   } catch (e) {
@@ -312,40 +297,20 @@ async function load() {
   }
 }
 
-function showLock(message) {
-  $('app').hidden = true; $('lock').hidden = false;
-  $('lockErr').hidden = !message; $('lockErr').textContent = message || '';
-}
-$('lock').onsubmit = async (e) => {
-  e.preventDefault();
-  $('go').disabled = true;
-  const { error } = await sb.auth.signInWithPassword({ email: $('email').value.trim(), password: $('password').value });
-  $('go').disabled = false;
-  if (error) return showLock(error.status === 400 ? 'המייל או הסיסמה לא נכונים.' : 'לא הצלחתי להיכנס. נסה שוב.');
-  $('password').value = '';
-  load();
-};
-$('signout').onclick = async () => { await sb.auth.signOut(); showLock(); };
-
-function setReal(v) { real = v; store.set('stats_real', v ? '1' : '0'); paint(); load(); }
-function setDays(v) { days = v; store.set('stats_days', String(v)); paint(); load(); }
-function setTab(v) { tab = v; store.set('stats_tab', v); paint(); }
-function paint() {
-  $('real1').setAttribute('aria-pressed', real); $('real0').setAttribute('aria-pressed', !real);
-  document.querySelectorAll('.range button').forEach((b) => b.setAttribute('aria-pressed', Number(b.dataset.days) === days));
-  document.querySelectorAll('.tabs button').forEach((b) => b.setAttribute('aria-selected', b.dataset.tab === tab));
-  // On an iPad every panel is on screen (sketch B); on a phone, one tab at a time (sketch A).
-  const wide = matchMedia('(min-width: 900px)').matches;
-  document.body.classList.toggle('wide', wide);
-  document.querySelectorAll('.panel').forEach((p) => p.hidden = !wide && p.dataset.panel !== tab);
-}
+function showLock(wrong) { $('app').hidden = true; $('lock').hidden = false; $('lockErr').hidden = !wrong; $('key').focus(); }
+$('go').onclick = () => { key = $('key').value.trim(); if (!key) return; store.set('stats_key', key); $('lock').hidden = true; $('app').hidden = false; load(); };
+$('key').onkeydown = (e) => { if (e.key === 'Enter') $('go').click(); };
+function setReal(v) { real = v; store.set('stats_real', v ? '1' : '0'); $('real1').setAttribute('aria-pressed', v); $('real0').setAttribute('aria-pressed', !v); load(); }
 $('real1').onclick = () => setReal(true); $('real0').onclick = () => setReal(false);
-document.querySelectorAll('.range button').forEach((b) => b.onclick = () => setDays(Number(b.dataset.days)));
-document.querySelectorAll('.tabs button').forEach((b) => b.onclick = () => setTab(b.dataset.tab));
-matchMedia('(min-width: 900px)').addEventListener('change', paint);
+$('real1').setAttribute('aria-pressed', real); $('real0').setAttribute('aria-pressed', !real);
+document.querySelectorAll('.tabs button').forEach((b) => b.onclick = () => {
+  document.querySelectorAll('.tabs button').forEach((x) => x.setAttribute('aria-selected', x === b));
+  document.querySelectorAll('.panel').forEach((p) => { p.hidden = p.dataset.panel !== b.dataset.tab; });
+  store.set('stats_tab', b.dataset.tab);
+});
+const savedTab = store.get('stats_tab'); if (savedTab) document.querySelector(`.tabs button[data-tab="${savedTab}"]`)?.click();
 $('refresh').onclick = load;
-setInterval(() => { if (!document.hidden && !$('app').hidden) load(); }, 5 * 60 * 1000);
-paint();
+setInterval(() => { if (!document.hidden) load(); }, 5 * 60 * 1000);
 load();
 </script>
 </body>
