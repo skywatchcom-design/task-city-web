@@ -34954,7 +34954,7 @@ m=n.b
 if(m!==200)throw A.i(A.dM("version.json: "+m))
 p=A.a_(t.P.a(B.V.h7(A.jx(A.ju(n.e)).bN(n.w),null)).h(0,"stamp"))
 if(p==null)p=""
-o=B.c.aR(p,"20261023173752")>0
+o=B.c.aR(p,"20261024192608")>0
 if(o)$.a9_().sn(p)
 s=4
 return A.j(A.azy(),$async$Av)
@@ -110202,7 +110202,7 @@ p=p.b
 m=Math.sin(m*3)*1.5
 n=q.a
 s=n.b2(l,p)
-r=n.d/56*1.08
+r=n.d/62*1.08
 p=s.a
 l=p+0
 o=s.b
@@ -110602,7 +110602,7 @@ p=A.kC(c,0.18)
 m=A.h(p,A.h(p,B.o,0.6),m)
 m.toString
 o.hS(new A.f(r+n*0.38,q+n*0.4),b*0.5,m)},
-SQ(a7,a8,a9,b0,b1){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2=this,a3=null,a4=a2.a,a5=a4.b2(a7,a8),a6=a4.d/56*b1
+SQ(a7,a8,a9,b0,b1){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2=this,a3=null,a4=a2.a,a5=a4.b2(a7,a8),a6=a4.d/62*b1
 switch(a9.a){case 0:s=B.Wt[B.f.ao(b0,3)]
 a2.Nz(a5,13*a6)
 r=a5.a
@@ -110869,7 +110869,7 @@ a5.delete()}r.r=b3.gn()
 a5=r.bi()
 q.drawCircle(j.a,j.b,s,a5)
 a5.delete()}},
-B_(a8,a9,b0,b1,b2,b3){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0=this,a1=a0.a,a2=a1.b2(a8,a9),a3=a1.d/56*b0.r,a4=a2.a,a5=a2.b,a6=3.4*a3,a7=1.5*a3
+B_(a8,a9,b0,b1,b2,b3){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0=this,a1=a0.a,a2=a1.b2(a8,a9),a3=a1.d/62*b0.r,a4=a2.a,a5=a2.b,a6=3.4*a3,a7=1.5*a3
 a0.hT(new A.f(a4,a5+1),a6,a7,B.u.bz(0.18))
 s=b3?Math.sin(b2)*1.4*a3:0
 r=b3?Math.abs(Math.cos(b2))*0.3*a3:0
@@ -111010,7 +111010,7 @@ a1.vb(a6,3.141592653589793,3.141592653589793,!0,l)
 break}},
 aM8(a,b,c,d,e){return this.B_(a,b,c,1,d,e)},
 fz(a,b,c){return this.B_(a,b,c,1,0,!1)},
-aFs(a,b,c,a0){var s,r,q,p,o,n,m,l,k,j,i=this,h=i.a,g=h.b2(a,b),f=h.d/56,e=g.a,d=g.b
+aFs(a,b,c,a0){var s,r,q,p,o,n,m,l,k,j,i=this,h=i.a,g=h.b2(a,b),f=h.d/62,e=g.a,d=g.b
 i.hT(new A.f(e,d+1),5*f,1.6*f,B.u.bz(0.16))
 $.Z()
 s=A.ax()
@@ -115609,7 +115609,7 @@ A.cc(this.a,!1).dQ(s)
 return null},
 $S:0}
 A.auW.prototype={
-$3(a,b,c){var s,r,q,p="20261023173752",o=this.b,n=o.tf(B.S1,A.v("upd_check"),new A.auU(this.a,a))
+$3(a,b,c){var s,r,q,p="20261024192608",o=this.b,n=o.tf(B.S1,A.v("upd_check"),new A.auU(this.a,a))
 if(A.Zd()==null){s=A.v("upd_yours")
 r=A.aZ7(p)
 s=A.bc(s,"{v}",r)}else{s=A.v("upd_here_preview")
