@@ -1,1 +1,42 @@
-[{"name": "city-look", "title": "העיר: רחובות ואני", "stamp": "20261024192608"}, {"name": "shared-home", "title": "הבית שלנו", "stamp": "20261023163917"}, {"name": "notifications", "title": "התראות ומה חדש", "stamp": "20261022164729"}, {"name": "own-analytics", "title": "מדידה משלנו", "stamp": "20261022152933"}, {"name": "task-flow", "title": "משימות ושכונות", "stamp": "20261021225507"}, {"name": "analytics", "title": "מדידה ומספרים", "stamp": "20261021225028"}, {"name": "release-fixes", "title": "הגדרות וכניסה עם גוגל", "stamp": "20261020215811"}]
+[
+ {
+  "name": "feature-tour",
+  "title": "סיור פיצ'רים",
+  "stamp": "20261025002530"
+ },
+ {
+  "name": "city-look",
+  "title": "העיר: רחובות ואני",
+  "stamp": "20261024192608"
+ },
+ {
+  "name": "shared-home",
+  "title": "הבית שלנו",
+  "stamp": "20261023163917"
+ },
+ {
+  "name": "notifications",
+  "title": "התראות ומה חדש",
+  "stamp": "20261022164729"
+ },
+ {
+  "name": "own-analytics",
+  "title": "מדידה משלנו",
+  "stamp": "20261022152933"
+ },
+ {
+  "name": "task-flow",
+  "title": "משימות ושכונות",
+  "stamp": "20261021225507"
+ },
+ {
+  "name": "analytics",
+  "title": "מדידה ומספרים",
+  "stamp": "20261021225028"
+ },
+ {
+  "name": "release-fixes",
+  "title": "הגדרות וכניסה עם גוגל",
+  "stamp": "20261020215811"
+ }
+]
