@@ -1,5 +1,10 @@
 [
  {
+  "name": "calendar-ahead",
+  "title": "יומן: כל שבוע קדימה",
+  "stamp": "20261025214500"
+ },
+ {
   "name": "calendar-events",
   "title": "אירועים ביומן",
   "stamp": "20261025005528"
