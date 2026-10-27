@@ -1,5 +1,10 @@
 [
  {
+  "name": "city-camera",
+  "title": "מצלמה חופשית",
+  "stamp": "20261027225558"
+ },
+ {
   "name": "phone-calendar",
   "title": "היומנים בטלפון וייצוא",
   "stamp": "20261027210900"
@@ -53,10 +58,5 @@
   "name": "notifications",
   "title": "התראות ומה חדש",
   "stamp": "20261022164729"
- },
- {
-  "name": "own-analytics",
-  "title": "מדידה משלנו",
-  "stamp": "20261022152933"
  }
 ]
