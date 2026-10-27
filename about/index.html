@@ -56,15 +56,16 @@
   </div>
 
   <section class="wide">
-    <h2>How SkyTasks uses your calendars</h2>
-    <p>Both are optional, and each starts only when you turn it on.</p>
+    <h2>How SkyTasks uses Google Calendar</h2>
+    <p>Google Calendar is optional and has two separate switches in the calendar tab. Each asks Google for permission only when you turn it on.</p>
     <ul>
-      <li><b>On a phone, its own calendars:</b> SkyTasks shows the events from the calendars on your phone (Google, iCloud, Outlook) in
-        its calendar tab, and writes your tasks with a date and time into one calendar you pick. Moving or renaming one there updates
-        the task. This goes through the phone's calendar permission; your events are never stored on our servers.</li>
-      <li><b>On the web, Google Calendar</b> (<code>calendar.app.created</code>): SkyTasks creates one calendar named "SkyTasks" and
-        keeps your tasks with a date and time there. Moving or renaming one of those events updates the task. No other calendar is
-        read or touched.</li>
+      <li><b>Your tasks in Google Calendar</b> (<code>calendar.app.created</code>): SkyTasks creates one calendar named "SkyTasks" and
+        keeps your tasks with a date and time there, so they appear next to everything else in Google Calendar. Moving or renaming one
+        of those events updates the task. No other calendar is touched.</li>
+      <li><b>Your meetings in SkyTasks</b> (<code>calendar.calendarlist.readonly</code>, <code>calendar.events.readonly</code>): SkyTasks
+        shows the meetings from the calendars you choose as busy time in its calendar tab, so you can plan tasks around them. Tapping a
+        meeting starts a new task with its name and time. Read only: SkyTasks never changes your calendars, and meetings are never stored
+        on our servers.</li>
     </ul>
     <p>Details are in the <a href="../privacy.html">privacy policy</a>. SkyTasks' use of information received from Google APIs adheres to
       the Google API Services User Data Policy, including the Limited Use requirements.</p>
@@ -73,8 +74,8 @@
   <section class="wide he" id="he" lang="he">
     <h2>SkyTasks בעברית</h2>
     <p>SkyTasks היא אפליקציה לניהול משימות, שבה החיים שלך הם עיר קטנה. כל תחום הוא שכונה, וכל משימה שסיימת מגדילה אותה.
-      מכניסים משימות במשפט חופשי, מקבלים תזכורת בזמן, ורואים את היום והשבוע ביומן. בטלפון אפשר לחבר את היומנים שכבר יש בו: האירועים
-      מופיעים ליד המשימות, והמשימות עם שעה נכנסות ליומן שבוחרים. שום דבר מהיומן לא נשמר אצלנו.
+      מכניסים משימות במשפט חופשי, מקבלים תזכורת בזמן, ורואים את היום והשבוע ביומן. החיבור ליומן גוגל הוא רשות: המשימות עם שעה
+      נכנסות ליומן נפרד בשם SkyTasks, ואם תרצה, הפגישות שלך מוצגות באפליקציה לקריאה בלבד ולא נשמרות אצלנו.
       <a href="../privacy.html">מדיניות הפרטיות</a>.</p>
   </section>
 
