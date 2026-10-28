@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>מרכז הניהול של SkyTasks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* The owner's "היום שלי" page (sketch 29, direction 1: white and clean, built for a computer). Sign in with the owner's
+   account; the tables are readable only for the account the server marked as the owner (migration 20261028_admin_digest.sql).
+   Hairlines instead of boxes, numbers in plain columns, status by a dot. Light on purpose. */
+:root{
+  --white:#FFFFFF; --line:#ECECEA; --line2:#F3F3F1; --ink:#1D2B55; --text:#2F3652; --muted:#80849A;
+  --hover:#F7F7F5; --sel:#F3F4F8; --sun:#E0A63A; --red:#C8503C; --amber:#D9992B; --green:#3C8F5F;
+  --head:'Rubik',system-ui,sans-serif; --body:'Assistant',system-ui,sans-serif; color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--white);color:var(--text);font:15px/1.5 var(--body)}
+a{color:inherit}
+button{font:inherit}
+.app{display:grid;grid-template-columns:224px minmax(0,1fr);min-height:100vh;max-width:1360px;margin:0 auto}
+.nav{padding:22px 14px;display:flex;flex-direction:column;gap:2px;border-inline-end:1px solid var(--line);position:sticky;top:0;height:100vh;align-self:start}
+.brand{display:flex;align-items:center;gap:8px;font:700 17px var(--head);color:var(--ink);padding:0 10px 18px}
+.brand svg{width:22px;height:22px}
+.nav a,.nav button.link{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:8px;color:var(--text);font:600 14.5px var(--body);width:100%}
+.nav a:hover,.nav button.link:hover{background:var(--hover)}
+.nav .on{background:var(--sel);color:var(--ink)}
+.nav :focus-visible,.btn:focus-visible,.go:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.nav .n{font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.nav .n.hot{color:var(--red)}
+.nav .lab{font-size:11.5px;color:var(--muted);padding:20px 10px 6px;letter-spacing:.05em}
+.nav .sp{flex:1}
+.nav .me{font-size:12.5px;color:var(--muted);padding:12px 10px 0;border-top:1px solid var(--line2);margin-top:12px;overflow-wrap:anywhere}
+.main{padding:30px 40px 40px;display:flex;flex-direction:column;gap:30px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.top h1{font:600 26px/1.2 var(--head);color:var(--ink);margin:0}
+.top .sub{color:var(--muted);font-size:14px;margin-top:2px}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;font:600 14px var(--body);border:1px solid var(--line);background:var(--white);color:var(--ink);padding:6px 14px;border-radius:8px;min-height:34px;display:inline-flex;align-items:center}
+.btn:hover{background:var(--hover)}
+.btn.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.pri:hover{opacity:.9}
+.btn.sm{padding:3px 12px;min-height:28px;font-size:13px}
+.btn.ghost{border-color:transparent;color:var(--muted);padding-inline:8px}
+.btn.ghost:hover{color:var(--ink);background:var(--hover)}
+.btn[disabled]{opacity:.5;cursor:default}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--line)}
+.kpi{padding:18px 4px 18px 20px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi+.kpi{border-inline-start:1px solid var(--line);padding-inline-start:24px}
+.kpi .l{color:var(--muted);font-size:13.5px}
+.kpi .v{font:600 34px/1.2 var(--head);color:var(--ink);font-variant-numeric:tabular-nums}
+.kpi .d{font-size:13px;color:var(--muted)}
+.sec h2{font:600 16px var(--head);color:var(--ink);margin:0 0 4px;display:flex;justify-content:space-between;align-items:baseline}
+.sec h2 span{font:400 13px var(--body);color:var(--muted)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-weight:600;font-size:12.5px;color:var(--muted);text-align:start;padding:10px 0;border-bottom:1px solid var(--line)}
+td{padding:13px 0;border-bottom:1px solid var(--line2);font-size:15px;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.src,td.when{color:var(--muted);font-size:14px;white-space:nowrap;padding-inline-end:16px}
+td.act,th.act{text-align:end;white-space:nowrap}
+td a{text-decoration:none;border-bottom:1px solid var(--line)}
+td a:hover{border-color:var(--ink)}
+tr.gone td{color:var(--muted);text-decoration:line-through}
+tr.gone .btn{visibility:hidden}
+.sumline{display:block;color:var(--muted);font-size:13.5px;margin-top:1px}
+.wait{color:var(--muted);font-size:13px;margin-inline-end:8px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-inline-end:10px;background:#C9CBD6}
+.dot.r{background:var(--red)}.dot.a{background:var(--amber)}.dot.g{background:var(--green)}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px}
+.li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line2);font-size:15px}
+.li:last-child{border-bottom:0}
+.li .r{color:var(--muted);font-size:13.5px;white-space:nowrap}
+.prog{height:5px;background:var(--line2);border-radius:3px;overflow:hidden;margin-top:8px}.prog i{display:block;height:100%;background:var(--sun)}
+.empty{color:var(--muted);font-size:14.5px;padding:14px 0}
+.err{color:var(--red);font-weight:600;margin:0}
+.note{color:var(--muted);font-size:13px;margin:0}
+.lock{max-width:420px;margin:12vh auto 0;padding:0 16px;display:grid;gap:12px}
+.lock input{font:600 17px var(--body);padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--white);color:var(--ink);width:100%;direction:ltr}
+.lock .go{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;background:var(--ink);color:#fff;font:600 16px var(--head);padding:13px;border-radius:8px}
+.lock h1{font:600 24px var(--head);color:var(--ink);margin:0}
+.lock label{font-size:13px;color:var(--muted)}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .nav{position:static;height:auto;flex-direction:row;flex-wrap:wrap;border-inline-end:0;border-bottom:1px solid var(--line);padding:10px 14px}
+  .nav .brand,.nav .sp,.nav .me,.nav .lab{display:none}
+  .nav a,.nav button.link{width:auto}
+  .main{padding:22px 16px 32px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi:nth-child(3){border-inline-start:0}.kpi:nth-child(n+3){border-top:1px solid var(--line)}
+  .cols{grid-template-columns:1fr;gap:30px}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app" hidden>
+  <nav class="nav" aria-label="תפריט">
+    <div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="14" width="5" height="8" rx="1" fill="currentColor"/><rect x="9.5" y="9" width="5" height="13" rx="1" fill="currentColor"/><rect x="17" y="2" width="5" height="20" rx="1" fill="currentColor"/><rect x="18.5" y="5" width="2" height="2.4" fill="var(--sun)"/></svg>SkyTasks</div>
+    <button class="link on" data-filter="all" type="button">היום שלי</button>
+    <button class="link" data-filter="mail" type="button">דואר <span class="n" id="nMail"></span></button>
+    <button class="link" data-filter="bug" type="button">באגים <span class="n" id="nBug"></span></button>
+    <a href="#stores">חנויות</a>
+    <a href="#today">יומן</a>
+    <div class="lab">המספרים</div>
+    <a href="../stats/">כל המספרים</a>
+    <div class="sp"></div>
+    <div class="me"><span id="who"></span><br><span id="stamp">עוד לא התעדכן</span><br><button class="link" id="signout" type="button" style="padding:4px 0;color:var(--ink)">יציאה</button></div>
+  </nav>
+  <main class="main">
+    <div class="top">
+      <div><h1 id="hello">בוקר טוב</h1><div class="sub" id="sub"></div></div>
+      <button class="btn" id="refresh" type="button">לבקש רענון</button>
+    </div>
+    <p class="err" id="err" hidden></p>
+    <div class="kpis">
+      <div class="kpi"><span class="l">דורש תשובה</span><span class="v" id="kMail">–</span><span class="d" id="kMailD"></span></div>
+      <div class="kpi"><span class="l">באגים פתוחים</span><span class="v" id="kBug">–</span><span class="d" id="kBugD"></span></div>
+      <div class="kpi"><span class="l">בדיקה סגורה</span><span class="v" id="kClosed">–</span><span class="d" id="kClosedD"></span></div>
+      <div class="kpi"><span class="l">משתמשים פעילים היום</span><span class="v" id="kUsers">–</span><span class="d" id="kUsersD"></span></div>
+    </div>
+    <section class="sec" aria-labelledby="qt">
+      <h2><span id="qt" style="font:600 16px var(--head);color:var(--ink)">דורש אותך</span><span id="qCount"></span></h2>
+      <div class="tw"><table>
+        <thead><tr><th>נושא</th><th>מקור</th><th>מתי</th><th class="act"></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+      <div class="empty" id="empty" hidden></div>
+    </section>
+    <div class="cols">
+      <section class="sec" id="stores"><h2>חנויות</h2><div id="storeList"></div></section>
+      <section class="sec" id="today"><h2><span style="font:600 16px var(--head);color:var(--ink)">היום</span><span id="todayCount"></span></h2><div id="todayList"></div></section>
+    </div>
+    <p class="note">הכפתורים רק כותבים בקשה. טיוטה, משימה ותיקון בקוד נעשים בריצה הבאה של הסיכום או כשמבקשים מ־Claude בשיחה, ושום דבר לא נשלח בלי הלחיצה שלך.</p>
+  </main>
+</div>
+
+<form class="lock" id="lock" hidden>
+  <h1>מרכז הניהול</h1>
+  <p class="note">כניסה עם החשבון של SkyTasks שמורשה לראות את המספרים.</p>
+  <label for="email">מייל</label>
+  <input id="email" type="email" autocomplete="username" spellcheck="false">
+  <label for="password">סיסמה</label>
+  <input id="password" type="password" autocomplete="current-password">
+  <button class="go" id="go" type="submit">כניסה</button>
+  <p class="err" id="lockErr" hidden></p>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+// Filled in by tools/publish_web.sh from tmp/ (the URL and the public key the app itself ships with).
+const SUPABASE_URL = 'https://wlsvwtvinopzuodpmqsj.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_4OvvqiYTH1VsWdLjl-3eeg_CVxF_zyf';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = (id) => document.getElementById(id);
+// Everything here came from a mail, a bug report or a store page: never trust it as HTML.
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+const SOURCES = {mail:'מייל', bug:'באגים', store:'חנות', calendar:'יומן', task:'משימה'};
+// The first button of a row is the action that matches what the item is.
+const PRIMARY = {mail:['draft_reply','טיוטת תשובה'], bug:['fix_task','למשימת תיקון'], store:['add_task','הוסף משימה'], calendar:['add_task','הוסף משימה'], task:['add_task','הוסף משימה']};
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch {} } };
+
+let items = [], meta = {}, filter = 'all', stats = null;
+const rtf = new Intl.RelativeTimeFormat('he', {numeric: 'auto'});
+
+function ago(iso) {
+  if (!iso) return '';
+  const min = Math.round((Date.parse(iso) - Date.now()) / 60000), abs = Math.abs(min);
+  if (abs < 60) return rtf.format(min, 'minute');
+  if (abs < 60 * 24) return rtf.format(Math.round(min / 60), 'hour');
+  return rtf.format(Math.round(min / 1440), 'day');
+}
+const clock = (iso) => new Date(iso).toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'});
+const isOpen = (i) => i.status === 'open' || (i.status === 'snoozed' && i.snoozed_until && Date.parse(i.snoozed_until) <= Date.now());
+const SEV = {r: 0, a: 1, n: 2};
+
+function openItems(source) {
+  return items.filter((i) => isOpen(i) && (!source || i.source === source))
+    .sort((a, b) => (SEV[a.severity] - SEV[b.severity]) || (Date.parse(b.happened_at || 0) - Date.parse(a.happened_at || 0)));
+}
+
+function rowHtml(i) {
+  const [action, label] = PRIMARY[i.source] || PRIMARY.task;
+  const title = /^https:\/\//.test(i.link || '') ? `<a href="${esc(i.link)}" target="_blank" rel="noopener noreferrer">${esc(i.title)}</a>` : esc(i.title);
+  const who = i.who ? `${esc(SOURCES[i.source])} · ${esc(i.who)}` : esc(SOURCES[i.source]);
+  let act;
+  if (i.requested_action && i.handled_at) act = `<span class="wait">${esc(i.handled_note || 'בוצע')}</span>`;
+  else if (i.requested_action) act = `<span class="wait">נרשם, ממתין לריצה</span>`;
+  else act = `<button class="btn pri sm" type="button" data-act="${action}" data-id="${i.id}">${label}</button>`;
+  return `<tr data-id="${i.id}">
+    <td><span class="dot ${i.severity === 'n' ? '' : i.severity}"></span>${title}${i.summary ? `<span class="sumline">${esc(i.summary)}</span>` : ''}</td>
+    <td class="src">${who}</td><td class="when">${esc(ago(i.happened_at))}</td>
+    <td class="act">${act}<button class="btn ghost sm" type="button" data-snooze="${i.id}">למחר</button><button class="btn ghost sm" type="button" data-done="${i.id}">טופל</button></td></tr>`;
+}
+
+function render() {
+  const list = openItems(filter === 'all' ? null : filter);
+  $('rows').innerHTML = list.map(rowHtml).join('');
+  $('qt').textContent = filter === 'mail' ? 'דואר שדורש אותך' : filter === 'bug' ? 'באגים פתוחים' : 'דורש אותך';
+  $('qCount').textContent = list.length ? `${list.length} פריטים` : '';
+  const never = !meta.digest;
+  $('empty').hidden = list.length > 0;
+  $('empty').textContent = never
+    ? 'הסיכום עוד לא רץ. אחרי שהוא יתחבר ל־Gmail וליומן, כאן יופיע מה שמחכה לך, בבוקר ובערב.'
+    : 'אין כרגע מה שמחכה לך.';
+  const mail = openItems('mail'), bug = openItems('bug');
+  $('nMail').textContent = mail.length || ''; $('nMail').classList.toggle('hot', mail.some((i) => i.severity === 'r'));
+  $('nBug').textContent = bug.length || '';
+  $('kMail').textContent = never ? '–' : mail.length;
+  $('kMailD').textContent = mail.filter((i) => i.severity === 'r').length ? `${mail.filter((i) => i.severity === 'r').length} דחוף` : '';
+  $('kBug').textContent = never && !items.length ? '–' : bug.length;
+  const rep = bug.filter((i) => i.occurrences >= 2).length;
+  $('kBugD').textContent = rep ? `${rep} חוזרים` : '';
+  $('sub').textContent = never ? 'עוד אין סיכום' : `${openItems().length} דברים מחכים לך`;
+  const d = meta.digest;
+  $('stamp').textContent = d ? `עודכן ${new Date(d.updated_at).toLocaleDateString('he-IL', {day:'numeric', month:'numeric'})} ב־${clock(d.updated_at)}` : 'עוד לא התעדכן';
+  document.querySelectorAll('.nav [data-filter]').forEach((b) => b.classList.toggle('on', b.dataset.filter === filter));
+
+  const stores = Array.isArray(meta.stores) ? meta.stores : [];
+  $('storeList').innerHTML = stores.length ? stores.map((s) => `<div class="li" style="${s.progress != null ? 'display:block' : ''}">
+      <div style="display:flex;justify-content:space-between;gap:12px"><span><span class="dot ${['r','a','g'].includes(s.tone) ? s.tone : ''}"></span>${esc(s.label)}</span><span class="r">${esc(s.value)}</span></div>
+      ${s.progress != null ? `<div class="prog"><i style="width:${Math.max(0, Math.min(100, 100 * Number(s.progress)))}%"></i></div>` : ''}</div>`).join('')
+    : '<div class="empty">עוד לא התעדכן.</div>';
+  const t = meta.today || {}, meetings = Array.isArray(t.meetings) ? t.meetings : [], tasks = Array.isArray(t.tasks) ? t.tasks : [];
+  $('todayCount').textContent = meetings.length ? `${meetings.length} פגישות` : '';
+  $('todayList').innerHTML = meetings.length || tasks.length
+    ? meetings.map((m) => `<div class="li"><span>${esc(m.title)}</span><span class="r">${esc(m.time)}</span></div>`).join('')
+      + tasks.map((x) => `<div class="li"><span>${esc(x)}</span><span class="r">משימה</span></div>`).join('')
+    : '<div class="empty">עוד לא התעדכן.</div>';
+}
+
+function renderStats() {
+  if (!stats) return;
+  const c = stats.closed;
+  if (c) {
+    $('kClosed').textContent = `${c.android}/${c.goal}`;
+    $('kClosedD').textContent = c.day <= 14 ? `יום ${c.day} מתוך 14` : 'עברו 14 יום';
+  }
+  const days = stats.days || [], today = days[days.length - 1], before = days[days.length - 2];
+  if (today) {
+    $('kUsers').textContent = today.users;
+    $('kUsersD').textContent = before ? `אתמול ${before.users}` : '';
+  }
+}
+
+async function load() {
+  const { data } = await sb.auth.getSession();
+  if (!data.session) return showLock();
+  $('lock').hidden = true; $('app').hidden = false; $('err').hidden = true;
+  $('who').textContent = data.session.user.email || '';
+  const h = new Date().getHours();
+  $('hello').textContent = h < 5 ? 'לילה טוב' : h < 12 ? 'בוקר טוב' : h < 18 ? 'צהריים טובים' : 'ערב טוב';
+  try {
+    const [a, m] = await Promise.all([
+      sb.from('admin_items').select('*').order('happened_at', {ascending: false}).limit(300),
+      sb.from('admin_meta').select('key, value'),
+    ]);
+    if (a.error || m.error) throw new Error((a.error || m.error).message);
+    items = a.data; meta = Object.fromEntries(m.data.map((r) => [r.key, r.value]));
+    render();
+  } catch (e) {
+    $('err').textContent = 'לא הצלחתי להביא את הסיכום. בדוק את החיבור ולחץ "לבקש רענון" או טען את הדף מחדש. (' + e.message + ')';
+    $('err').hidden = false;
+  }
+  // The numbers come from the same function the numbers page uses; if it says no, the tiles just stay empty.
+  fetch(`${SUPABASE_URL}/functions/v1/stats?real=1&days=7`, { headers: { Authorization: `Bearer ${data.session.access_token}`, apikey: SUPABASE_KEY } })
+    .then((r) => r.ok ? r.json() : null).then((d) => { stats = d; renderStats(); }).catch(() => {});
+}
+
+function showLock(message) {
+  $('app').hidden = true; $('lock').hidden = false;
+  $('lockErr').hidden = !message; $('lockErr').textContent = message || '';
+}
+$('lock').onsubmit = async (e) => {
+  e.preventDefault();
+  $('go').disabled = true;
+  const { error } = await sb.auth.signInWithPassword({ email: $('email').value.trim(), password: $('password').value });
+  $('go').disabled = false;
+  if (error) return showLock(error.status === 400 ? 'המייל או הסיסמה לא נכונים.' : 'לא הצלחתי להיכנס. נסה שוב.');
+  $('password').value = '';
+  load();
+};
+$('signout').onclick = async () => { await sb.auth.signOut(); showLock(); };
+
+/** Writes one change the page is allowed to make; on failure it says so and leaves the row alone. */
+async function change(id, patch) {
+  const { error } = await sb.from('admin_items').update(patch).eq('id', id);
+  if (error) { $('err').textContent = 'לא הצלחתי לשמור את השינוי. נסה שוב. (' + error.message + ')'; $('err').hidden = false; return false; }
+  $('err').hidden = true;
+  const it = items.find((x) => x.id === Number(id));
+  if (it) Object.assign(it, patch);
+  return true;
+}
+const tomorrowMorning = () => { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(7, 0, 0, 0); return d.toISOString(); };
+
+$('rows').addEventListener('click', async (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  const row = b.closest('tr'), id = row.dataset.id;
+  b.disabled = true;
+  let ok = false;
+  if (b.dataset.done) { ok = await change(id, {status: 'done'}); if (ok) row.classList.add('gone'); }
+  else if (b.dataset.snooze) { ok = await change(id, {status: 'snoozed', snoozed_until: tomorrowMorning()}); if (ok) row.classList.add('gone'); }
+  else if (b.dataset.act) { ok = await change(id, {requested_action: b.dataset.act, requested_at: new Date().toISOString()}); if (ok) { b.replaceWith(Object.assign(document.createElement('span'), {className: 'wait', textContent: 'נרשם, ממתין לריצה'})); } }
+  if (!ok) b.disabled = false;
+  else if (row.classList.contains('gone')) setTimeout(render, 900);
+});
+document.querySelectorAll('.nav [data-filter]').forEach((b) => b.onclick = () => { filter = b.dataset.filter; render(); });
+$('refresh').onclick = async () => {
+  $('refresh').disabled = true;
+  const { error } = await sb.from('admin_meta').upsert({key: 'refresh_request', value: {at: new Date().toISOString()}}, {onConflict: 'key'});
+  $('refresh').textContent = error ? 'לא נשמר, נסה שוב' : 'הבקשה נרשמה';
+  setTimeout(() => { $('refresh').textContent = 'לבקש רענון'; $('refresh').disabled = false; }, 4000);
+  if (!error) load();
+};
+setInterval(() => { if (!document.hidden && !$('app').hidden) load(); }, 5 * 60 * 1000);
+load();
+</script>
+</body>
+</html>
