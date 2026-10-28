@@ -39778,7 +39778,7 @@ m=p.b
 if(m!==200)throw A.p(A.d8("version.json: "+m))
 o=A.a_(t.P.a(B.M.ek(A.kG(A.kD(p.e)).bK(p.w),null)).h(0,"stamp"))
 if(o==null)o=""
-n=B.c.aK(o,"20261028130844")>0
+n=B.c.aK(o,"20261028131518")>0
 if(n)$.ady().sn(o)
 s=4
 return A.c(A.aKK(),$async$De)
@@ -124887,7 +124887,7 @@ h=i===0?o.length:i
 g=r<=0
 i=g&&p>0&&p===i
 f=a8.c
-f=A.bX(A.dW(a4,a4,a4,new A.WP(h,p,i,m,""+A.bo(f)+"."+A.b2(f),a4),B.a4),190,a4)
+f=A.bX(A.dW(a4,a4,a4,new A.WP(h,p,i,m,""+A.bo(f)+"."+A.b2(f),a4),B.a4),190,1/0)
 if(r<0)i=A.f("exam_passed")
 else if(r===0)i=A.f("exam_today")
 else{i=A.f(r===1?"exam_left_one":"exam_left")
@@ -129672,7 +129672,7 @@ A.b7(this.a,!1).bA(s)
 return null},
 $S:0}
 A.aEW.prototype={
-$3(a,b,c){var s,r,q,p="20261028130844",o=this.b,n=o.mu(B.Xd,A.f("upd_check"),new A.aEU(this.a,a))
+$3(a,b,c){var s,r,q,p="20261028131518",o=this.b,n=o.mu(B.Xd,A.f("upd_check"),new A.aEU(this.a,a))
 if(A.y2()==null){s=A.f("upd_yours")
 r=A.bfh(p)
 s=A.ag(s,"{v}",r)}else{s=A.f("upd_here_preview")
