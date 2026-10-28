@@ -248,6 +248,11 @@ function renderStats() {
 async function load() {
   const { data } = await sb.auth.getSession();
   if (!data.session) return showLock();
+  // The tables already answer nobody but the owner (row level security); this keeps any other account from even seeing the page.
+  if (data.session.user.app_metadata?.stats_owner !== true) {
+    await sb.auth.signOut();
+    return showLock('החשבון הזה לא מורשה להיכנס לכאן. היכנס עם החשבון הניהולי של SkyTasks.');
+  }
   $('lock').hidden = true; $('app').hidden = false; $('err').hidden = true;
   $('who').textContent = data.session.user.email || '';
   const h = new Date().getHours();
