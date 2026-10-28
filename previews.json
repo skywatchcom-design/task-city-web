@@ -1,5 +1,10 @@
 [
  {
+  "name": "calendar-school",
+  "title": "מערכת שעות ומבחנים",
+  "stamp": "20261028130844"
+ },
+ {
   "name": "city-camera",
   "title": "מצלמה חופשית",
   "stamp": "20261027225558"
@@ -53,10 +58,5 @@
   "name": "shared-home",
   "title": "הבית שלנו",
   "stamp": "20261023163917"
- },
- {
-  "name": "notifications",
-  "title": "התראות ומה חדש",
-  "stamp": "20261022164729"
  }
 ]
