@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Rubik:wght@700;800&display=swap">
 <style>
 /* The one link we share everywhere (launch kit, 26.10): an iPhone goes straight to the App Store; an Android phone
-   gets the three steps into the closed test; a computer sees both. Same A+E language as the app and the landing page. */
+   gets an email to us asking to join the closed test (we reply with the link); a computer sees both. Same A+E language as the app and the landing page. */
 :root{--bg:#F7F7F4;--ink:#1D2B55;--sub:#5C6683;--line:#E2E1DA;--card:#FFFFFF;--sun:#E0A63A;--brand:#1D2B55;
   --f-head:"Rubik","Assistant",system-ui,sans-serif;--f-body:"Assistant","Rubik",system-ui,sans-serif}
 @media (prefers-color-scheme:dark){:root{--bg:#0F1626;--ink:#E8ECF6;--sub:#9AA4C0;--line:#263049;--card:#172036;--sun:#F2C14E;--brand:#F2C14E}}
@@ -66,13 +66,9 @@ ol{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:s}
 
   <section class="card" id="android">
     <h2 data-he="אנדרואיד: גרסת בדיקה" data-en="Android: test version"></h2>
-    <p data-he="באנדרואיד SkyTasks עוד בבדיקה של גוגל פליי. ההצטרפות לוקחת דקה, ומכאן העדכונים מגיעים לבד." data-en="On Android, SkyTasks is still in Google Play testing. Joining takes a minute, and updates come by themselves after that."></p>
-    <ol>
-      <li class="step"><div><b data-he="מצטרפים לקבוצת הבודקים" data-en="Join the testers' group"></b><a id="aGroup" href="#" data-he="לקבוצה ←" data-en="Open the group →"></a></div></li>
-      <li class="step"><div><b data-he="מאשרים את ההשתתפות בבדיקה" data-en="Accept the test invitation"></b><a id="aOptIn" href="#" data-he="לאישור ←" data-en="Accept →"></a></div></li>
-      <li class="step"><div><b data-he="מתקינים מגוגל פליי" data-en="Install from Google Play"></b><a id="aPlay" href="#" data-he="לגוגל פליי ←" data-en="Open Google Play →"></a></div></li>
-    </ol>
-    <p class="note" data-he="צריך להיכנס עם אותו חשבון גוגל בשלושת השלבים." data-en="Use the same Google account in all three steps."></p>
+    <p data-he="באנדרואיד SkyTasks עוד בבדיקה של גוגל פליי. שלחו לנו מייל, ונשלח לכם קישור להורדה." data-en="On Android, SkyTasks is still in Google Play testing. Send us an email and we will send you the download link."></p>
+    <a class="btn and" id="aMail" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span data-he="לבקש להצטרף לבדיקה" data-en="Ask to join the test"></span></a>
+    <p class="note"><span data-he="כתבו במייל את כתובת הג'ימייל שאיתה אתם נכנסים לגוגל פליי. אפשר גם לכתוב ישירות ל־" data-en="Include the Gmail address you use on Google Play. You can also write directly to "></span><span dir="ltr">skywatchcom@gmail.com</span></p>
   </section>
 
   <div class="foot">
@@ -93,9 +89,6 @@ ol{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:s}
   // An iPhone or iPad goes straight to the App Store; "#android" (from the landing page) always shows the steps.
   if(apple&&location.hash!=='#android'){location.replace(S.appStore);return;}
   document.getElementById('appStore').href=S.appStore;
-  document.getElementById('aGroup').href=S.androidGroup;
-  document.getElementById('aOptIn').href=S.androidOptIn;
-  document.getElementById('aPlay').href=S.androidStore;
   if(android||location.hash==='#android'){document.getElementById('ios').hidden=true;document.querySelector('.lead').hidden=true;}
   var r=document.documentElement;
   function set(l){
@@ -104,6 +97,7 @@ ol{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:s}
     document.getElementById('bHe').setAttribute('aria-pressed',l==='he');
     document.getElementById('bEn').setAttribute('aria-pressed',l==='en');
     document.title=l==='he'?'SkyTasks, להורדה':'SkyTasks, download';
+    document.getElementById('aMail').href=S.testerMail(l);
   }
   document.getElementById('bHe').onclick=function(){set('he')};
   document.getElementById('bEn').onclick=function(){set('en')};

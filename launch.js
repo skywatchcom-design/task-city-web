@@ -5,9 +5,16 @@ window.SKY = {
   live: true,
   // iPhone and iPad: public once Apple approves version 0.1.0.
   appStore: 'https://apps.apple.com/app/id6826658767',
-  // Android stays a closed test (Alpha) until 12 testers have had it 14 days. Anyone who joins the Google Group
-  // becomes a tester, as long as the group is added as testers of the Alpha track in Play Console.
-  androidGroup: 'https://groups.google.com/g/skytasks-testers',
-  androidOptIn: 'https://play.google.com/apps/testing/com.skywatchcom.skytasks',
-  androidStore: 'https://play.google.com/store/apps/details?id=com.skywatchcom.skytasks'
+  // Android stays a closed test (Alpha) until 12 testers have had it 14 days. Testers ask by email (owner, 30.10), we add
+  // their Gmail address to the testers list in Play Console and reply with the link.
+  androidMail: 'skywatchcom@gmail.com',
+  androidStore: 'https://play.google.com/store/apps/details?id=com.skywatchcom.skytasks',
+  testerMail: function (lang) {
+    var he = lang === 'he';
+    var subject = he ? 'SkyTasks: בקשה להצטרף לבדיקה באנדרואיד' : 'SkyTasks: joining the Android test';
+    var body = he
+      ? 'שלום,\nאשמח להצטרף לבדיקה של SkyTasks באנדרואיד.\nכתובת הג\'ימייל שלי בגוגל פליי: \n\nתודה!'
+      : 'Hi,\nI would like to join the SkyTasks Android test.\nThe Gmail address I use on Google Play: \n\nThanks!';
+    return 'mailto:' + this.androidMail + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  }
 };
