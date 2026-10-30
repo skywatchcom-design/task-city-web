@@ -119,8 +119,6 @@ a.store{text-decoration:none;cursor:pointer}a.store:hover{filter:brightness(1.12
     document.getElementById('bHe').setAttribute('aria-pressed',l==='he');
     document.getElementById('bEn').setAttribute('aria-pressed',l==='en');
     var live=window.SKY&&SKY.live;
-    var and=document.getElementById('sAndroid');
-    if(live&&and.tagName==='A')and.href=SKY.testerMail(l);
     document.title=live?(l==='he'?'SkyTasks, להורדה':'SkyTasks, download'):(l==='he'?'SkyTasks, בקרוב':'SkyTasks, coming soon');
   }
   // Launch day (../launch.js): the iPhone tile opens the App Store, the Android tile the way into the test.
@@ -134,8 +132,8 @@ a.store{text-decoration:none;cursor:pointer}a.store:hover{filter:brightness(1.12
       d.replaceWith(a);
     }
     link('sApple',SKY.appStore,['להורדה ב־App Store','Download on the App Store'],['אייפון ואייפד','iPhone and iPad']);
-    // Android is a closed test: the button writes us an email asking to join, and we reply with the link.
-    link('sAndroid',SKY.testerMail('he'),['גרסת בדיקה, לבקש הצטרפות במייל','Test version, ask by email'],['אנדרואיד','Android']);
+    // Android is a closed test: the button opens the request form on /get/, and we reply with the link.
+    link('sAndroid','../get/#android',['גרסת בדיקה, לבקש הצטרפות','Test version, ask to join'],['אנדרואיד','Android']);
     var m=document.querySelector('meta[name=description]');
     if(m)m.content='SkyTasks: המשימות, היומן והלימודים במקום אחד, ועיר שנבנית ממה שעשית. עכשיו באייפון, ובגרסת בדיקה באנדרואיד.';
   }
