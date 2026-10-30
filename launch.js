@@ -2,7 +2,7 @@
 // (soon/) and the store link page (get/) read this one file: until launch day they say "coming soon".
 // On the day Apple approves SkyTasks, change `live` to true and publish the site (owner's approval), nothing else.
 window.SKY = {
-  live: false,
+  live: true,
   // iPhone and iPad: public once Apple approves version 0.1.0.
   appStore: 'https://apps.apple.com/app/id6826658767',
   // Android stays a closed test (Alpha) until 12 testers have had it 14 days. Anyone who joins the Google Group
