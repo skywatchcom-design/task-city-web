@@ -104,6 +104,31 @@ tr.gone .btn{visibility:hidden}
 .card .state.bad{color:var(--red)}
 .card .state.ok{color:var(--green)}
 .card .askbox{display:flex;flex-direction:column;gap:6px}
+.h{font:600 16px var(--head);color:var(--ink)}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.mini{border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.mini .mhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.mini h2{margin:0;font:600 16px var(--head);color:var(--ink)}
+.mini .big{font:600 30px/1.1 var(--head);color:var(--ink);font-variant-numeric:tabular-nums}
+.mini .big.hot{color:var(--red)}
+.mini .msub{font-size:13px;color:var(--muted)}
+.mini .mrow{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line2);font-size:14px}
+.mini .mrow:first-of-type{margin-top:4px}
+.mini .mrow span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.mini .mrow .r{color:var(--muted);white-space:nowrap}
+.mrow .ok,.mrow .tg{color:var(--green)!important}.mrow .ta{color:var(--amber)!important}.mrow .tr{color:var(--red)!important}
+.mini .more{all:unset;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--ink);margin-top:auto;padding-top:6px}
+.mini .more:hover{text-decoration:underline}
+.mini .more:focus-visible,.chip:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:54px;margin-top:6px}
+.bars i{flex:1;background:#E6E8EF;border-radius:6px 6px 0 0;min-height:4px}
+.bars i.now{background:var(--ink)}
+.wide .bars{height:120px;margin:10px 0 14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px}
+.chip{all:unset;box-sizing:border-box;cursor:pointer;font:600 13.5px var(--body);border:1px solid var(--line);color:var(--text);padding:6px 14px;border-radius:16px}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tab[hidden]{display:none!important}
+@media (max-width:1100px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   .nav{position:static;height:auto;flex-direction:row;flex-wrap:wrap;border-inline-end:0;border-bottom:1px solid var(--line);padding:10px 14px}
@@ -113,6 +138,7 @@ tr.gone .btn{visibility:hidden}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .kpi:nth-child(3){border-inline-start:0}.kpi:nth-child(n+3){border-top:1px solid var(--line)}
   .cols{grid-template-columns:1fr;gap:30px}
+  .board{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -120,12 +146,13 @@ tr.gone .btn{visibility:hidden}
 <div class="app" id="app" hidden>
   <nav class="nav" aria-label="תפריט">
     <div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="14" width="5" height="8" rx="1" fill="currentColor"/><rect x="9.5" y="9" width="5" height="13" rx="1" fill="currentColor"/><rect x="17" y="2" width="5" height="20" rx="1" fill="currentColor"/><rect x="18.5" y="5" width="2" height="2.4" fill="var(--sun)"/></svg>SkyTasks</div>
-    <button class="link on" data-filter="all" type="button">היום שלי</button>
-    <button class="link" data-filter="mail" type="button">דואר <span class="n" id="nMail"></span></button>
-    <button class="link" data-filter="bug" type="button">באגים <span class="n" id="nBug"></span></button>
-    <a href="#social">פייסבוק ואינסטגרם <span class="n" id="nSocial"></span></a>
-    <a href="#stores">חנויות</a>
-    <a href="#today">יומן</a>
+    <button class="link on" data-tab="overview" type="button">סקירה</button>
+    <button class="link" data-tab="mail" type="button">דואר <span class="n" id="nMail"></span></button>
+    <button class="link" data-tab="bug" type="button">באגים <span class="n" id="nBug"></span></button>
+    <button class="link" data-tab="social" type="button">פייסבוק ואינסטגרם <span class="n" id="nSocial"></span></button>
+    <button class="link" data-tab="stores" type="button">חנויות</button>
+    <button class="link" data-tab="users" type="button">משתמשים</button>
+    <button class="link" data-tab="calendar" type="button">יומן ומשימות</button>
     <div class="lab">המספרים</div>
     <a href="../stats/">כל המספרים</a>
     <div class="sp"></div>
@@ -137,33 +164,60 @@ tr.gone .btn{visibility:hidden}
       <button class="btn" id="refresh" type="button">לבקש רענון</button>
     </div>
     <p class="err" id="err" hidden></p>
-    <div class="kpis">
-      <div class="kpi"><span class="l">דורש תשובה</span><span class="v" id="kMail">–</span><span class="d" id="kMailD"></span></div>
-      <div class="kpi"><span class="l">באגים פתוחים</span><span class="v" id="kBug">–</span><span class="d" id="kBugD"></span></div>
-      <div class="kpi"><span class="l">בדיקה סגורה</span><span class="v" id="kClosed">–</span><span class="d" id="kClosedD"></span></div>
-      <div class="kpi"><span class="l">משתמשים פעילים היום</span><span class="v" id="kUsers">–</span><span class="d" id="kUsersD"></span></div>
-    </div>
-    <section class="sec" aria-labelledby="qt">
-      <h2><span id="qt" style="font:600 16px var(--head);color:var(--ink)">דורש אותך</span><span id="qCount"></span></h2>
-      <div class="tw"><table>
-        <thead><tr><th>נושא</th><th>מקור</th><th>מתי</th><th class="act"></th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table></div>
-      <div class="empty" id="empty" hidden></div>
+    <section class="tab" data-tab="overview" aria-label="סקירה"><div class="board" id="board"></div></section>
+    <section class="tab sec" data-tab="mail" hidden>
+      <h2><span class="h">דואר שדורש אותך</span><span data-count="mail"></span></h2>
+      <div class="tw"><table><thead><tr><th>נושא</th><th>מקור</th><th>מתי</th><th class="act"></th></tr></thead><tbody class="items" data-sources="mail"></tbody></table></div>
+      <div class="empty" data-empty="mail" hidden></div>
     </section>
-    <section class="sec" id="social" aria-labelledby="st">
-      <h2><span id="st" style="font:600 16px var(--head);color:var(--ink)">לאישור לפייסבוק ולאינסטגרם</span><span id="sCount"></span></h2>
-      <p class="soc-line" id="socLine"></p>
-      <div class="cards" id="cards"></div>
-      <div class="empty" id="sEmpty" hidden></div>
+    <section class="tab sec" data-tab="bug" hidden>
+      <h2><span class="h">באגים פתוחים</span><span data-count="bug"></span></h2>
+      <div class="tw"><table><thead><tr><th>נושא</th><th>מקור</th><th>מתי</th><th class="act"></th></tr></thead><tbody class="items" data-sources="bug"></tbody></table></div>
+      <div class="empty" data-empty="bug" hidden></div>
     </section>
-    <div class="cols">
-      <section class="sec" id="stores"><h2>חנויות</h2><div id="storeList"></div></section>
-      <section class="sec" id="today"><h2><span style="font:600 16px var(--head);color:var(--ink)">היום</span><span id="todayCount"></span></h2><div id="todayList"></div></section>
-    </div>
-    <p class="note">בפייסבוק ובאינסטגרם, "מאשר" מתזמן את הפריט, והשרת מפרסם אותו בשעה שלו. בלי הלחיצה הזאת שום דבר לא עולה.</p>
-    <p class="note">הכפתורים רק כותבים בקשה. טיוטה, משימה ותיקון בקוד נעשים בריצה הבאה של הסיכום או כשמבקשים מ־Claude בשיחה, ושום דבר לא נשלח בלי הלחיצה שלך.</p>
+    <section class="tab" data-tab="social" hidden>
+      <div class="kpis" id="socKpis"></div>
+      <section class="sec" aria-labelledby="st">
+        <h2><span id="st" class="h">פייסבוק ואינסטגרם</span><span id="sCount"></span></h2>
+        <p class="soc-line" id="socLine"></p>
+        <div class="chips" id="socChips" role="group" aria-label="סינון">
+          <button class="chip on" type="button" data-show="wait">לאישור</button>
+          <button class="chip" type="button" data-show="sched">מתוזמנים</button>
+          <button class="chip" type="button" data-show="done">עלו</button>
+          <button class="chip" type="button" data-show="replies">תשובות לתגובות</button>
+        </div>
+        <div class="cards" id="cards"></div>
+        <div class="empty" id="sEmpty" hidden></div>
+      </section>
+      <p class="note">"מאשר" מתזמן את הפריט, והשרת מפרסם אותו בשעה שלו. בלי הלחיצה הזאת שום דבר לא עולה.</p>
+    </section>
+    <section class="tab" data-tab="stores" hidden>
+      <section class="sec"><h2><span class="h">חנויות</span></h2><div id="storeList"></div></section>
+      <section class="sec" style="margin-top:28px">
+        <h2><span class="h">מה מחכה בחנויות</span><span data-count="store"></span></h2>
+        <div class="tw"><table><thead><tr><th>נושא</th><th>מקור</th><th>מתי</th><th class="act"></th></tr></thead><tbody class="items" data-sources="store"></tbody></table></div>
+        <div class="empty" data-empty="store" hidden></div>
+      </section>
+    </section>
+    <section class="tab" data-tab="users" hidden>
+      <div class="kpis" id="userKpis"></div>
+      <section class="sec" style="margin-top:28px">
+        <h2><span class="h">פעילים, 7 הימים האחרונים</span><a href="../stats/" class="r" style="font-size:13.5px;font-weight:700">כל המספרים ←</a></h2>
+        <div id="userBars" class="wide"></div>
+        <div class="tw"><table><thead><tr><th>יום</th><th>פעילים</th><th>חדשים</th><th>משימות שנוספו</th><th>שבוצעו</th></tr></thead><tbody id="dayRows"></tbody></table></div>
+      </section>
+    </section>
+    <section class="tab" data-tab="calendar" hidden>
+      <section class="sec"><h2><span class="h">היום</span><span id="todayCount"></span></h2><div id="todayList"></div></section>
+      <section class="sec" style="margin-top:28px">
+        <h2><span class="h">משימות</span><span data-count="calendar,task"></span></h2>
+        <div class="tw"><table><thead><tr><th>נושא</th><th>מקור</th><th>מתי</th><th class="act"></th></tr></thead><tbody class="items" data-sources="calendar,task"></tbody></table></div>
+        <div class="empty" data-empty="calendar,task" hidden></div>
+      </section>
+    </section>
+    <p class="note">הכפתורים בדואר ובבאגים רק כותבים בקשה. טיוטה, משימה ותיקון בקוד נעשים בריצה הבאה של הסיכום או כשמבקשים מ־Claude בשיחה.</p>
   </main>
+
 </div>
 
 <form class="lock" id="lock" hidden>
@@ -191,7 +245,7 @@ const SOURCES = {mail:'מייל', bug:'באגים', store:'חנות', calendar:'
 const PRIMARY = {mail:['draft_reply','טיוטת תשובה'], bug:['fix_task','למשימת תיקון'], store:['add_task','הוסף משימה'], calendar:['add_task','הוסף משימה'], task:['add_task','הוסף משימה']};
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch {} } };
 
-let items = [], meta = {}, filter = 'all', stats = null, posts = [];
+let items = [], meta = {}, stats = null, posts = [];
 const rtf = new Intl.RelativeTimeFormat('he', {numeric: 'auto'});
 
 function ago(iso) {
@@ -224,29 +278,64 @@ function rowHtml(i) {
     <td class="act">${act}<button class="btn ghost sm" type="button" data-snooze="${i.id}">למחר</button><button class="btn ghost sm" type="button" data-done="${i.id}">טופל</button></td></tr>`;
 }
 
-function render() {
-  const list = openItems(filter === 'all' ? null : filter);
-  $('rows').innerHTML = list.map(rowHtml).join('');
-  $('qt').textContent = filter === 'mail' ? 'דואר שדורש אותך' : filter === 'bug' ? 'באגים פתוחים' : 'דורש אותך';
-  $('qCount').textContent = list.length ? `${list.length} פריטים` : '';
+// ---- Tabs (sketch 30, direction A "לוח", 31.10): an overview of small tables, and one tab per area.
+const TABS = ['overview', 'mail', 'bug', 'social', 'stores', 'users', 'calendar'];
+let tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
+
+function showTab(next, push = true) {
+  tab = TABS.includes(next) ? next : 'overview';
+  document.querySelectorAll('.tab').forEach((s) => { s.hidden = s.dataset.tab !== tab; });
+  document.querySelectorAll('.nav [data-tab]').forEach((b) => {
+    b.classList.toggle('on', b.dataset.tab === tab);
+    if (b.dataset.tab === tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+  if (push && location.hash.slice(1) !== tab) history.replaceState(null, '', '#' + tab);
+  window.scrollTo(0, 0);
+}
+
+const mrow = (left, right, tone) => `<div class="mrow"><span>${left}</span><span class="r ${tone || ''}">${right}</span></div>`;
+function mini(id, title, big, sub, body, link, hot) {
+  return `<section class="mini" aria-labelledby="m-${id}">
+    <div class="mhead"><h2 id="m-${id}">${title}</h2><span class="big ${hot ? 'hot' : ''}">${big}</span></div>
+    <div class="msub">${sub}</div>${body}
+    <button class="more" type="button" data-go="${id}">${link} ←</button></section>`;
+}
+const days7 = () => (stats?.days || []).slice(-7);
+function bars(list, key) {
+  const top = Math.max(1, ...list.map((d) => Number(d[key]) || 0));
+  return `<div class="bars" aria-hidden="true">${list.map((d, i) =>
+    `<i style="height:${Math.max(6, Math.round(100 * (Number(d[key]) || 0) / top))}%" class="${i === list.length - 1 ? 'now' : ''}"></i>`).join('')}</div>`;
+}
+
+function renderItems() {
   const never = !meta.digest;
-  $('empty').hidden = list.length > 0;
-  $('empty').textContent = never
-    ? 'הסיכום עוד לא רץ. אחרי שהוא יתחבר ל־Gmail וליומן, כאן יופיע מה שמחכה לך, בבוקר ובערב.'
-    : 'אין כרגע מה שמחכה לך.';
+  document.querySelectorAll('tbody.items').forEach((tb) => {
+    const list = openItems().filter((i) => tb.dataset.sources.split(',').includes(i.source));
+    tb.innerHTML = list.map(rowHtml).join('');
+    const empty = document.querySelector(`[data-empty="${tb.dataset.sources}"]`);
+    if (empty) {
+      empty.hidden = list.length > 0;
+      empty.textContent = never ? 'הסיכום עוד לא רץ. הוא מתעדכן בבוקר ובערב.' : 'אין כרגע מה שמחכה לך כאן.';
+    }
+    const count = document.querySelector(`[data-count="${tb.dataset.sources}"]`);
+    if (count) count.textContent = list.length ? `${list.length} פריטים` : '';
+  });
+}
+
+function render() {
+  renderItems();
+  const never = !meta.digest;
   const mail = openItems('mail'), bug = openItems('bug');
-  $('nMail').textContent = mail.length || ''; $('nMail').classList.toggle('hot', mail.some((i) => i.severity === 'r'));
+  const urgent = mail.filter((i) => i.severity === 'r').length;
+  $('nMail').textContent = mail.length || ''; $('nMail').classList.toggle('hot', urgent > 0);
   $('nBug').textContent = bug.length || '';
-  $('kMail').textContent = never ? '–' : mail.length;
-  $('kMailD').textContent = mail.filter((i) => i.severity === 'r').length ? `${mail.filter((i) => i.severity === 'r').length} דחוף` : '';
-  $('kBug').textContent = never && !items.length ? '–' : bug.length;
-  const rep = bug.filter((i) => i.occurrences >= 2).length;
-  $('kBugD').textContent = rep ? `${rep} חוזרים` : '';
-  $('sub').textContent = never ? 'עוד אין סיכום' : `${openItems().length} דברים מחכים לך`;
+  const waiting = posts.filter((x) => ['draft', 'failed'].includes(x.status)).length;
+  $('nSocial').textContent = waiting || '';
+  $('sub').textContent = never ? 'עוד אין סיכום' : `${openItems().length + waiting} דברים מחכים לך`;
   const d = meta.digest;
   $('stamp').textContent = d ? `עודכן ${new Date(d.updated_at).toLocaleDateString('he-IL', {day:'numeric', month:'numeric'})} ב־${clock(d.updated_at)}` : 'עוד לא התעדכן';
-  document.querySelectorAll('.nav [data-filter]').forEach((b) => b.classList.toggle('on', b.dataset.filter === filter));
 
+  // Stores and the calendar have their own tabs; the digest fills both.
   const stores = Array.isArray(meta.stores) ? meta.stores : [];
   $('storeList').innerHTML = stores.length ? stores.map((s) => `<div class="li" style="${s.progress != null ? 'display:block' : ''}">
       <div style="display:flex;justify-content:space-between;gap:12px"><span><span class="dot ${['r','a','g'].includes(s.tone) ? s.tone : ''}"></span>${esc(s.label)}</span><span class="r">${esc(s.value)}</span></div>
@@ -258,21 +347,66 @@ function render() {
     ? meetings.map((m) => `<div class="li"><span>${esc(m.title)}</span><span class="r">${esc(m.time)}</span></div>`).join('')
       + tasks.map((x) => `<div class="li"><span>${esc(x)}</span><span class="r">משימה</span></div>`).join('')
     : '<div class="empty">עוד לא התעדכן.</div>';
+  renderUsers();
+  renderBoard();
 }
 
-function renderStats() {
-  if (!stats) return;
-  const c = stats.closed;
-  if (c) {
-    $('kClosed').textContent = `${c.android}/${c.goal}`;
-    $('kClosedD').textContent = c.day <= 14 ? `יום ${c.day} מתוך 14` : 'עברו 14 יום';
-  }
-  const days = stats.days || [], today = days[days.length - 1], before = days[days.length - 2];
-  if (today) {
-    $('kUsers').textContent = today.users;
-    $('kUsersD').textContent = before ? `אתמול ${before.users}` : '';
-  }
+function renderBoard() {
+  const never = !meta.digest;
+  const mail = openItems('mail'), bug = openItems('bug');
+  const urgent = mail.filter((i) => i.severity === 'r').length;
+  const cards = [];
+  cards.push(mini('mail', 'דואר', never ? '–' : mail.length, `דורש תשובה${urgent ? ` · ${urgent} דחוף` : ''}`,
+    mail.slice(0, 3).map((i) => mrow(esc(i.title), esc(ago(i.happened_at)))).join('') || '<div class="mrow"><span class="r">אין מה שמחכה</span></div>',
+    'לכל הדואר', urgent > 0));
+  const rep = bug.filter((i) => i.occurrences >= 2).length;
+  cards.push(mini('bug', 'באגים', never && !items.length ? '–' : bug.length, `פתוחים${rep ? ` · ${rep} חוזרים` : ''}`,
+    bug.slice(0, 3).map((i) => mrow(esc(i.title), `${esc(i.occurrences)} ×`)).join('') || '<div class="mrow"><span class="r">אין באגים פתוחים</span></div>',
+    'לכל הבאגים'));
+  const s = meta.social, now = Date.now();
+  const waiting = posts.filter((x) => ['draft', 'failed'].includes(x.status));
+  const next = posts.filter((x) => x.kind !== 'reply' && ['draft', 'changes', 'approved'].includes(x.status) && x.scheduled_at && Date.parse(x.scheduled_at) > now)
+    .sort((a, b) => Date.parse(a.scheduled_at) - Date.parse(b.scheduled_at)).slice(0, 2);
+  const last = posts.filter((x) => x.status === 'published' && x.kind !== 'reply').sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at))[0];
+  const followers = s?.ok ? `${s.page?.followers ?? 0} בפייסבוק · ${s.ig?.followers ?? 0} באינסטגרם` : 'לא מחובר';
+  cards.push(mini('social', 'פייסבוק ואינסטגרם', waiting.length, `לאישור · עוקבים: ${esc(followers)}`,
+    next.map((x) => mrow(`${esc(KIND[x.kind])} · ${esc(x.theme || '')}`, `${esc(shortWhen(x.scheduled_at))}${x.status === 'approved' ? ' · מתוזמן' : ''}`)).join('')
+      + (last ? mrow(`עלה: ${esc(KIND[last.kind])} · ${esc(last.theme || '')}`, esc(ago(last.published_at)), 'ok') : '')
+      || '<div class="mrow"><span class="r">אין טיוטות</span></div>',
+    'לאישור הפוסטים', waiting.length > 0));
+  const c = stats?.closed;
+  const stores = Array.isArray(meta.stores) ? meta.stores : [];
+  cards.push(mini('stores', 'חנויות', c ? c.android : '–', c ? `בודקים באנדרואיד (היעד ${c.goal}) · ${c.day <= 14 ? `יום ${c.day} מתוך 14` : 'עברו 14 יום'}` : 'בודקים באנדרואיד',
+    (c ? `<div class="prog"><i style="width:${Math.max(0, Math.min(100, 100 * Math.min(c.day, 14) / 14))}%"></i></div>` : '')
+      + stores.filter((x) => x.progress == null).slice(0, 3).map((x) => mrow(esc(x.label), esc(x.value), ['r', 'a', 'g'].includes(x.tone) ? 't' + x.tone : '')).join(''),
+    'לחנויות'));
+  const ds = days7(), today = ds[ds.length - 1], before = ds[ds.length - 2];
+  cards.push(mini('users', 'משתמשים', today ? today.users : '–', today ? `פעילים היום${before ? ` · אתמול ${before.users}` : ''}` : 'פעילים היום',
+    (ds.length ? bars(ds, 'users') : '') + (today ? mrow('משימות שבוצעו היום', esc(today.done)) + mrow('משתמשים חדשים היום', esc(today.new_users)) : ''),
+    'לכל המשתמשים'));
+  const t = meta.today || {}, meetings = Array.isArray(t.meetings) ? t.meetings : [];
+  cards.push(mini('calendar', 'יומן', never ? '–' : meetings.length, 'פגישות היום',
+    meetings.slice(0, 3).map((m) => mrow(esc(m.title), esc(m.time))).join('') || `<div class="mrow"><span class="r">${never ? 'עוד לא התעדכן' : 'היום פנוי'}</span></div>`,
+    'ליומן'));
+  $('board').innerHTML = cards.join('');
 }
+
+const shortWhen = (iso) => new Date(iso).toLocaleString('he-IL', {weekday:'short', hour:'2-digit', minute:'2-digit'});
+
+function renderUsers() {
+  const ds = days7(), today = ds[ds.length - 1];
+  const k = (label, v, sub) => `<div class="kpi"><span class="l">${label}</span><span class="v">${v}</span><span class="d">${sub || ''}</span></div>`;
+  const sum = (key) => ds.reduce((a, d) => a + (Number(d[key]) || 0), 0);
+  $('userKpis').innerHTML = today
+    ? k('פעילים היום', esc(today.users), `השבוע ${esc(stats.range?.users ?? '')}`) + k('חדשים היום', esc(today.new_users), `השבוע ${sum('new_users')}`)
+      + k('משימות שנוספו היום', esc(today.added), `השבוע ${sum('added')}`) + k('משימות שבוצעו היום', esc(today.done), `השבוע ${sum('done')}`)
+    : k('פעילים היום', '–') + k('חדשים היום', '–') + k('משימות שנוספו', '–') + k('משימות שבוצעו', '–');
+  $('userBars').innerHTML = ds.length ? bars(ds, 'users') : '';
+  $('dayRows').innerHTML = ds.slice().reverse().map((d) => `<tr><td>${esc(new Date(d.day).toLocaleDateString('he-IL', {weekday:'long', day:'numeric', month:'numeric'}))}</td>
+    <td>${esc(d.users)}</td><td>${esc(d.new_users)}</td><td>${esc(d.added)}</td><td>${esc(d.done)}</td></tr>`).join('');
+}
+
+function renderStats() { render(); }
 
 async function load() {
   const { data } = await sb.auth.getSession();
@@ -331,8 +465,10 @@ async function change(id, patch) {
 }
 const tomorrowMorning = () => { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(7, 0, 0, 0); return d.toISOString(); };
 
-$('rows').addEventListener('click', async (e) => {
-  const b = e.target.closest('button'); if (!b) return;
+$('app').addEventListener('click', async (e) => {
+  const go = e.target.closest('[data-go]');
+  if (go) return showTab(go.dataset.go);
+  const b = e.target.closest('tbody.items button'); if (!b) return;
   const row = b.closest('tr'), id = row.dataset.id;
   b.disabled = true;
   let ok = false;
@@ -342,7 +478,9 @@ $('rows').addEventListener('click', async (e) => {
   if (!ok) b.disabled = false;
   else if (row.classList.contains('gone')) setTimeout(render, 900);
 });
-document.querySelectorAll('.nav [data-filter]').forEach((b) => b.onclick = () => { filter = b.dataset.filter; render(); });
+document.querySelectorAll('.nav [data-tab]').forEach((b) => b.onclick = () => showTab(b.dataset.tab));
+window.addEventListener('hashchange', () => showTab(location.hash.slice(1), false));
+showTab(tab, false);
 $('refresh').onclick = async () => {
   $('refresh').disabled = true;
   const { error } = await sb.from('admin_meta').upsert({key: 'refresh_request', value: {at: new Date().toISOString()}}, {onConflict: 'key'});
@@ -362,9 +500,15 @@ const fromLocal = (v) => v ? new Date(v).toISOString() : null;
 const isHttps = (u) => /^https:\/\//.test(u || '');
 const ORDER = {failed:0, changes:1, draft:2, publishing:3, approved:4, published:5, rejected:6};
 
+let socShow = 'wait';
+const SHOW = {
+  wait: (x) => ['draft', 'changes', 'failed'].includes(x.status) && x.kind !== 'reply',
+  sched: (x) => ['approved', 'publishing'].includes(x.status),
+  done: (x) => ['published', 'rejected'].includes(x.status) && Date.parse(x.updated_at) > Date.now() - 14 * 86400000,
+  replies: (x) => x.kind === 'reply' && ['draft', 'changes', 'failed'].includes(x.status),
+};
 function socialShown() {
-  const week = Date.now() - 7 * 86400000;
-  return posts.filter((x) => !['published', 'rejected'].includes(x.status) || Date.parse(x.updated_at) > week)
+  return posts.filter(SHOW[socShow])
     .sort((a, b) => (ORDER[a.status] - ORDER[b.status]) || ((Date.parse(a.scheduled_at || 0) || 0) - (Date.parse(b.scheduled_at || 0) || 0)));
 }
 
@@ -404,13 +548,26 @@ function renderSocial() {
     ? `מחובר: <b>${esc(s.page?.name)}</b>${s.page?.followers != null ? ` · ${esc(s.page.followers)} עוקבים` : ''}${s.ig ? ` · אינסטגרם <b>@${esc(s.ig.username)}</b>${s.ig.followers != null ? ` · ${esc(s.ig.followers)} עוקבים` : ''}` : ' · אינסטגרם עוד לא מחובר'}`
     : s?.error && s.error !== 'not_connected' ? `<span class="err">החיבור לפייסבוק לא עובד: ${esc(s.error)}</span>`
     : 'העמוד עוד לא מחובר. אחרי ההגדרה ב־Meta, הטיוטות שאישרת יעלו לבד בשעה שלהן.';
+  const week = Date.now() - 7 * 86400000, ins = meta.social_insights;
+  const k = (label, v, sub) => `<div class="kpi"><span class="l">${label}</span><span class="v">${v}</span><span class="d">${sub || ''}</span></div>`;
+  $('socKpis').innerHTML = k('מחכים לאישור', posts.filter(SHOW.wait).length + posts.filter(SHOW.replies).length,
+      posts.filter(SHOW.replies).length ? `מהם ${posts.filter(SHOW.replies).length} תשובות` : '')
+    + k('מתוזמנים', posts.filter(SHOW.sched).length)
+    + k('צפיות השבוע', ins?.week ? esc(ins.week.views) : '–', ins?.week ? `${esc(ins.week.reach)} נחשפו · ${esc(ins.week.saved)} שמירות` : 'נמדד פעם ב־6 שעות')
+    + k('עוקבים', s?.ok ? (Number(s.page?.followers) || 0) + (Number(s.ig?.followers) || 0) : '–',
+      s?.ok ? `${esc(s.page?.followers ?? 0)} בפייסבוק · ${esc(s.ig?.followers ?? 0)} באינסטגרם` : '');
+  const counts = {wait: posts.filter(SHOW.wait).length, sched: posts.filter(SHOW.sched).length, done: posts.filter(SHOW.done).length, replies: posts.filter(SHOW.replies).length};
+  const LABEL = {wait: 'לאישור', sched: 'מתוזמנים', done: 'עלו', replies: 'תשובות לתגובות'};
+  document.querySelectorAll('#socChips [data-show]').forEach((b) => {
+    b.classList.toggle('on', b.dataset.show === socShow);
+    b.setAttribute('aria-pressed', String(b.dataset.show === socShow));
+    b.textContent = `${LABEL[b.dataset.show]}${counts[b.dataset.show] ? ` · ${counts[b.dataset.show]}` : ''}`;
+  });
   const list = socialShown();
   $('cards').innerHTML = list.map(cardHtml).join('');
-  const waiting = posts.filter((x) => x.status === 'draft' || x.status === 'failed').length;
-  $('nSocial').textContent = waiting || '';
-  $('sCount').textContent = waiting ? `${waiting} מחכים לך` : '';
+  $('sCount').textContent = '';
   $('sEmpty').hidden = list.length > 0;
-  $('sEmpty').textContent = 'אין כרגע טיוטות. ביום ראשון יגיע השבוע הבא.';
+  $('sEmpty').textContent = {wait: 'אין כרגע טיוטות. ביום ראשון יגיע השבוע הבא.', sched: 'אין כרגע פריטים מתוזמנים.', done: 'עוד לא עלה כלום בשבועיים האחרונים.', replies: 'אין תגובות שמחכות לתשובה.'}[socShow];
 }
 
 /** One change the owner may make to a draft; the server's trigger decides what is allowed. */
@@ -462,7 +619,11 @@ $('cards').addEventListener('click', async (e) => {
   } else if (b.dataset.no) ok = await changePost(id, {status: 'rejected'});
   else if (b.dataset.undo) ok = await changePost(id, {status: 'draft'});
   else if (b.dataset.retry) ok = await changePost(id, {status: 'approved'});
-  if (ok) renderSocial(); else b.disabled = false;
+  if (ok) { renderSocial(); renderBoard(); } else b.disabled = false;
+});
+$('socChips').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-show]'); if (!b) return;
+  socShow = b.dataset.show; renderSocial();
 });
 // A caption or a time edited and left without approving is still saved.
 $('cards').addEventListener('change', async (e) => {
