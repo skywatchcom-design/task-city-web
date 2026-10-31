@@ -29,7 +29,8 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset
 .lead{font-size:19px;color:var(--sub);margin-top:18px;max-width:34ch}
 .stores{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
 .heroimg{position:relative}
-.heroimg video{width:100%;height:auto;display:block;background:var(--bg,#F7F7F4)}
+/* The loop's background is pure white; multiply turns it into the page color whatever the browser's video color handling. */
+.heroimg video{width:100%;height:auto;display:block;mix-blend-mode:multiply}
 .watch .in{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;padding-block:16px 64px}
 .watch h2{font-size:clamp(26px,3.6vw,36px)}
 .watch p{margin-top:16px;color:var(--sub);max-width:36ch}
