@@ -83,6 +83,27 @@ tr.gone .btn{visibility:hidden}
 .lock .go{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;background:var(--ink);color:#fff;font:600 16px var(--head);padding:13px;border-radius:8px}
 .lock h1{font:600 24px var(--head);color:var(--ink);margin:0}
 .lock label{font-size:13px;color:var(--muted)}
+.soc-line{color:var(--muted);font-size:13.5px;margin:0 0 12px}
+.soc-line b{color:var(--ink);font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px;margin-top:6px}
+.card{border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0;background:var(--white)}
+.card.dim{opacity:.72}
+.card .media{width:100%;aspect-ratio:9/16;max-height:380px;object-fit:cover;border-radius:8px;background:var(--line2);display:block}
+.card .media.sq{aspect-ratio:1/1}
+.card .tags{display:flex;flex-wrap:wrap;gap:6px;font-size:12.5px;color:var(--muted)}
+.card .tags b{color:var(--ink);font-weight:700}
+.card .theme{font:600 14.5px var(--head);color:var(--ink)}
+.card .why{font-size:13px;color:var(--muted)}
+.card textarea{font:15px/1.45 var(--body);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:120px;resize:vertical;width:100%;background:var(--white)}
+.card textarea[readonly]{border-color:transparent;padding-inline:0;min-height:0;resize:none}
+.card input[type=datetime-local]{font:600 14px var(--body);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:5px 8px;width:100%;direction:ltr;text-align:right}
+.card .quote{font-size:14px;background:var(--hover);border-radius:8px;padding:8px 10px}
+.card .quote .by{display:block;font-size:12.5px;color:var(--muted)}
+.card .acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:auto}
+.card .state{font-size:13.5px;color:var(--muted)}
+.card .state.bad{color:var(--red)}
+.card .state.ok{color:var(--green)}
+.card .askbox{display:flex;flex-direction:column;gap:6px}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   .nav{position:static;height:auto;flex-direction:row;flex-wrap:wrap;border-inline-end:0;border-bottom:1px solid var(--line);padding:10px 14px}
@@ -102,6 +123,7 @@ tr.gone .btn{visibility:hidden}
     <button class="link on" data-filter="all" type="button">היום שלי</button>
     <button class="link" data-filter="mail" type="button">דואר <span class="n" id="nMail"></span></button>
     <button class="link" data-filter="bug" type="button">באגים <span class="n" id="nBug"></span></button>
+    <a href="#social">פייסבוק ואינסטגרם <span class="n" id="nSocial"></span></a>
     <a href="#stores">חנויות</a>
     <a href="#today">יומן</a>
     <div class="lab">המספרים</div>
@@ -129,10 +151,17 @@ tr.gone .btn{visibility:hidden}
       </table></div>
       <div class="empty" id="empty" hidden></div>
     </section>
+    <section class="sec" id="social" aria-labelledby="st">
+      <h2><span id="st" style="font:600 16px var(--head);color:var(--ink)">לאישור לפייסבוק ולאינסטגרם</span><span id="sCount"></span></h2>
+      <p class="soc-line" id="socLine"></p>
+      <div class="cards" id="cards"></div>
+      <div class="empty" id="sEmpty" hidden></div>
+    </section>
     <div class="cols">
       <section class="sec" id="stores"><h2>חנויות</h2><div id="storeList"></div></section>
       <section class="sec" id="today"><h2><span style="font:600 16px var(--head);color:var(--ink)">היום</span><span id="todayCount"></span></h2><div id="todayList"></div></section>
     </div>
+    <p class="note">בפייסבוק ובאינסטגרם, "מאשר" מתזמן את הפריט, והשרת מפרסם אותו בשעה שלו. בלי הלחיצה הזאת שום דבר לא עולה.</p>
     <p class="note">הכפתורים רק כותבים בקשה. טיוטה, משימה ותיקון בקוד נעשים בריצה הבאה של הסיכום או כשמבקשים מ־Claude בשיחה, ושום דבר לא נשלח בלי הלחיצה שלך.</p>
   </main>
 </div>
@@ -162,7 +191,7 @@ const SOURCES = {mail:'מייל', bug:'באגים', store:'חנות', calendar:'
 const PRIMARY = {mail:['draft_reply','טיוטת תשובה'], bug:['fix_task','למשימת תיקון'], store:['add_task','הוסף משימה'], calendar:['add_task','הוסף משימה'], task:['add_task','הוסף משימה']};
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch {} } };
 
-let items = [], meta = {}, filter = 'all', stats = null;
+let items = [], meta = {}, filter = 'all', stats = null, posts = [];
 const rtf = new Intl.RelativeTimeFormat('he', {numeric: 'auto'});
 
 function ago(iso) {
@@ -258,13 +287,15 @@ async function load() {
   const h = new Date().getHours();
   $('hello').textContent = h < 5 ? 'לילה טוב' : h < 12 ? 'בוקר טוב' : h < 18 ? 'צהריים טובים' : 'ערב טוב';
   try {
-    const [a, m] = await Promise.all([
+    const [a, m, p] = await Promise.all([
       sb.from('admin_items').select('*').order('happened_at', {ascending: false}).limit(300),
       sb.from('admin_meta').select('key, value'),
+      sb.from('social_items').select('*').order('scheduled_at', {ascending: true, nullsFirst: true}).limit(200),
     ]);
     if (a.error || m.error) throw new Error((a.error || m.error).message);
     items = a.data; meta = Object.fromEntries(m.data.map((r) => [r.key, r.value]));
-    render();
+    posts = p.error ? [] : p.data;
+    render(); renderSocial();
   } catch (e) {
     $('err').textContent = 'לא הצלחתי להביא את הסיכום. בדוק את החיבור ולחץ "לבקש רענון" או טען את הדף מחדש. (' + e.message + ')';
     $('err').hidden = false;
@@ -319,6 +350,128 @@ $('refresh').onclick = async () => {
   setTimeout(() => { $('refresh').textContent = 'לבקש רענון'; $('refresh').disabled = false; }, 4000);
   if (!error) load();
 };
+// ---- Facebook and Instagram (migration 20261031_social.sql): Claude's drafts, approved here one by one.
+const KIND = {reel:'רילס', story:'סטורי', post:'פוסט', reply:'תשובה'};
+const CH = {fb:'פייסבוק', ig:'אינסטגרם'};
+const WHERE = {fb_comment:'תגובה בפייסבוק', ig_comment:'תגובה באינסטגרם', fb_message:'הודעה במסנג׳ר', ig_message:'הודעה באינסטגרם'};
+const media = (path) => `${SUPABASE_URL}/storage/v1/object/public/social/${path.split('/').map(encodeURIComponent).join('/')}`;
+const dayTime = (iso) => new Date(iso).toLocaleString('he-IL', {weekday:'long', day:'numeric', month:'numeric', hour:'2-digit', minute:'2-digit'});
+/** "2026-11-03T17:00" in the iPad's own time, for the time field, and back. */
+const toLocal = (iso) => { if (!iso) return ''; const d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
+const fromLocal = (v) => v ? new Date(v).toISOString() : null;
+const isHttps = (u) => /^https:\/\//.test(u || '');
+const ORDER = {failed:0, changes:1, draft:2, publishing:3, approved:4, published:5, rejected:6};
+
+function socialShown() {
+  const week = Date.now() - 7 * 86400000;
+  return posts.filter((x) => !['published', 'rejected'].includes(x.status) || Date.parse(x.updated_at) > week)
+    .sort((a, b) => (ORDER[a.status] - ORDER[b.status]) || ((Date.parse(a.scheduled_at || 0) || 0) - (Date.parse(b.scheduled_at || 0) || 0)));
+}
+
+function cardHtml(x) {
+  const open = x.status === 'draft' || x.status === 'changes';
+  let pic = '';
+  if (x.media_path && x.media_kind === 'video') pic = `<video class="media" controls preload="none" playsinline ${x.poster_path ? `poster="${esc(media(x.poster_path))}"` : ''} src="${esc(media(x.media_path))}"></video>`;
+  else if (x.media_path) pic = `<img class="media ${x.kind === 'story' ? '' : 'sq'}" loading="lazy" alt="" src="${esc(media(x.media_path))}">`;
+  const tags = x.kind === 'reply'
+    ? `<b>${esc(WHERE[x.reply_where] || 'תשובה')}</b>`
+    : `<b>${esc(KIND[x.kind])}</b><span>${x.channels.map((c) => esc(CH[c])).join(' + ')}</span>`;
+  const quote = x.kind === 'reply' && x.reply_context
+    ? `<div class="quote"><span class="by">${esc(x.reply_author || 'מישהו')} כתב:</span>${esc(x.reply_context)}${isHttps(x.reply_link) ? ` · <a href="${esc(x.reply_link)}" target="_blank" rel="noopener noreferrer">לפתוח</a>` : ''}</div>` : '';
+  const when = x.kind === 'reply' ? ''
+    : open ? `<label class="state">מתי<input type="datetime-local" data-when="${x.id}" value="${esc(toLocal(x.scheduled_at))}"></label>`
+    : x.scheduled_at ? `<span class="state">${esc(dayTime(x.scheduled_at))}</span>` : '';
+  let acts = '';
+  if (open) acts = `<button class="btn pri sm" type="button" data-ok="${x.id}">מאשר</button><button class="btn sm" type="button" data-ask="${x.id}">לשנות</button><button class="btn ghost sm" type="button" data-no="${x.id}">לא</button>`;
+  else if (x.status === 'approved') acts = `<span class="state ok">${x.kind === 'reply' ? 'אושר, יוצא בדקות הקרובות' : 'מתוזמן'}</span><button class="btn ghost sm" type="button" data-undo="${x.id}">לבטל</button>`;
+  else if (x.status === 'publishing') acts = `<span class="state">עולה עכשיו…</span>`;
+  else if (x.status === 'failed') acts = `<span class="state bad">לא עלה: ${esc(x.error || '')}</span><button class="btn sm" type="button" data-retry="${x.id}">לנסות שוב</button><button class="btn ghost sm" type="button" data-no="${x.id}">לוותר</button>`;
+  else if (x.status === 'published') acts = `<span class="state ok">עלה ${esc(ago(x.published_at))}</span>` + Object.entries(x.results || {})
+    .filter(([, r]) => isHttps(r?.link)).map(([c, r]) => `<a class="btn ghost sm" href="${esc(r.link)}" target="_blank" rel="noopener noreferrer">ב${esc(CH[c])}</a>`).join('');
+  else if (x.status === 'rejected') acts = `<span class="state">ירד</span>`;
+  const sent = x.status === 'changes' && x.owner_note ? `<span class="state">נשלח ל־Claude: ${esc(x.owner_note)}</span>` : '';
+  return `<article class="card ${['published', 'rejected'].includes(x.status) ? 'dim' : ''}" data-card="${x.id}">
+    ${pic}<div class="tags">${tags}</div>
+    ${x.theme ? `<div class="theme">${esc(x.theme)}</div>` : ''}${quote}
+    ${x.kind === 'story' ? '' : `<textarea data-cap="${x.id}" ${open ? '' : 'readonly'} aria-label="הטקסט">${esc(x.caption || '')}</textarea>`}
+    ${x.notes ? `<div class="why">${esc(x.notes)}</div>` : ''}
+    ${when}${sent}<div class="acts">${acts}</div></article>`;
+}
+
+function renderSocial() {
+  const s = meta.social;
+  $('socLine').innerHTML = s?.ok
+    ? `מחובר: <b>${esc(s.page?.name)}</b>${s.page?.followers != null ? ` · ${esc(s.page.followers)} עוקבים` : ''}${s.ig ? ` · אינסטגרם <b>@${esc(s.ig.username)}</b>${s.ig.followers != null ? ` · ${esc(s.ig.followers)} עוקבים` : ''}` : ' · אינסטגרם עוד לא מחובר'}`
+    : s?.error && s.error !== 'not_connected' ? `<span class="err">החיבור לפייסבוק לא עובד: ${esc(s.error)}</span>`
+    : 'העמוד עוד לא מחובר. אחרי ההגדרה ב־Meta, הטיוטות שאישרת יעלו לבד בשעה שלהן.';
+  const list = socialShown();
+  $('cards').innerHTML = list.map(cardHtml).join('');
+  const waiting = posts.filter((x) => x.status === 'draft' || x.status === 'failed').length;
+  $('nSocial').textContent = waiting || '';
+  $('sCount').textContent = waiting ? `${waiting} מחכים לך` : '';
+  $('sEmpty').hidden = list.length > 0;
+  $('sEmpty').textContent = 'אין כרגע טיוטות. ביום ראשון יגיע השבוע הבא.';
+}
+
+/** One change the owner may make to a draft; the server's trigger decides what is allowed. */
+async function changePost(id, patch) {
+  const { data, error } = await sb.from('social_items').update(patch).eq('id', id).select('*');
+  if (error || !data?.length) {
+    $('err').textContent = 'לא הצלחתי לשמור. נסה שוב. (' + (error?.message || 'אין הרשאה') + ')';
+    $('err').hidden = false;
+    return false;
+  }
+  $('err').hidden = true;
+  const i = posts.findIndex((x) => x.id === Number(id));
+  if (i >= 0) posts[i] = data[0];
+  return true;
+}
+
+$('cards').addEventListener('click', async (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  const card = b.closest('.card'), id = Number(card.dataset.card);
+  if (b.dataset.ask) {
+    // A short note to Claude; the draft comes back changed in the next run.
+    if (card.querySelector('.askbox')) return;
+    const box = Object.assign(document.createElement('div'), {className: 'askbox'});
+    box.innerHTML = '<textarea placeholder="מה לשנות? למשל: פתיחה חזקה יותר, בלי אימוג׳ים, שעה אחרת"></textarea><div class="acts"><button class="btn pri sm" type="button" data-send="1">לשלוח ל־Claude</button></div>';
+    card.querySelector('.acts').before(box);
+    box.querySelector('textarea').focus();
+    return;
+  }
+  b.disabled = true;
+  let ok = false;
+  const x = posts.find((y) => y.id === id);
+  const cap = card.querySelector(`[data-cap="${id}"]`), when = card.querySelector(`[data-when="${id}"]`);
+  const edits = () => {
+    const p = {};
+    if (cap && !cap.readOnly && cap.value !== (x.caption || '')) p.caption = cap.value;
+    if (when && fromLocal(when.value) !== (x.scheduled_at ? new Date(x.scheduled_at).toISOString() : null)) p.scheduled_at = fromLocal(when.value);
+    return p;
+  };
+  if (b.dataset.ok) {
+    const p = edits();
+    if (x.kind !== 'reply' && !(p.scheduled_at || x.scheduled_at)) {
+      $('err').textContent = 'צריך לבחור מתי לפרסם לפני האישור.'; $('err').hidden = false; b.disabled = false; return;
+    }
+    ok = await changePost(id, {...p, status: 'approved'});
+  } else if (b.dataset.send) {
+    const note = card.querySelector('.askbox textarea').value.trim();
+    if (!note) { b.disabled = false; return; }
+    ok = await changePost(id, {...edits(), status: 'changes', owner_note: note.slice(0, 600)});
+  } else if (b.dataset.no) ok = await changePost(id, {status: 'rejected'});
+  else if (b.dataset.undo) ok = await changePost(id, {status: 'draft'});
+  else if (b.dataset.retry) ok = await changePost(id, {status: 'approved'});
+  if (ok) renderSocial(); else b.disabled = false;
+});
+// A caption or a time edited and left without approving is still saved.
+$('cards').addEventListener('change', async (e) => {
+  const t = e.target, id = Number(t.closest('.card')?.dataset.card);
+  if (!id || t.closest('.askbox')) return;
+  if (t.dataset.cap && !t.readOnly) await changePost(id, {caption: t.value});
+  if (t.dataset.when) await changePost(id, {scheduled_at: fromLocal(t.value)});
+});
+
 setInterval(() => { if (!document.hidden && !$('app').hidden) load(); }, 5 * 60 * 1000);
 load();
 </script>
