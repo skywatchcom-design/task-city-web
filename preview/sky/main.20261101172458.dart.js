@@ -73232,7 +73232,7 @@
               site = A._asStringQ(type$.Map_String_dynamic._as(B.C_JsonCodec.decode$2$reviver(A.encodingForContentTypeHeader(A._contentTypeForHeaders(res.headers)).decode$1(res.bodyBytes), null)).$index(0, "stamp"));
               if (site == null)
                 site = "";
-              isNewer = B.JSString_methods.compareTo$1(site, "20261101170358") > 0;
+              isNewer = B.JSString_methods.compareTo$1(site, "20261101172458") > 0;
               if (isNewer)
                 $.$get$WebUpdate_newer().set$value(site);
               $async$goto = 4;
@@ -246211,10 +246211,12 @@
       return B.JSNumber_methods.clamp$2(m / 60 - t1, 0, this.lastHour - t1) * this.hourHeight;
     },
     _calendar_tab$_span$2(from, to) {
-      var _this = this,
-        $top = _this._calendar_tab$_y$1(from),
-        t1 = _this.hourHeight;
-      return new A._Record_2_height_top(B.JSNumber_methods.clamp$2(_this._calendar_tab$_y$1(to), $top + t1 * 0.25, (_this.lastHour - _this.firstHour) * t1) - $top - 2, $top + 1);
+      var $top, _this = this,
+        t1 = _this.hourHeight,
+        end = (_this.lastHour - _this.firstHour) * t1;
+      t1 *= 0.25;
+      $top = B.JSNumber_methods.clamp$2(_this._calendar_tab$_y$1(from), 0, end - t1);
+      return new A._Record_2_height_top(B.JSNumber_methods.clamp$2(_this._calendar_tab$_y$1(to), $top + t1, end) - $top - 2, $top + 1);
     },
     build$1(context) {
       var t3, t4, _i, l, m, x, t5, t6, e, t, lane, gaps, _this = this,
@@ -257143,7 +257145,7 @@
   A.SettingsTab__webUpdate_closure.prototype = {
     call$3(context, previews, __wc0_formal) {
       var t3, t4, t5,
-        _s14_ = "20261101170358",
+        _s14_ = "20261101172458",
         t1 = this.k,
         t2 = t1.row$3(B.IconData_983563_MaterialIcons_false, A.I18n_t("upd_check"), new A.SettingsTab__webUpdate__closure(this.$this, context));
       if (A.WebUpdate_current() == null) {
