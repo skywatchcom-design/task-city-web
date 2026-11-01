@@ -201,7 +201,7 @@ tr.gone .btn{visibility:hidden}
         <div class="tw"><table><thead><tr><th>יום</th><th>App Store</th><th>Google Play</th><th>כניסות לדף ההורדה</th><th>מאייפון</th><th>מאנדרואיד</th><th>בקשות לבדיקה</th></tr></thead><tbody id="dlRows"></tbody></table></div>
       </section>
       <section class="sec" style="margin-top:28px"><h2><span class="h">מאיפה הגיעו לאתר, 7 ימים</span></h2><div id="dlSrc"></div></section>
-      <p class="note">אפל וגוגל מעדכנים את המספרים פעם ביום, באיחור של יום או יומיים. כניסות לאתר נספרות מיד.</p>
+      <p class="note">השרת בודק כל רבע שעה, אבל אפל וגוגל מפרסמים מספרים פעם ביום, באיחור של יום או יומיים. כניסות לאתר נספרות מיד, והדף מתרענן כל 5 דקות.</p>
     </section>
     <section class="tab" data-tab="stores" hidden>
       <section class="sec"><h2><span class="h">חנויות</span></h2><div id="storeList"></div></section>
@@ -624,7 +624,7 @@ function renderSocial() {
   $('socKpis').innerHTML = k('מחכים לאישור', posts.filter(SHOW.wait).length + posts.filter(SHOW.replies).length,
       posts.filter(SHOW.replies).length ? `מהם ${posts.filter(SHOW.replies).length} תשובות` : '')
     + k('מתוזמנים', posts.filter(SHOW.sched).length)
-    + k('צפיות השבוע', ins?.week ? esc(ins.week.views) : '–', ins?.week ? `${esc(ins.week.reach)} נחשפו · ${esc(ins.week.saved)} שמירות` : 'נמדד פעם ב־6 שעות')
+    + k('צפיות השבוע', ins?.week ? esc(ins.week.views) : '–', ins?.week ? `${esc(ins.week.reach)} נחשפו · ${esc(ins.week.saved)} שמירות` : 'נמדד כל שעה')
     + k('עוקבים', s?.ok ? (Number(s.page?.followers) || 0) + (Number(s.ig?.followers) || 0) : '–',
       s?.ok ? `${esc(s.page?.followers ?? 0)} בפייסבוק · ${esc(s.ig?.followers ?? 0)} באינסטגרם` : '');
   const counts = {wait: posts.filter(SHOW.wait).length, sched: posts.filter(SHOW.sched).length, done: posts.filter(SHOW.done).length, replies: posts.filter(SHOW.replies).length};
