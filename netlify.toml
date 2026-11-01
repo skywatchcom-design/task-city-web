@@ -1,0 +1,8 @@
+# The clean address skytasks-app.netlify.app (site-build.sh). Netlify's free plan has 300 credits a month and every
+# production deploy costs 15, while most pushes to this repo (previews, the admin page, the web app) do not change a
+# single page Netlify serves. So a build runs only when one of those pages changed; any other push is skipped and costs
+# nothing (owner, 1.11, after the "75% of your credits" mail: 16 pushes in two days).
+[build]
+  command = "bash site-build.sh"
+  publish = "cf"
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- soon get about launch.js favicon.png privacy.html terms.html delete-account.html site-build.sh netlify.toml"
