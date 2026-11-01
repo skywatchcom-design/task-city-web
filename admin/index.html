@@ -150,7 +150,7 @@ tr.gone .btn{visibility:hidden}
     <button class="link" data-tab="downloads" type="button">הורדות</button>
     <button class="link" data-tab="mail" type="button">דואר <span class="n" id="nMail"></span></button>
     <button class="link" data-tab="bug" type="button">באגים <span class="n" id="nBug"></span></button>
-    <button class="link" data-tab="social" type="button">פייסבוק ואינסטגרם <span class="n" id="nSocial"></span></button>
+    <button class="link" data-tab="social" type="button">רשתות <span class="n" id="nSocial"></span></button>
     <button class="link" data-tab="stores" type="button">חנויות</button>
     <button class="link" data-tab="users" type="button">משתמשים</button>
     <button class="link" data-tab="calendar" type="button">יומן ומשימות</button>
@@ -179,7 +179,7 @@ tr.gone .btn{visibility:hidden}
     <section class="tab" data-tab="social" hidden>
       <div class="kpis" id="socKpis"></div>
       <section class="sec" aria-labelledby="st">
-        <h2><span id="st" class="h">פייסבוק ואינסטגרם</span><span id="sCount"></span></h2>
+        <h2><span id="st" class="h">פייסבוק, אינסטגרם ויוטיוב</span><span id="sCount"></span></h2>
         <p class="soc-line" id="socLine"></p>
         <div class="chips" id="socChips" role="group" aria-label="סינון">
           <button class="chip on" type="button" data-show="wait">לאישור</button>
@@ -381,8 +381,8 @@ function renderBoard() {
   const next = posts.filter((x) => x.kind !== 'reply' && ['draft', 'changes', 'approved'].includes(x.status) && x.scheduled_at && Date.parse(x.scheduled_at) > now)
     .sort((a, b) => Date.parse(a.scheduled_at) - Date.parse(b.scheduled_at)).slice(0, 2);
   const last = posts.filter((x) => x.status === 'published' && x.kind !== 'reply').sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at))[0];
-  const followers = s?.ok ? `${s.page?.followers ?? 0} בפייסבוק · ${s.ig?.followers ?? 0} באינסטגרם` : 'לא מחובר';
-  cards.push(mini('social', 'פייסבוק ואינסטגרם', waiting.length, `לאישור · עוקבים: ${esc(followers)}`,
+  const followers = s?.ok ? `${s.page?.followers ?? 0} בפייסבוק · ${s.ig?.followers ?? 0} באינסטגרם${s.yt?.id ? ` · ${s.yt.subscribers ?? 0} ביוטיוב` : ''}` : 'לא מחובר';
+  cards.push(mini('social', 'רשתות', waiting.length, `לאישור · עוקבים: ${esc(followers)}`,
     next.map((x) => mrow(`${esc(KIND[x.kind])} · ${esc(x.theme || '')}`, `${esc(shortWhen(x.scheduled_at))}${x.status === 'approved' ? ' · מתוזמן' : ''}`)).join('')
       + (last ? mrow(`עלה: ${esc(KIND[last.kind])} · ${esc(last.theme || '')}`, esc(ago(last.published_at)), 'ok') : '')
       || '<div class="mrow"><span class="r">אין טיוטות</span></div>',
@@ -561,14 +561,16 @@ $('refresh').onclick = async () => {
 };
 // ---- Facebook and Instagram (migration 20261031_social.sql): Claude's drafts, approved here one by one.
 const KIND = {reel:'רילס', story:'סטורי', post:'פוסט', reply:'תשובה'};
-const CH = {fb:'פייסבוק', ig:'אינסטגרם'};
-const WHERE = {fb_comment:'תגובה בפייסבוק', ig_comment:'תגובה באינסטגרם', fb_message:'הודעה במסנג׳ר', ig_message:'הודעה באינסטגרם'};
+const CH = {fb:'פייסבוק', ig:'אינסטגרם', yt:'יוטיוב'};
+const WHERE = {fb_comment:'תגובה בפייסבוק', ig_comment:'תגובה באינסטגרם', fb_message:'הודעה במסנג׳ר', ig_message:'הודעה באינסטגרם', yt_comment:'תגובה ביוטיוב'};
 const media = (path) => `${SUPABASE_URL}/storage/v1/object/public/social/${path.split('/').map(encodeURIComponent).join('/')}`;
 const dayTime = (iso) => new Date(iso).toLocaleString('he-IL', {weekday:'long', day:'numeric', month:'numeric', hour:'2-digit', minute:'2-digit'});
 /** "2026-11-03T17:00" in the iPad's own time, for the time field, and back. */
 const toLocal = (iso) => { if (!iso) return ''; const d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
 const fromLocal = (v) => v ? new Date(v).toISOString() : null;
 const isHttps = (u) => /^https:\/\//.test(u || '');
+/** The same rule the server uses (shortTitle in supabase/functions/social): the first line that is not hashtags, up to 100. */
+const ytTitle = (x) => { const l = (x.caption || '').split(/\r?\n/).map((t) => t.trim()).find((t) => t && !t.startsWith('#')) || x.theme || 'SkyTasks'; return l.length > 100 ? l.slice(0, 99) + '…' : l; };
 const ORDER = {failed:0, changes:1, draft:2, publishing:3, approved:4, published:5, rejected:6};
 
 let socShow = 'wait';
@@ -602,13 +604,17 @@ function cardHtml(x) {
   else if (x.status === 'publishing') acts = `<span class="state">עולה עכשיו…</span>`;
   else if (x.status === 'failed') acts = `<span class="state bad">לא עלה: ${esc(x.error || '')}</span><button class="btn sm" type="button" data-retry="${x.id}">לנסות שוב</button><button class="btn ghost sm" type="button" data-no="${x.id}">לוותר</button>`;
   else if (x.status === 'published') acts = `<span class="state ok">עלה ${esc(ago(x.published_at))}</span>` + Object.entries(x.results || {})
-    .filter(([, r]) => isHttps(r?.link)).map(([c, r]) => `<a class="btn ghost sm" href="${esc(r.link)}" target="_blank" rel="noopener noreferrer">ב${esc(CH[c])}</a>`).join('');
+    .filter(([, r]) => isHttps(r?.link)).map(([c, r]) => c === 'yt' && r.private && isHttps(r.studio)
+      // Until YouTube's audit passes the Short is private: one tap in Studio makes it public.
+      ? `<a class="btn pri sm" href="${esc(r.studio)}" target="_blank" rel="noopener noreferrer">יוטיוב: לפרסם ב־Studio</a>`
+      : `<a class="btn ghost sm" href="${esc(r.link)}" target="_blank" rel="noopener noreferrer">ב${esc(CH[c])}</a>`).join('');
   else if (x.status === 'rejected') acts = `<span class="state">ירד</span>`;
   const sent = x.status === 'changes' && x.owner_note ? `<span class="state">נשלח ל־Claude: ${esc(x.owner_note)}</span>` : '';
   return `<article class="card ${['published', 'rejected'].includes(x.status) ? 'dim' : ''}" data-card="${x.id}">
     ${pic}<div class="tags">${tags}</div>
     ${x.theme ? `<div class="theme">${esc(x.theme)}</div>` : ''}${quote}
     ${x.kind === 'story' ? '' : `<textarea data-cap="${x.id}" ${open ? '' : 'readonly'} aria-label="הטקסט">${esc(x.caption || '')}</textarea>`}
+    ${x.channels.includes('yt') ? `<div class="why">הכותרת ביוטיוב: ${esc(ytTitle(x))}</div>` : ''}
     ${x.notes ? `<div class="why">${esc(x.notes)}</div>` : ''}
     ${when}${sent}<div class="acts">${acts}</div></article>`;
 }
@@ -619,14 +625,17 @@ function renderSocial() {
     ? `מחובר: <b>${esc(s.page?.name)}</b>${s.page?.followers != null ? ` · ${esc(s.page.followers)} עוקבים` : ''}${s.ig ? ` · אינסטגרם <b>@${esc(s.ig.username)}</b>${s.ig.followers != null ? ` · ${esc(s.ig.followers)} עוקבים` : ''}` : ' · אינסטגרם עוד לא מחובר'}`
     : s?.error && s.error !== 'not_connected' ? `<span class="err">החיבור לפייסבוק לא עובד: ${esc(s.error)}</span>`
     : 'העמוד עוד לא מחובר. אחרי ההגדרה ב־Meta, הטיוטות שאישרת יעלו לבד בשעה שלהן.';
+  if (s?.yt) $('socLine').innerHTML += s.yt.error ? ` · <span class="err">יוטיוב לא עובד: ${esc(s.yt.error)}</span>`
+    : ` · יוטיוב <b>${esc(s.yt.title)}</b>${s.yt.subscribers != null ? ` · ${esc(s.yt.subscribers)} מנויים` : ''}${s.yt.public ? '' : ' · השורטס עולים כפרטיים עד שיוטיוב יאשרו'}`;
+  else if (s?.ok) $('socLine').innerHTML += ' · יוטיוב עוד לא מחובר';
   const week = Date.now() - 7 * 86400000, ins = meta.social_insights;
   const k = (label, v, sub) => `<div class="kpi"><span class="l">${label}</span><span class="v">${v}</span><span class="d">${sub || ''}</span></div>`;
   $('socKpis').innerHTML = k('מחכים לאישור', posts.filter(SHOW.wait).length + posts.filter(SHOW.replies).length,
       posts.filter(SHOW.replies).length ? `מהם ${posts.filter(SHOW.replies).length} תשובות` : '')
     + k('מתוזמנים', posts.filter(SHOW.sched).length)
     + k('צפיות השבוע', ins?.week ? esc(ins.week.views) : '–', ins?.week ? `${esc(ins.week.reach)} נחשפו · ${esc(ins.week.saved)} שמירות` : 'נמדד כל שעה')
-    + k('עוקבים', s?.ok ? (Number(s.page?.followers) || 0) + (Number(s.ig?.followers) || 0) : '–',
-      s?.ok ? `${esc(s.page?.followers ?? 0)} בפייסבוק · ${esc(s.ig?.followers ?? 0)} באינסטגרם` : '');
+    + k('עוקבים', s?.ok ? (Number(s.page?.followers) || 0) + (Number(s.ig?.followers) || 0) + (Number(s.yt?.subscribers) || 0) : '–',
+      s?.ok ? `${esc(s.page?.followers ?? 0)} בפייסבוק · ${esc(s.ig?.followers ?? 0)} באינסטגרם${s.yt?.id ? ` · ${esc(s.yt.subscribers ?? 0)} ביוטיוב` : ''}` : '');
   const counts = {wait: posts.filter(SHOW.wait).length, sched: posts.filter(SHOW.sched).length, done: posts.filter(SHOW.done).length, replies: posts.filter(SHOW.replies).length};
   const LABEL = {wait: 'לאישור', sched: 'מתוזמנים', done: 'עלו', replies: 'תשובות לתגובות'};
   document.querySelectorAll('#socChips [data-show]').forEach((b) => {
