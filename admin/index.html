@@ -147,6 +147,7 @@ tr.gone .btn{visibility:hidden}
   <nav class="nav" aria-label="תפריט">
     <div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="14" width="5" height="8" rx="1" fill="currentColor"/><rect x="9.5" y="9" width="5" height="13" rx="1" fill="currentColor"/><rect x="17" y="2" width="5" height="20" rx="1" fill="currentColor"/><rect x="18.5" y="5" width="2" height="2.4" fill="var(--sun)"/></svg>SkyTasks</div>
     <button class="link on" data-tab="overview" type="button">סקירה</button>
+    <button class="link" data-tab="downloads" type="button">הורדות</button>
     <button class="link" data-tab="mail" type="button">דואר <span class="n" id="nMail"></span></button>
     <button class="link" data-tab="bug" type="button">באגים <span class="n" id="nBug"></span></button>
     <button class="link" data-tab="social" type="button">פייסבוק ואינסטגרם <span class="n" id="nSocial"></span></button>
@@ -190,6 +191,17 @@ tr.gone .btn{visibility:hidden}
         <div class="empty" id="sEmpty" hidden></div>
       </section>
       <p class="note">"מאשר" מתזמן את הפריט, והשרת מפרסם אותו בשעה שלו. בלי הלחיצה הזאת שום דבר לא עולה.</p>
+    </section>
+    <section class="tab" data-tab="downloads" hidden>
+      <div class="kpis" id="dlKpis"></div>
+      <p class="soc-line" id="dlLine" style="margin-top:10px"></p>
+      <section class="sec" style="margin-top:18px">
+        <h2><span class="h">הורדות, 14 הימים האחרונים</span></h2>
+        <div id="dlBars" class="wide"></div>
+        <div class="tw"><table><thead><tr><th>יום</th><th>App Store</th><th>Google Play</th><th>כניסות לדף ההורדה</th><th>מאייפון</th><th>מאנדרואיד</th><th>בקשות לבדיקה</th></tr></thead><tbody id="dlRows"></tbody></table></div>
+      </section>
+      <section class="sec" style="margin-top:28px"><h2><span class="h">מאיפה הגיעו לאתר, 7 ימים</span></h2><div id="dlSrc"></div></section>
+      <p class="note">אפל וגוגל מעדכנים את המספרים פעם ביום, באיחור של יום או יומיים. כניסות לאתר נספרות מיד.</p>
     </section>
     <section class="tab" data-tab="stores" hidden>
       <section class="sec"><h2><span class="h">חנויות</span></h2><div id="storeList"></div></section>
@@ -279,7 +291,7 @@ function rowHtml(i) {
 }
 
 // ---- Tabs (sketch 30, direction A "לוח", 31.10): an overview of small tables, and one tab per area.
-const TABS = ['overview', 'mail', 'bug', 'social', 'stores', 'users', 'calendar'];
+const TABS = ['overview', 'downloads', 'mail', 'bug', 'social', 'stores', 'users', 'calendar'];
 let tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
 
 function showTab(next, push = true) {
@@ -348,6 +360,7 @@ function render() {
       + tasks.map((x) => `<div class="li"><span>${esc(x)}</span><span class="r">משימה</span></div>`).join('')
     : '<div class="empty">עוד לא התעדכן.</div>';
   renderUsers();
+  renderDownloads();
   renderBoard();
 }
 
@@ -355,7 +368,7 @@ function renderBoard() {
   const never = !meta.digest;
   const mail = openItems('mail'), bug = openItems('bug');
   const urgent = mail.filter((i) => i.severity === 'r').length;
-  const cards = [];
+  const cards = [downloadsCard()];
   cards.push(mini('mail', 'דואר', never ? '–' : mail.length, `דורש תשובה${urgent ? ` · ${urgent} דחוף` : ''}`,
     mail.slice(0, 3).map((i) => mrow(esc(i.title), esc(ago(i.happened_at)))).join('') || '<div class="mrow"><span class="r">אין מה שמחכה</span></div>',
     'לכל הדואר', urgent > 0));
@@ -393,6 +406,62 @@ function renderBoard() {
 
 const shortWhen = (iso) => new Date(iso).toLocaleString('he-IL', {weekday:'short', hour:'2-digit', minute:'2-digit'});
 
+// ---- Downloads (migration 20261101_downloads.sql): the stores' daily numbers and visits to /get/, from store_daily.
+let dl = [];
+/** The last n days in Israel, newest last, as "YYYY-MM-DD". */
+const lastDays = (n) => Array.from({length: n}, (_, i) => new Date(Date.now() - (n - 1 - i) * 86400000).toLocaleDateString('en-CA', {timeZone: 'Asia/Jerusalem'}));
+const dlVal = (source, metric, day) => { const r = dl.find((x) => x.source === source && x.metric === metric && x.day === day); return r ? r.value : null; };
+const dlSum = (source, metric, days) => days.reduce((a, d) => a + (dlVal(source, metric, d) || 0), 0);
+const dlHas = (source, metric, days) => days.some((d) => dlVal(source, metric, d) != null);
+const visits = (d) => (dlVal('site', 'get_view', d) || 0) + (dlVal('site', 'home_view', d) || 0);
+
+function storeState(name, s) {
+  if (!s) return `${name}: עוד לא נמשך`;
+  if (s.error) return `${name}: תקלה (${s.error})`;
+  if (s.skipped) return `${name}: עוד לא מחובר${/vendor/.test(s.skipped) ? ' (חסר מספר הספק)' : /bucket/.test(s.skipped) ? ' (חסרה תיקיית הדוחות)' : ''}`;
+  return `${name}: מחובר`;
+}
+
+function renderDownloads() {
+  const week = lastDays(7), two = lastDays(14), y = lastDays(2)[0];
+  const k = (label, v, sub) => `<div class="kpi"><span class="l">${label}</span><span class="v">${v}</span><span class="d">${sub || ''}</span></div>`;
+  const apple = dlHas('app_store', 'downloads', week) ? dlSum('app_store', 'downloads', week) : '–';
+  const play = dlHas('google_play', 'installs', two) ? dlSum('google_play', 'installs', week) : '–';
+  const lastActive = two.slice().reverse().map((d) => dlVal('google_play', 'active', d)).find((v) => v != null);
+  $('dlKpis').innerHTML = k('App Store, 7 ימים', esc(apple), dlVal('app_store', 'downloads', y) != null ? `אתמול ${esc(dlVal('app_store', 'downloads', y))} · הורדות חוזרות ${dlSum('app_store', 'redownloads', week)}` : 'אפל מעדכנים פעם ביום')
+    + k('Google Play, 7 ימים', esc(play), lastActive != null ? `${esc(lastActive)} מכשירים עם האפליקציה` : 'גוגל מעדכנים פעם ביום')
+    + k('כניסות לאתר, 7 ימים', week.reduce((a, d) => a + visits(d), 0), `לדף ההורדה ${dlSum('site', 'get_view', week)} · מאייפון ${dlSum('site', 'get_view_ios', week)} · מאנדרואיד ${dlSum('site', 'get_view_android', week)}`)
+    + k('בקשות לבדיקה באנדרואיד', dlSum('site', 'android_requests', week), '7 ימים');
+  const m = meta.downloads;
+  $('dlLine').textContent = [storeState('App Store', m?.apple), storeState('Google Play', m?.google),
+    m?.at ? `נמשך ${new Date(m.at).toLocaleString('he-IL', {day:'numeric', month:'numeric', hour:'2-digit', minute:'2-digit'})}` : ''].filter(Boolean).join(' · ');
+  const perDay = two.map((d) => ({users: (dlVal('app_store', 'downloads', d) || 0) + (dlVal('google_play', 'installs', d) || 0)}));
+  $('dlBars').innerHTML = bars(perDay, 'users');
+  const cell = (v) => v == null ? '<span style="color:var(--muted)">–</span>' : esc(v);
+  $('dlRows').innerHTML = two.slice().reverse().map((d) => `<tr><td>${esc(new Date(d + 'T12:00:00').toLocaleDateString('he-IL', {weekday:'long', day:'numeric', month:'numeric'}))}</td>
+    <td>${cell(dlVal('app_store', 'downloads', d))}</td><td>${cell(dlVal('google_play', 'installs', d))}</td>
+    <td>${cell(dlVal('site', 'get_view', d))}</td><td>${cell(dlVal('site', 'get_view_ios', d))}</td><td>${cell(dlVal('site', 'get_view_android', d))}</td>
+    <td>${cell(dlVal('site', 'android_requests', d))}</td></tr>`).join('');
+  const src = {};
+  dl.filter((x) => x.source === 'site' && x.metric.startsWith('src_') && week.includes(x.day)).forEach((x) => { src[x.metric.slice(4)] = (src[x.metric.slice(4)] || 0) + x.value; });
+  const NAMES = {fb: 'פייסבוק', ig: 'אינסטגרם', wa: 'וואטסאפ', tt: 'טיקטוק'};
+  const list = Object.entries(src).sort((a, b) => b[1] - a[1]);
+  $('dlSrc').innerHTML = list.length
+    ? list.map(([s, n]) => `<div class="li"><span>${esc(NAMES[s] || s)}</span><span class="r">${esc(n)}</span></div>`).join('')
+    : '<div class="empty">עוד אין. בפוסטים הקישור יהיה עם ?s=fb או ?s=ig, וכאן יופיע מאיפה הגיעו.</div>';
+}
+
+function downloadsCard() {
+  const week = lastDays(7);
+  const apple = dlSum('app_store', 'downloads', week), play = dlSum('google_play', 'installs', week);
+  const any = dlHas('app_store', 'downloads', week) || dlHas('google_play', 'installs', lastDays(14));
+  return mini('downloads', 'הורדות', any ? apple + play : '–', '7 ימים, בשתי החנויות',
+    mrow('App Store', dlHas('app_store', 'downloads', week) ? esc(apple) : 'עוד לא מחובר')
+      + mrow('Google Play', dlHas('google_play', 'installs', lastDays(14)) ? esc(play) : 'עוד לא מחובר')
+      + mrow('כניסות לדף ההורדה', esc(dlSum('site', 'get_view', week))),
+    'לכל ההורדות');
+}
+
 function renderUsers() {
   const ds = days7(), today = ds[ds.length - 1];
   const k = (label, v, sub) => `<div class="kpi"><span class="l">${label}</span><span class="v">${v}</span><span class="d">${sub || ''}</span></div>`;
@@ -421,14 +490,16 @@ async function load() {
   const h = new Date().getHours();
   $('hello').textContent = h < 5 ? 'לילה טוב' : h < 12 ? 'בוקר טוב' : h < 18 ? 'צהריים טובים' : 'ערב טוב';
   try {
-    const [a, m, p] = await Promise.all([
+    const [a, m, p, dd] = await Promise.all([
       sb.from('admin_items').select('*').order('happened_at', {ascending: false}).limit(300),
       sb.from('admin_meta').select('key, value'),
       sb.from('social_items').select('*').order('scheduled_at', {ascending: true, nullsFirst: true}).limit(200),
+      sb.from('store_daily').select('source, day, metric, value').gte('day', new Date(Date.now() - 31 * 86400000).toISOString().slice(0, 10)).limit(5000),
     ]);
     if (a.error || m.error) throw new Error((a.error || m.error).message);
     items = a.data; meta = Object.fromEntries(m.data.map((r) => [r.key, r.value]));
     posts = p.error ? [] : p.data;
+    dl = dd.error ? [] : dd.data;
     render(); renderSocial();
   } catch (e) {
     $('err').textContent = 'לא הצלחתי להביא את הסיכום. בדוק את החיבור ולחץ "לבקש רענון" או טען את הדף מחדש. (' + e.message + ')';

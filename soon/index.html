@@ -114,6 +114,8 @@ a.store{text-decoration:none;cursor:pointer}a.store:hover{filter:brightness(1.12
 <script src="../launch.js"></script>
 <script>
 (function(){
+  // One visit for the downloads tab on the admin page (../launch.js).
+  if(window.SKY&&SKY.hit)SKY.hit('home');
   var r=document.documentElement;
   function set(l){
     r.lang=l; r.dir=l==='he'?'rtl':'ltr';

@@ -105,6 +105,8 @@ button.btn[disabled]{opacity:.6;cursor:default}
   var S=window.SKY||{};
   // Until launch day the store pages are not open yet: the landing page says "coming soon".
   if(!S.live){location.replace('../soon/');return;}
+  // One visit for the downloads tab, sent before an iPhone is sent on to the App Store.
+  if(S.hit)S.hit('get');
   var ua=navigator.userAgent||'';
   var apple=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
   var android=/Android/.test(ua);
