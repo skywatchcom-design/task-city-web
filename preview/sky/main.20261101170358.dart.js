@@ -61136,8 +61136,10 @@
       return t1;
     },
     doorOf(district) {
-      var lot, k, w,
-        t1 = A.lots().$index(0, district);
+      var t1, lot, k, w;
+      if (A.lots().$index(0, district) == null)
+        district = "home";
+      t1 = A.lots().$index(0, district);
       t1.toString;
       lot = J.get$first$ax(t1);
       k = A.kindFor(district);
@@ -73230,7 +73232,7 @@
               site = A._asStringQ(type$.Map_String_dynamic._as(B.C_JsonCodec.decode$2$reviver(A.encodingForContentTypeHeader(A._contentTypeForHeaders(res.headers)).decode$1(res.bodyBytes), null)).$index(0, "stamp"));
               if (site == null)
                 site = "";
-              isNewer = B.JSString_methods.compareTo$1(site, "20261101165413") > 0;
+              isNewer = B.JSString_methods.compareTo$1(site, "20261101170358") > 0;
               if (isNewer)
                 $.$get$WebUpdate_newer().set$value(site);
               $async$goto = 4;
@@ -257141,7 +257143,7 @@
   A.SettingsTab__webUpdate_closure.prototype = {
     call$3(context, previews, __wc0_formal) {
       var t3, t4, t5,
-        _s14_ = "20261101165413",
+        _s14_ = "20261101170358",
         t1 = this.k,
         t2 = t1.row$3(B.IconData_983563_MaterialIcons_false, A.I18n_t("upd_check"), new A.SettingsTab__webUpdate__closure(this.$this, context));
       if (A.WebUpdate_current() == null) {
