@@ -291,6 +291,12 @@ tr.gone .btn{visibility:hidden}
         </div>
         <div class="opanel" id="oPanel" hidden></div>
       </section>
+      <section class="sec" id="cList" style="margin-bottom:26px" hidden>
+        <h2><span class="h">הרשימה של הקהילן</span><span id="cCount"></span></h2>
+        <p class="note">תשובות פשוטות בעמודים שלנו ושאלות על הרילסים יוצאות לבד. כאן מה שמחכה לך: תגובות בקבוצות וברדיט, ותשובות אישיות. תגובה לרדיט מעתיקים ומפרסמים מהחשבון שלך, ואז "שלחתי".</p>
+        <div style="display:flex;justify-content:flex-end;margin:4px 0 6px"><button class="btn pri sm" id="cAll" type="button">לאשר הכול</button></div>
+        <div id="cRows"></div>
+      </section>
       <div class="goal" id="jGoal"></div>
       <section class="sec" style="margin-top:26px"><h2><span class="h">מה ג'וניור אומר השבוע</span><span id="jReportAt"></span></h2><div id="jReport"></div></section>
       <section class="sec" style="margin-top:30px">
@@ -887,7 +893,7 @@ document.addEventListener('change', async (e) => {
 let agent = [], templates = [];
 let jShift = 0, jPick = null, jSaid = 'all';
 const GOAL = 500, GOAL_UNTIL = '2026-12-27';
-const AKIND = {guide: 'דף לגוגל', tool: 'כלי לגוגל', outreach: 'קהילה', proposal: 'הצעה'};
+const AKIND = {guide: 'דף לגוגל', tool: 'כלי לגוגל', outreach: 'קהילה', proposal: 'הצעה', comment: 'תגובה'};
 const DAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
 const ilDay = (d = new Date()) => d.toLocaleDateString('en-CA', {timeZone: 'Asia/Jerusalem'});
 const plusDays = (day, n) => { const d = new Date(day + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
@@ -1070,6 +1076,7 @@ function renderJunior() {
   const badge = waiting.length + props.filter((a) => a.status === 'draft').length + templates.filter((t) => t.status === 'draft').length
     + stock.filter((x) => x.status === 'draft').length + pages.filter((a) => a.status === 'draft').length;
   $('nJunior').textContent = badge || '';
+  renderCommunity();
 }
 
 function juniorCard() {
@@ -1196,12 +1203,15 @@ const WHO = {
   junior: {name: "ג'וניור", role: 'הראש: התוכנית, המדריכים לגוגל והדוח', color: '#1D2B55'},
   director: {name: 'הבמאי', role: 'רילסים, סטוריז והמלאי', color: '#C8503C'},
   ambassador: {name: 'השגריר', role: 'קהילות, שותפים ועיתונות', color: '#3C8F5F'},
+  community: {name: 'הקהילן', role: 'תשובות בעמודים, תגובות בקבוצות וברדיט', color: '#6B5BD2'},
 };
 // When each one runs by himself (the scheduled tasks, Israel time); day 6 is Saturday night.
 const SCHEDULE = {
   junior: [{h: 9, m: 0}, {dow: 6, h: 21, m: 0}],
   director: [{dow: 6, h: 21, m: 30}, {dow: 3, h: 10, m: 0}],
   ambassador: [{h: 10, m: 0}],
+  // Every 3 hours (owner, 3.11).
+  community: [0, 3, 6, 9, 12, 15, 18, 21].map((h) => ({h, m: 0})),
 };
 const ilMinutes = (d = new Date()) => { const [h, m] = d.toLocaleTimeString('en-GB', {timeZone: 'Asia/Jerusalem', hour12: false}).split(':').map(Number); return h * 60 + m; };
 const pad2 = (n) => String(n).padStart(2, '0');
@@ -1248,6 +1258,12 @@ function weekNumber(agent) {
     const stock = posts.filter((x) => x.stock && !x.scheduled_at && x.status === 'approved').length;
     const reels = weekItems(sun).filter((w) => w.t === 's' && w.x.kind === 'reel').length;
     return `מלאי ${stock}/10 · ${reels} רילסים השבוע`;
+  }
+  if (agent === 'community') {
+    const week = Date.now() - 7 * 86400000;
+    const replies = posts.filter((x) => x.kind === 'reply' && x.made_by === 'community' && x.status === 'published' && Date.parse(x.published_at) > week).length;
+    const comments = agentAll().filter((a) => a.kind === 'comment' && a.status === 'sent' && a.done_at && Date.parse(a.done_at) > week).length;
+    return `${replies} תשובות ו־${comments} תגובות השבוע`;
   }
   const fromCommunities = (sourcesIn(days).find(([k]) => k === 'community') || [0, 0])[1];
   return `${agentItemsSentThisWeek()} פניות נשלחו השבוע · ${fromCommunities} כניסות מהן`;
@@ -1300,8 +1316,8 @@ function deskSvg(dx, dy, lit) {
     <polygon points="${P([[324.6,251.3],[358.8,268.4],[358.8,244.4],[324.6,227.3]])}" fill="#2A3150" stroke="#23283A"/>
     ${lit ? `<polygon points="${P([[338,244],[345,247.5],[345,253.5],[338,250]])}" fill="#F2C14E"/>` : ''}`;
 }
-const HAIR = {junior: '#3A2E28', director: '#2F3652', ambassador: '#1F1A17'};
-const SKIN = {junior: '#E8B98F', director: '#D9A47A', ambassador: '#C98E62'};
+const HAIR = {junior: '#3A2E28', director: '#2F3652', ambassador: '#1F1A17', community: '#7A4A2A'};
+const SKIN = {junior: '#E8B98F', director: '#D9A47A', ambassador: '#C98E62', community: '#F0C9A0'};
 function headSvg(agent, x, y) {
   const top = agent === 'director'
     ? `<ellipse cx="${x - 3}" cy="${y - 9}" rx="12" ry="5" fill="#2F3652"/><circle cx="${x - 10}" cy="${y - 11}" r="2.5" fill="#2F3652"/>`
@@ -1326,9 +1342,10 @@ function standSvg(agent, x, y, mug) {
     ${headSvg(agent, x, y - 69)}</g>`;
 }
 // Where each one sits (the floor point behind the desk), the desks' offsets from the first one, and the standing spots.
-const SEAT = {junior: [363, 277, 0, 0], director: [636, 277, 273.6, 0], ambassador: [492, 357, 129.2, 79.8]};
-const COFFEE = [[655, 405], [606, 428], [557, 451]];
-const BY_ME = [[398, 236], [372, 224], [420, 250]];
+const SEAT = {junior: [363, 277, 0, 0], director: [636, 277, 273.6, 0], ambassador: [492, 357, 129.2, 79.8], community: [267.6, 335.7, -95.4, 58.7]};
+const COFFEE = [[655, 405], [606, 428], [557, 451], [508, 474]];
+const BY_ME = [[398, 236], [372, 224], [420, 250], [350, 212]];
+const AGENT_IDS = ['junior', 'director', 'ambassador', 'community'];
 
 function floorSvg(desks, mine) {
   let back = '', mid = '', front = '';
@@ -1357,13 +1374,13 @@ function floorSvg(desks, mine) {
     <polygon points="723.6,302.4 761.6,321.4 723.6,340.4 685.6,321.4" fill="#E9EEF5" stroke="#C9C3B6"/>
     <rect x="712" y="292" width="20" height="26" rx="3" fill="#3A4060"/><rect x="717" y="306" width="10" height="7" fill="#F2EFE8"/>`;
   let coffee = 0, byMe = 0;
-  for (const a of ['junior', 'director', 'ambassador']) {
+  for (const a of AGENT_IDS) {
     const d = desks[a], [x, base, dx, dy] = SEAT[a];
     const lit = d.s === 'work';
     const atDesk = d.s === 'work' || d.s === 'bad' || d.s === 'soon';
     const person = atDesk ? sitSvg(a, x, base, lit) : '';
     const desk = deskSvg(dx, dy, lit);
-    const layer = a === 'ambassador' ? 'front' : 'mid';
+    const layer = a === 'ambassador' || a === 'community' ? 'front' : 'mid';
     const chunk = person + desk;
     if (layer === 'front') front += chunk; else mid = chunk + mid;
     if (d.s === 'ask') {
@@ -1387,7 +1404,7 @@ function renderOffice() {
   if (office.missing) { $('office').hidden = true; return; }
   $('office').hidden = false;
   const s = office.state || {mode: 'ask', stopped: false};
-  const desks = Object.fromEntries(['junior', 'director', 'ambassador'].map((a) => [a, deskOf(a)]));
+  const desks = Object.fromEntries(AGENT_IDS.map((a) => [a, deskOf(a)]));
   const mine = onMyDesk();
   document.querySelectorAll('#oMode [data-mode]').forEach((b) => b.classList.toggle('on', b.dataset.mode === s.mode));
   $('oStop').hidden = !!s.stopped;
@@ -1397,7 +1414,7 @@ function renderOffice() {
     ? `אוטומטי ${ago(s.mode_since)}: הם מתחילים בלי לשאול, ושולחים לך עדכון כל 3 שעות${s.last_update_at ? ` (האחרון ${ago(s.last_update_at)})` : ''}. הודעות בקבוצות עדיין מחכות ל"כן" שלך.`
     : 'לפני כל ריצה הם מבקשים "קדימה" על השולחן שלך, ומעדכנים בסוף. הם עובדים רק כשהמחשב דלוק ו־Claude פתוח.';
   const STATE = {work: ['עובד', 's-work'], ask: ['מבקש להתחיל', 's-wait'], soon: ['קיבל קדימה', 's-work'], bad: ['נכשל', 's-bad'], rest: [s.stopped ? 'עצור' : 'בהפסקה', 's-rest']};
-  $('oList').innerHTML = ['junior', 'director', 'ambassador'].map((a) => {
+  $('oList').innerHTML = AGENT_IDS.map((a) => {
     const d = desks[a], [label, cls] = STATE[d.s];
     const what = d.s === 'work' ? (d.run.doing || d.run.title) : d.s === 'ask' || d.s === 'soon' ? d.run.title : d.s === 'bad' ? (d.run.error || 'הריצה נכשלה') : `הריצה הבאה ${nextRun(a)}`;
     return `<button class="orow ${oPick === a ? 'sel' : ''}" type="button" data-oagent="${a}"><span class="av" style="background:${WHO[a].color}"></span>
@@ -1445,6 +1462,60 @@ function renderPanel() {
         <span class="sumline">${esc(RS[r.status])} · ${esc(ago(r.ended_at || r.started_at || r.asked_at))}${r.by_owner ? ' · ביקשת' : ''}</span>
         ${r.summary ? `<div class="sum">${esc(r.summary)}</div>` : ''}${r.status === 'failed' && r.error ? `<div class="sum" style="color:var(--red)">${esc(r.error)}</div>` : ''}</div>`).join('') || '<div class="empty">עוד לא היו ריצות.</div>'}</div>`;
 }
+
+// ---- The community manager's list (migration 20261104_community.sql): one list a day, approved line by line or all.
+const agentAll = () => agent;
+const isReddit = (u) => /^https:\/\/(www\.|old\.)?reddit\.com\//.test(u || '');
+function communityItems() {
+  const comments = agent.filter((a) => a.kind === 'comment' && ['draft', 'changes', 'approved'].includes(a.status));
+  const replies = posts.filter((x) => x.kind === 'reply' && x.made_by === 'community' && ['draft', 'changes'].includes(x.status));
+  return {comments, replies};
+}
+function renderCommunity() {
+  if (!$('cList')) return;
+  const {comments, replies} = communityItems();
+  const total = comments.length + replies.length;
+  $('cList').hidden = !total;
+  if (!total) return;
+  const waiting = comments.filter((a) => a.status !== 'approved').length + replies.length;
+  $('cCount').textContent = `${waiting} לאישור${comments.length - comments.filter((a) => a.status !== 'approved').length ? ` · ${comments.filter((a) => a.status === 'approved').length} מאושרות` : ''}`;
+  $('cAll').disabled = !waiting;
+  const row = (where, quote, text, acts) => `<div class="said"><div class="q"><span class="by">${where}</span>${quote}</div><div class="a">${esc(text)}</div><div class="r">${acts}</div></div>`;
+  $('cRows').innerHTML = replies.map((x) => row(`${esc(WHERE[x.reply_where] || 'בעמוד שלנו')} · ${esc(x.reply_author || 'מישהו')}`,
+      esc(x.reply_context || ''), x.caption || '',
+      `<button class="btn pri sm" type="button" data-cpok="${x.id}">מאשר</button><button class="btn ghost sm" type="button" data-cpno="${x.id}">לא</button>`)).join('')
+    + comments.map((a) => {
+      const link = isHttps(a.target_url) ? `<a href="${esc(a.target_url)}" target="_blank" rel="noopener noreferrer">${esc(a.target || 'הפוסט')}</a>` : esc(a.target || '');
+      const acts = a.status === 'approved'
+        ? (isReddit(a.target_url)
+          ? `<button class="btn pri sm" type="button" data-ccopy="${a.id}">להעתיק</button><button class="btn sm" type="button" data-csent="${a.id}">שלחתי</button>`
+          : '<span class="pill ok">מאושר, עולה בריצה הבאה</span>')
+        : `<button class="btn pri sm" type="button" data-cok="${a.id}">מאשר</button><button class="btn ghost sm" type="button" data-cno="${a.id}">לא</button>`;
+      return row(`${isReddit(a.target_url) ? 'רדיט' : 'קבוצה'} · ${link}`, esc(a.summary || ''), a.body || '', acts);
+    }).join('');
+}
+$('cList').addEventListener('click', async (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.ccopy) {
+    const a = agent.find((x) => x.id === Number(b.dataset.ccopy));
+    try { await navigator.clipboard.writeText(a?.body || ''); b.textContent = 'הועתק'; } catch { b.textContent = 'לא הועתק'; }
+    setTimeout(() => { b.textContent = 'להעתיק'; }, 2500);
+    return;
+  }
+  b.disabled = true;
+  let ok = true;
+  if (b.id === 'cAll') {
+    const {comments, replies} = communityItems();
+    for (const x of replies) ok = (await changePost(x.id, {status: 'approved'})) && ok;
+    for (const a of comments.filter((c) => c.status !== 'approved')) ok = (await changeAgent(a.id, {status: 'approved'})) && ok;
+  } else if (b.dataset.cpok) ok = await changePost(Number(b.dataset.cpok), {status: 'approved'});
+  else if (b.dataset.cpno) ok = await changePost(Number(b.dataset.cpno), {status: 'rejected'});
+  else if (b.dataset.cok) ok = await changeAgent(Number(b.dataset.cok), {status: 'approved'});
+  else if (b.dataset.cno) ok = await changeAgent(Number(b.dataset.cno), {status: 'rejected'});
+  else if (b.dataset.csent) ok = await changeAgent(Number(b.dataset.csent), {status: 'sent'});
+  renderCommunity(); renderJunior(); renderSocial();
+  if (!ok) b.disabled = false;
+});
 
 async function officeChange(op) {
   const { error } = await op;
