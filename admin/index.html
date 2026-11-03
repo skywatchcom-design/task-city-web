@@ -105,6 +105,8 @@ tr.gone .btn{visibility:hidden}
 .card .state.ok{color:var(--green)}
 .card .askbox{display:flex;flex-direction:column;gap:6px}
 .h{font:600 16px var(--head);color:var(--ink)}
+/* A section title inside a heading row keeps its own look (the row's other span is the quiet count). */
+.sec h2 span.h{font:600 16px var(--head);color:var(--ink)}
 .board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
 .mini{border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .mini .mhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
@@ -128,6 +130,62 @@ tr.gone .btn{visibility:hidden}
 .chip{all:unset;box-sizing:border-box;cursor:pointer;font:600 13.5px var(--body);border:1px solid var(--line);color:var(--text);padding:6px 14px;border-radius:16px}
 .chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .tab[hidden]{display:none!important}
+/* ג'וניור DM (sketch 36: the goal of A over the week of B). */
+.goal{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:32px;align-items:start;border-block:1px solid var(--line);padding:18px 0}
+.goal .big{font:600 52px/1 var(--head);color:var(--ink);font-variant-numeric:tabular-nums}
+.goal .big small{font:600 20px var(--body);color:var(--muted)}
+.goal .prog{height:8px;margin:12px 0 8px}
+.srcs{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.srcs b{color:var(--ink);font-variant-numeric:tabular-nums}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{font:12px var(--body);fill:var(--muted)}
+.letter{max-width:72ch;display:flex;flex-direction:column;gap:10px;font-size:15.5px}
+.letter p{margin:0}
+.letter .lead{font:600 19px/1.4 var(--head);color:var(--ink)}
+.ask{border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;max-width:72ch}
+.ask .acts{display:flex;gap:6px;flex-wrap:wrap}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:12px 12px 12px 2px;overflow:hidden}
+.wday{border-inline-end:1px solid var(--line);display:flex;flex-direction:column;min-width:0;min-height:170px}
+.wday:last-child{border-inline-end:0}
+.wday.today{background:#FCFBF7}
+.wday h3{margin:0;font:600 14px var(--head);color:var(--ink);padding:9px 10px;border-bottom:1px solid var(--line2);display:flex;justify-content:space-between;gap:6px}
+.wday h3 span{font:400 12px var(--body);color:var(--muted)}
+.wday .its{display:flex;flex-direction:column;gap:6px;padding:8px}
+.wday .foot{margin-top:auto;padding:8px;border-top:1px solid var(--line2)}
+.it{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--line);border-radius:8px 8px 8px 2px;padding:6px 8px;font-size:13px;line-height:1.35;display:flex;flex-direction:column;gap:2px;min-width:0;overflow-wrap:anywhere}
+.it:hover{background:var(--hover)}
+.it:focus-visible{outline:3px solid var(--sun);outline-offset:1px}
+.it.sel{border-color:var(--ink)}
+.it.ok{background:#F2F8F4;border-color:#D4E8DB}
+.it.bad{border-color:var(--red)}
+.it .k{font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px}
+.it .k::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.k-reel{color:var(--ink)}.k-story{color:#6B5BD2}.k-post{color:var(--green)}.k-guide,.k-tool{color:#C0622D}.k-outreach{color:#8A6D1E}
+.detail{margin-top:14px}
+.detail .card{max-width:520px}
+.acard{border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.acard .tags{display:flex;flex-wrap:wrap;gap:6px;font-size:12.5px;color:var(--muted)}
+.acard .tags b{color:var(--ink)}
+.acard .t{font:600 15.5px var(--head);color:var(--ink)}
+.acard .why{font-size:13.5px;color:var(--muted)}
+.acard textarea{font:15px/1.45 var(--body);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:120px;resize:vertical;width:100%;background:var(--white)}
+.acard textarea[readonly]{background:var(--hover);border-color:transparent}
+.acard iframe{width:100%;height:420px;border:1px solid var(--line);border-radius:8px;background:#F7F7F4}
+.acard .acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.acard .state{font-size:13.5px;color:var(--muted)}.acard .state.ok{color:var(--green)}.acard .state.bad{color:var(--red)}
+.alist{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;margin-top:6px}
+.said{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:16px;padding:12px 0;border-bottom:1px solid var(--line2);font-size:14.5px;align-items:start}
+.said:last-child{border-bottom:0}
+.said .q{color:var(--text)}.said .q .by{display:block;font-size:12.5px;color:var(--muted)}
+.said .a{color:var(--ink)}.said .a .by{display:block;font-size:12.5px;color:var(--muted)}
+.said .r{color:var(--muted);font-size:13px;white-space:nowrap;text-align:end;display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.pill{display:inline-block;font:600 12px var(--body);padding:1px 9px;border-radius:999px;white-space:nowrap;background:var(--sel);color:var(--ink)}
+.pill.auto{background:#FBF0DD;color:#8A5A12}.pill.ok{background:#E4F2EB;color:var(--green)}
+.tpl{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr) auto;gap:16px;padding:14px 0;border-bottom:1px solid var(--line2);align-items:start}
+.tpl:last-child{border-bottom:0}
+.tpl .words{font-size:13px;color:var(--muted)}
+.tpl textarea{font:15px/1.45 var(--body);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:70px;resize:vertical;width:100%}
+.tpl .acts{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
 @media (max-width:1100px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
@@ -139,6 +197,12 @@ tr.gone .btn{visibility:hidden}
   .kpi:nth-child(3){border-inline-start:0}.kpi:nth-child(n+3){border-top:1px solid var(--line)}
   .cols{grid-template-columns:1fr;gap:30px}
   .board{grid-template-columns:1fr}
+  .goal{grid-template-columns:1fr;gap:18px}
+  .week{grid-template-columns:1fr}
+  .wday{border-inline-end:0;border-bottom:1px solid var(--line);min-height:0}
+  .wday:last-child{border-bottom:0}
+  .said,.tpl{grid-template-columns:1fr}
+  .said .r,.tpl .acts{align-items:flex-start;text-align:start}
 }
 </style>
 </head>
@@ -146,7 +210,8 @@ tr.gone .btn{visibility:hidden}
 <div class="app" id="app" hidden>
   <nav class="nav" aria-label="תפריט">
     <div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="14" width="5" height="8" rx="1" fill="currentColor"/><rect x="9.5" y="9" width="5" height="13" rx="1" fill="currentColor"/><rect x="17" y="2" width="5" height="20" rx="1" fill="currentColor"/><rect x="18.5" y="5" width="2" height="2.4" fill="var(--sun)"/></svg>SkyTasks</div>
-    <button class="link on" data-tab="overview" type="button">סקירה</button>
+    <button class="link on" data-tab="junior" type="button">ג'וניור DM <span class="n" id="nJunior"></span></button>
+    <button class="link" data-tab="overview" type="button">סקירה</button>
     <button class="link" data-tab="downloads" type="button">הורדות</button>
     <button class="link" data-tab="mail" type="button">דואר <span class="n" id="nMail"></span></button>
     <button class="link" data-tab="bug" type="button">באגים <span class="n" id="nBug"></span></button>
@@ -165,7 +230,41 @@ tr.gone .btn{visibility:hidden}
       <button class="btn" id="refresh" type="button">לבקש רענון</button>
     </div>
     <p class="err" id="err" hidden></p>
-    <section class="tab" data-tab="overview" aria-label="סקירה"><div class="board" id="board"></div></section>
+    <section class="tab" data-tab="junior" aria-label="ג'וניור DM">
+      <div class="goal" id="jGoal"></div>
+      <section class="sec" style="margin-top:26px"><h2><span class="h">מה ג'וניור אומר השבוע</span><span id="jReportAt"></span></h2><div id="jReport"></div></section>
+      <section class="sec" style="margin-top:30px">
+        <h2><span class="h" id="jWeekTitle">השבוע</span><span id="jWeekCount"></span></h2>
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin:4px 0 12px">
+          <div class="chips" id="jWeekChips" role="group" aria-label="איזה שבוע" style="margin:0">
+            <button class="chip" type="button" data-week="-7">השבוע שעבר</button>
+            <button class="chip on" type="button" data-week="0">השבוע</button>
+            <button class="chip" type="button" data-week="7">השבוע הבא</button>
+          </div>
+          <button class="btn pri" id="jApproveWeek" type="button">לאשר את השבוע</button>
+        </div>
+        <div class="week" id="jWeek"></div>
+        <div class="detail" id="jDetail"></div>
+      </section>
+      <section class="sec" style="margin-top:30px"><h2><span class="h">קהילות ושותפים השבוע</span><span id="jOutCount"></span></h2>
+        <p class="note">ג'וניור מכין את ההודעה, ואתה שולח אותה בעצמך. אחרי ששלחת, לוחצים "שלחתי".</p><div class="alist" id="jOutreach"></div></section>
+      <section class="sec" style="margin-top:30px"><h2><span class="h">דפים לגוגל</span><span id="jGuideCount"></span></h2>
+        <p class="note">אחרי "מאשר" הדף עולה לאתר בריצה הבאה של ג'וניור, ונכנס למפת האתר של גוגל ו־Bing.</p><div class="alist" id="jGuides"></div></section>
+      <section class="sec" style="margin-top:30px"><h2><span class="h">מה ענו לאנשים</span><span id="jSaidCount"></span></h2>
+        <div class="chips" id="jSaidChips" role="group" aria-label="סינון">
+          <button class="chip on" type="button" data-said="all">הכול</button>
+          <button class="chip" type="button" data-said="auto">אוטומטיות</button>
+          <button class="chip" type="button" data-said="mine">שאישרת</button>
+        </div>
+        <div id="jSaid"></div></section>
+      <section class="sec" style="margin-top:30px"><h2><span class="h">תשובות קבועות</span><span id="jTplCount"></span></h2>
+        <p class="note">תגובה קצרה שמתאימה לתשובה אחת בדיוק נענית לבד, כל חצי שעה, עד 30 ביום. תלונה, באג או שאלה אחרת מחכים לך. {link} בתשובה הופך לקישור ההורדה, עם קוד משלו.</p>
+        <div id="jTemplates"></div></section>
+      <section class="sec" style="margin-top:30px"><h2><span class="h">המלאי</span><span id="jStockCount"></span></h2>
+        <p class="note">פריטים בלי תאריך. ביום שלא עלה בו כלום עד 19:00, השרת מעלה אחד מהמלאי המאושר.</p>
+        <div class="cards" id="jStock"></div></section>
+    </section>
+    <section class="tab" data-tab="overview" aria-label="סקירה" hidden><div class="board" id="board"></div></section>
     <section class="tab sec" data-tab="mail" hidden>
       <h2><span class="h">דואר שדורש אותך</span><span data-count="mail"></span></h2>
       <div class="tw"><table><thead><tr><th>נושא</th><th>מקור</th><th>מתי</th><th class="act"></th></tr></thead><tbody class="items" data-sources="mail"></tbody></table></div>
@@ -291,11 +390,12 @@ function rowHtml(i) {
 }
 
 // ---- Tabs (sketch 30, direction A "לוח", 31.10): an overview of small tables, and one tab per area.
-const TABS = ['overview', 'downloads', 'mail', 'bug', 'social', 'stores', 'users', 'calendar'];
-let tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
+// ג'וניור DM is first and opens by default (owner, 3.11: "שם יהיה לי הכי נגיש").
+const TABS = ['junior', 'overview', 'downloads', 'mail', 'bug', 'social', 'stores', 'users', 'calendar'];
+let tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'junior';
 
 function showTab(next, push = true) {
-  tab = TABS.includes(next) ? next : 'overview';
+  tab = TABS.includes(next) ? next : 'junior';
   document.querySelectorAll('.tab').forEach((s) => { s.hidden = s.dataset.tab !== tab; });
   document.querySelectorAll('.nav [data-tab]').forEach((b) => {
     b.classList.toggle('on', b.dataset.tab === tab);
@@ -368,7 +468,7 @@ function renderBoard() {
   const never = !meta.digest;
   const mail = openItems('mail'), bug = openItems('bug');
   const urgent = mail.filter((i) => i.severity === 'r').length;
-  const cards = [downloadsCard()];
+  const cards = [juniorCard(), downloadsCard()];
   cards.push(mini('mail', 'דואר', never ? '–' : mail.length, `דורש תשובה${urgent ? ` · ${urgent} דחוף` : ''}`,
     mail.slice(0, 3).map((i) => mrow(esc(i.title), esc(ago(i.happened_at)))).join('') || '<div class="mrow"><span class="r">אין מה שמחכה</span></div>',
     'לכל הדואר', urgent > 0));
@@ -490,17 +590,21 @@ async function load() {
   const h = new Date().getHours();
   $('hello').textContent = h < 5 ? 'לילה טוב' : h < 12 ? 'בוקר טוב' : h < 18 ? 'צהריים טובים' : 'ערב טוב';
   try {
-    const [a, m, p, dd] = await Promise.all([
+    const [a, m, p, dd, ag, tp] = await Promise.all([
       sb.from('admin_items').select('*').order('happened_at', {ascending: false}).limit(300),
       sb.from('admin_meta').select('key, value'),
-      sb.from('social_items').select('*').order('scheduled_at', {ascending: true, nullsFirst: true}).limit(200),
-      sb.from('store_daily').select('source, day, metric, value').gte('day', new Date(Date.now() - 31 * 86400000).toISOString().slice(0, 10)).limit(5000),
+      sb.from('social_items').select('*').order('scheduled_at', {ascending: true, nullsFirst: true}).limit(600),
+      sb.from('store_daily').select('source, day, metric, value').gte('day', new Date(Date.now() - 70 * 86400000).toISOString().slice(0, 10)).limit(10000),
+      sb.from('agent_items').select('*').order('id', {ascending: false}).limit(300),
+      sb.from('reply_templates').select('*').order('id'),
     ]);
     if (a.error || m.error) throw new Error((a.error || m.error).message);
     items = a.data; meta = Object.fromEntries(m.data.map((r) => [r.key, r.value]));
     posts = p.error ? [] : p.data;
     dl = dd.error ? [] : dd.data;
-    render(); renderSocial();
+    agent = ag.error ? [] : ag.data;
+    templates = tp.error ? [] : tp.data;
+    render(); renderSocial(); renderJunior();
   } catch (e) {
     $('err').textContent = 'לא הצלחתי להביא את הסיכום. בדוק את החיבור ולחץ "לבקש רענון" או טען את הדף מחדש. (' + e.message + ')';
     $('err').hidden = false;
@@ -596,11 +700,12 @@ function cardHtml(x) {
   const quote = x.kind === 'reply' && x.reply_context
     ? `<div class="quote"><span class="by">${esc(x.reply_author || 'מישהו')} כתב:</span>${esc(x.reply_context)}${isHttps(x.reply_link) ? ` · <a href="${esc(x.reply_link)}" target="_blank" rel="noopener noreferrer">לפתוח</a>` : ''}</div>` : '';
   const when = x.kind === 'reply' ? ''
+    : x.stock && !x.scheduled_at ? `<span class="state">במלאי: עולה ביום שאין בו פרסום אחר</span>`
     : open ? `<label class="state">מתי<input type="datetime-local" data-when="${x.id}" value="${esc(toLocal(x.scheduled_at))}"></label>`
     : x.scheduled_at ? `<span class="state">${esc(dayTime(x.scheduled_at))}</span>` : '';
   let acts = '';
   if (open) acts = `<button class="btn pri sm" type="button" data-ok="${x.id}">מאשר</button><button class="btn sm" type="button" data-ask="${x.id}">לשנות</button><button class="btn ghost sm" type="button" data-no="${x.id}">לא</button>`;
-  else if (x.status === 'approved') acts = `<span class="state ok">${x.kind === 'reply' ? 'אושר, יוצא בדקות הקרובות' : 'מתוזמן'}</span><button class="btn ghost sm" type="button" data-undo="${x.id}">לבטל</button>`;
+  else if (x.status === 'approved') acts = `<span class="state ok">${x.kind === 'reply' ? 'אושר, יוצא בדקות הקרובות' : x.stock && !x.scheduled_at ? 'מאושר, במלאי' : 'מתוזמן'}</span><button class="btn ghost sm" type="button" data-undo="${x.id}">לבטל</button>`;
   else if (x.status === 'publishing') acts = `<span class="state">עולה עכשיו…</span>`;
   else if (x.status === 'failed') acts = `<span class="state bad">לא עלה: ${esc(x.error || '')}</span><button class="btn sm" type="button" data-retry="${x.id}">לנסות שוב</button><button class="btn ghost sm" type="button" data-no="${x.id}">לוותר</button>`;
   else if (x.status === 'published') acts = `<span class="state ok">עלה ${esc(ago(x.published_at))}</span>` + Object.entries(x.results || {})
@@ -664,8 +769,10 @@ async function changePost(id, patch) {
   return true;
 }
 
-$('cards').addEventListener('click', async (e) => {
-  const b = e.target.closest('button'); if (!b) return;
+// The same cards show on the networks tab and in ג'וניור DM (the week's details and the stock), so the handlers listen
+// on the whole page and act on whichever card was tapped.
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('.card[data-card] button'); if (!b) return;
   const card = b.closest('.card'), id = Number(card.dataset.card);
   if (b.dataset.ask) {
     // A short note to Claude; the draft comes back changed in the next run.
@@ -688,7 +795,7 @@ $('cards').addEventListener('click', async (e) => {
   };
   if (b.dataset.ok) {
     const p = edits();
-    if (x.kind !== 'reply' && !(p.scheduled_at || x.scheduled_at)) {
+    if (x.kind !== 'reply' && !x.stock && !(p.scheduled_at || x.scheduled_at)) {
       $('err').textContent = 'צריך לבחור מתי לפרסם לפני האישור.'; $('err').hidden = false; b.disabled = false; return;
     }
     ok = await changePost(id, {...p, status: 'approved'});
@@ -699,18 +806,323 @@ $('cards').addEventListener('click', async (e) => {
   } else if (b.dataset.no) ok = await changePost(id, {status: 'rejected'});
   else if (b.dataset.undo) ok = await changePost(id, {status: 'draft'});
   else if (b.dataset.retry) ok = await changePost(id, {status: 'approved'});
-  if (ok) { renderSocial(); renderBoard(); } else b.disabled = false;
+  if (ok) { renderSocial(); renderBoard(); renderJunior(); } else b.disabled = false;
 });
 $('socChips').addEventListener('click', (e) => {
   const b = e.target.closest('[data-show]'); if (!b) return;
   socShow = b.dataset.show; renderSocial();
 });
 // A caption or a time edited and left without approving is still saved.
-$('cards').addEventListener('change', async (e) => {
-  const t = e.target, id = Number(t.closest('.card')?.dataset.card);
+document.addEventListener('change', async (e) => {
+  const t = e.target, id = Number(t.closest('.card[data-card]')?.dataset.card);
   if (!id || t.closest('.askbox')) return;
   if (t.dataset.cap && !t.readOnly) await changePost(id, {caption: t.value});
   if (t.dataset.when) await changePost(id, {scheduled_at: fromLocal(t.value)});
+});
+
+// ---- ג'וניור DM (migration 20261103_junior.sql, sketch 36): the goal board of direction A over the week of direction B.
+// Claude's weekly run fills the week; the owner approves a day or the whole week here; the server publishes.
+let agent = [], templates = [];
+let jShift = 0, jPick = null, jSaid = 'all';
+const GOAL = 500, GOAL_UNTIL = '2026-12-27';
+const AKIND = {guide: 'דף לגוגל', tool: 'כלי לגוגל', outreach: 'קהילה', proposal: 'הצעה'};
+const DAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+const ilDay = (d = new Date()) => d.toLocaleDateString('en-CA', {timeZone: 'Asia/Jerusalem'});
+const plusDays = (day, n) => { const d = new Date(day + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const sundayOf = (day) => { const d = new Date(day + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() - d.getUTCDay()); return d.toISOString().slice(0, 10); };
+const shortDay = (day) => { const d = new Date(day + 'T12:00:00Z'); return `${d.getUTCDate()}.${d.getUTCMonth() + 1}`; };
+const weekDays = (sun) => Array.from({length: 7}, (_, i) => plusDays(sun, i));
+const downloadsOn = (days) => dlSum('app_store', 'downloads', days) + dlSum('google_play', 'installs', days);
+const isoIl = (iso) => iso ? ilDay(new Date(iso)) : null;
+
+/** Visits this week by where they came from: an item's code counts for its channel (r31fb is Facebook, k12 a community). */
+function sourcesIn(days) {
+  const out = {};
+  dl.filter((x) => x.source === 'site' && x.metric.startsWith('src_') && days.includes(x.day)).forEach((x) => {
+    const src = x.metric.slice(4), m = src.match(/^([rsfkagtp]\d{1,8})(fb|ig|yt)?$/);
+    const ch = m ? (m[2] || (m[1][0] === 'k' ? 'community' : 'other')) : src;
+    out[ch] = (out[ch] || 0) + x.value;
+  });
+  return Object.entries(out).sort((a, b) => b[1] - a[1]);
+}
+const SRCNAME = {fb: 'פייסבוק', ig: 'אינסטגרם', yt: 'יוטיוב', google: 'גוגל', bing: 'Bing', ddg: 'DuckDuckGo', chatgpt: 'ChatGPT', community: 'קהילות', wa: 'וואטסאפ', x: 'X', github: 'האתר הישן', other: 'אחר'};
+
+function chartSvg(sun) {
+  // Weeks from 8 weeks back to the goal's week, the downloads of each, and the dashed line of the pace the goal needs.
+  const first = plusDays(sun, -7 * 7), lastWeek = sundayOf(GOAL_UNTIL);
+  const weeks = []; for (let w = first; w <= lastWeek; w = plusDays(w, 7)) weeks.push(w);
+  const vals = weeks.map((w) => w <= sun ? downloadsOn(weekDays(w).filter((d) => d <= ilDay())) : null);
+  const top = Math.max(GOAL, ...vals.filter((v) => v != null));
+  const W = 640, H = 210, L = 44, R = 12, T = 16, B = 30;
+  const x = (i) => L + (weeks.length === 1 ? 0 : i * (W - L - R) / (weeks.length - 1));
+  const y = (v) => T + (1 - v / top) * (H - T - B);
+  const now = weeks.indexOf(sun);
+  const pts = vals.map((v, i) => v == null ? null : `${x(i).toFixed(1)},${y(v).toFixed(1)}`).filter(Boolean);
+  const grid = [0, top / 2, top].map((v) => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#ECECEA"${v === top ? ' stroke-dasharray="4 4"' : ''}/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${Math.round(v)}</text>`).join('');
+  const labels = weeks.map((w, i) => (i % 2 === 0 || i === weeks.length - 1) ? `<text x="${x(i)}" y="${H - 10}" text-anchor="middle">${shortDay(w)}</text>` : '').join('');
+  const area = pts.length > 1 ? `<path d="M${pts.join(' L')} L${x(pts.length - 1)},${y(0)} L${x(0)},${y(0)} Z" fill="#E0A63A" fill-opacity=".16"/>` : '';
+  const line = pts.length > 1 ? `<path d="M${pts.join(' L')}" fill="none" stroke="#1D2B55" stroke-width="2.5"/>` : '';
+  const cur = now >= 0 && vals[now] != null ? `<circle cx="${x(now)}" cy="${y(vals[now])}" r="5" fill="#1D2B55"/><text x="${x(now)}" y="${y(vals[now]) - 10}" text-anchor="middle" style="font-weight:700;fill:#1D2B55">${vals[now]}</text>` : '';
+  const pace = now >= 0 && vals[now] != null && now < weeks.length - 1 ? `<path d="M${x(now)},${y(vals[now])} L${x(weeks.length - 1)},${y(GOAL)}" fill="none" stroke="#E0A63A" stroke-width="2" stroke-dasharray="6 5"/><text x="${x(weeks.length - 1) - 4}" y="${y(GOAL) + 16}" text-anchor="end">היעד</text>` : '';
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="הורדות בכל שבוע, והקצב שהיעד צריך">${grid}${area}${line}${pace}${cur}${labels}</svg>`;
+}
+
+function weekItems(sun) {
+  const days = weekDays(sun);
+  const social = posts.filter((x) => x.kind !== 'reply' && x.status !== 'rejected' && x.scheduled_at && days.includes(isoIl(x.scheduled_at)))
+    .map((x) => ({t: 's', id: x.id, day: isoIl(x.scheduled_at), at: x.scheduled_at, x}));
+  const mine = agent.filter((a) => ['guide', 'tool', 'outreach'].includes(a.kind) && a.status !== 'rejected' && a.day && days.includes(a.day))
+    .map((a) => ({t: 'a', id: a.id, day: a.day, at: a.day + 'T23:00:00', a}));
+  return [...social, ...mine].sort((p, q) => String(p.at).localeCompare(String(q.at)));
+}
+const waitsForMe = (w) => w.t === 's' ? ['draft', 'changes'].includes(w.x.status) : ['draft', 'changes'].includes(w.a.status) && w.a.kind !== 'outreach';
+
+function chip(w) {
+  const k = w.t === 's' ? w.x.kind : w.a.kind;
+  const name = w.t === 's' ? (w.x.theme || ytTitle(w.x)) : w.a.title;
+  const st = w.t === 's' ? w.x.status : w.a.status;
+  const ok = ['approved', 'publishing', 'published', 'sent'].includes(st);
+  const when = w.t === 's' ? new Date(w.x.scheduled_at).toLocaleTimeString('he-IL', {hour: '2-digit', minute: '2-digit'}) : '';
+  const label = w.t === 's' ? KIND[k] : AKIND[k];
+  const sel = jPick && jPick.t === w.t && jPick.id === w.id;
+  return `<button class="it k-${esc(k)} ${ok ? 'ok' : ''} ${st === 'failed' ? 'bad' : ''} ${sel ? 'sel' : ''}" type="button" data-pick="${w.t}:${w.id}">
+    <span class="k">${esc(label)}${when ? ` ${esc(when)}` : ''}</span><span>${esc(name)}</span>
+    <span style="font-size:12px;color:var(--muted)">${esc({draft: 'לאישור', changes: 'נשלח לתיקון', approved: 'מאושר', publishing: 'עולה', published: 'עלה', sent: 'נשלח', failed: 'לא עלה'}[st] || st)}</span></button>`;
+}
+
+function agentCard(a) {
+  const open = a.status === 'draft' || a.status === 'changes';
+  const tags = `<b>${esc(AKIND[a.kind])}</b>${a.code ? `<span>${esc(a.code)}</span>` : ''}${a.day ? `<span>${esc(DAYS[new Date(a.day + 'T12:00:00Z').getUTCDay()])} ${esc(shortDay(a.day))}</span>` : ''}`;
+  let body = '';
+  if (a.kind === 'guide' || a.kind === 'tool') {
+    // The draft page, without any script (sandbox), in the site's look.
+    const doc = `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><style>body{font:16px/1.6 Assistant,system-ui,sans-serif;color:#1D2B55;background:#F7F7F4;margin:0;padding:18px 20px}h1{font:800 26px/1.2 Rubik,system-ui,sans-serif}h2{font:700 19px Rubik,system-ui,sans-serif;margin:22px 0 6px}a{color:#1D2B55}details{background:#fff;border:1px solid #E3E5EA;padding:8px 12px;margin:6px 0}</style></head><body><h1>${esc(a.title)}</h1>${a.body || ''}</body></html>`;
+    // A tool is a whole page with its own script: it runs in a frame of its own origin, which cannot reach this page.
+    const tool = a.kind === 'tool' && /^\s*<!doctype html/i.test(a.body || '');
+    body = `${a.target ? `<div class="why">החיפוש: "${esc(a.target)}"</div>` : ''}<iframe sandbox="${tool ? 'allow-scripts' : ''}" title="${esc(a.title)}" srcdoc="${esc(tool ? a.body : doc)}"></iframe>`;
+  } else if (a.kind === 'outreach') {
+    body = `${a.target ? `<div class="why">איפה: ${isHttps(a.target_url) ? `<a href="${esc(a.target_url)}" target="_blank" rel="noopener noreferrer">${esc(a.target)}</a>` : esc(a.target)}</div>` : ''}
+      <textarea data-abody="${a.id}" ${open ? '' : 'readonly'} aria-label="ההודעה">${esc(a.body || '')}</textarea>`;
+  } else body = a.body ? `<div>${esc(a.body)}</div>` : '';
+  let acts = '';
+  if (a.kind === 'outreach') {
+    acts = a.status === 'sent' ? `<span class="state ok">נשלח ${esc(ago(a.done_at))}</span>`
+      : a.status === 'rejected' ? `<span class="state">ירד</span>`
+      : `<button class="btn pri sm" type="button" data-acopy="${a.id}">להעתיק</button><button class="btn sm" type="button" data-asent="${a.id}">שלחתי</button><button class="btn ghost sm" type="button" data-aask="${a.id}">לשנות</button><button class="btn ghost sm" type="button" data-ano="${a.id}">לא</button>`;
+  } else if (open) acts = `<button class="btn pri sm" type="button" data-aok="${a.id}">${a.kind === 'proposal' ? 'כן' : 'מאשר'}</button><button class="btn sm" type="button" data-aask="${a.id}">לשנות</button><button class="btn ghost sm" type="button" data-ano="${a.id}">לא</button>`;
+  else if (a.status === 'approved') acts = `<span class="state ok">${a.kind === 'proposal' ? 'אושר, נכנס בריצה הבאה' : 'מאושר, עולה בריצה הבאה'}</span><button class="btn ghost sm" type="button" data-aundo="${a.id}">לבטל</button>`;
+  else if (a.status === 'published') acts = `<span class="state ok">עלה ${esc(ago(a.done_at))}</span>${isHttps(a.result_url) ? `<a class="btn ghost sm" href="${esc(a.result_url)}" target="_blank" rel="noopener noreferrer">לדף</a>` : ''}`;
+  else if (a.status === 'failed') acts = `<span class="state bad">לא עלה: ${esc(a.error || '')}</span><button class="btn sm" type="button" data-aretry="${a.id}">לנסות שוב</button>`;
+  else if (a.status === 'rejected') acts = `<span class="state">ירד</span>`;
+  const sent = a.status === 'changes' && a.owner_note ? `<span class="state">נשלח לג'וניור: ${esc(a.owner_note)}</span>` : '';
+  return `<article class="acard" data-agent="${a.id}"><div class="tags">${tags}</div><div class="t">${esc(a.title)}</div>
+    ${a.summary ? `<div class="why">${esc(a.summary)}</div>` : ''}${body}${sent}<div class="acts">${acts}</div></article>`;
+}
+
+function renderJunior() {
+  if (!$('jGoal')) return;
+  const today = ilDay(), thisSun = sundayOf(today), sun = plusDays(thisSun, jShift);
+  // ---- the goal
+  const soFar = weekDays(thisSun).filter((d) => d <= today);
+  const got = downloadsOn(soFar), lastWeek = downloadsOn(weekDays(plusDays(thisSun, -7)));
+  const weeksLeft = Math.max(1, Math.round((Date.parse(sundayOf(GOAL_UNTIL)) - Date.parse(thisSun)) / (7 * 86400000)));
+  const step = Math.max(0, Math.ceil((GOAL - lastWeek) / weeksLeft));
+  const any = dlHas('app_store', 'downloads', lastDays(14)) || dlHas('google_play', 'installs', lastDays(30));
+  const src = sourcesIn(soFar);
+  $('jGoal').innerHTML = `<div>
+      <span class="note">הורדות השבוע (${esc(shortDay(thisSun))}–${esc(shortDay(plusDays(thisSun, 6)))}), בשתי החנויות</span>
+      <div class="big">${any ? got : '–'} <small>/ ${GOAL}</small></div>
+      <div class="prog"><i style="width:${Math.min(100, 100 * got / GOAL)}%"></i></div>
+      <span class="note">${any ? `שבוע שעבר ${lastWeek}. עד ${esc(shortDay(GOAL_UNTIL))} צריך לגדול בכ־${step} בכל שבוע.` : 'אפל וגוגל מעדכנים פעם ביום, באיחור של יום או יומיים.'}</span>
+      <div class="srcs">${src.length ? src.map(([k, n]) => `<span>${esc(SRCNAME[k] || k)} <b>${esc(n)}</b></span>`).join('') : '<span>עוד אין כניסות עם מקור השבוע</span>'}</div>
+      <span class="note">המקורות הם כניסות לאתר, לא הורדות. ההורדות לפי מקור יופיעו ב־App Store Connect כשיהיה מספר הספק.</span>
+    </div><div class="chart">${chartSvg(thisSun)}</div>`;
+
+  // ---- the report and the proposals
+  const r = meta.junior;
+  const props = agent.filter((a) => a.kind === 'proposal' && ['draft', 'changes', 'approved'].includes(a.status));
+  $('jReportAt').textContent = r?.at ? `נכתב ${ago(r.at)}` : '';
+  const paras = String(r?.text || '').split(/\n{2,}/).map((t) => t.trim()).filter(Boolean);
+  $('jReport').innerHTML = (paras.length
+      ? `<div class="letter">${paras.map((t, i) => `<p class="${i === 0 ? 'lead' : ''}">${esc(t)}</p>`).join('')}</div>`
+      : '<div class="empty">הדוח הראשון ייכתב במוצאי שבת, יחד עם השבוע הבא.</div>')
+    + (props.length ? `<div class="alist" style="margin-top:14px">${props.map(agentCard).join('')}</div>` : '');
+
+  // ---- the week
+  const list = weekItems(sun);
+  $('jWeekTitle').textContent = jShift === 0 ? 'השבוע' : jShift > 0 ? 'השבוע הבא' : 'השבוע שעבר';
+  const waiting = list.filter(waitsForMe);
+  $('jWeekCount').textContent = `${shortDay(sun)}–${shortDay(plusDays(sun, 6))} · ${list.length} פריטים${waiting.length ? ` · ${waiting.length} לאישור` : ''}`;
+  $('jApproveWeek').textContent = waiting.length ? `לאשר את השבוע (${waiting.length})` : 'הכול מאושר';
+  $('jApproveWeek').disabled = !waiting.length;
+  document.querySelectorAll('#jWeekChips [data-week]').forEach((b) => b.classList.toggle('on', Number(b.dataset.week) === jShift));
+  $('jWeek').innerHTML = weekDays(sun).map((d, i) => {
+    const its = list.filter((w) => w.day === d), wait = its.filter(waitsForMe).length;
+    return `<div class="wday ${d === today ? 'today' : ''}"><h3>${DAYS[i]} <span>${esc(shortDay(d))}</span></h3>
+      <div class="its">${its.map(chip).join('') || '<span class="note">אין</span>'}</div>
+      <div class="foot">${wait ? `<button class="btn pri sm" type="button" data-approve-day="${d}">לאשר יום (${wait})</button>` : its.length ? '<span class="pill ok">מאושר</span>' : ''}</div></div>`;
+  }).join('');
+  const picked = jPick && (jPick.t === 's' ? posts.find((x) => x.id === jPick.id) : agent.find((a) => a.id === jPick.id));
+  $('jDetail').innerHTML = picked ? (jPick.t === 's' ? `<div class="cards">${cardHtml(picked)}</div>` : agentCard(picked)) : '';
+
+  // ---- communities and guides
+  const out = agent.filter((a) => a.kind === 'outreach' && (['draft', 'changes', 'approved'].includes(a.status) || (a.status === 'sent' && Date.parse(a.done_at) > Date.now() - 7 * 86400000)));
+  $('jOutCount').textContent = out.length ? `${out.filter((a) => a.status === 'sent').length} מתוך ${out.length} נשלחו` : '';
+  $('jOutreach').innerHTML = out.map(agentCard).join('') || '<div class="empty">אין השבוע. ג\'וניור מכין 5 בכל מוצאי שבת.</div>';
+  const pages = agent.filter((a) => ['guide', 'tool'].includes(a.kind) && a.status !== 'rejected').slice(0, 24);
+  $('jGuideCount').textContent = pages.length ? `${pages.filter((a) => a.status === 'published').length} באוויר · ${pages.filter((a) => ['draft', 'changes'].includes(a.status)).length} לאישור` : '';
+  $('jGuides').innerHTML = pages.map(agentCard).join('') || '<div class="empty">עוד אין דפים. ג\'וניור כותב 3 בשבוע.</div>';
+
+  // ---- what was answered
+  const month = Date.now() - 30 * 86400000;
+  const said = posts.filter((x) => x.kind === 'reply' && ['approved', 'publishing', 'published', 'failed'].includes(x.status) && Date.parse(x.published_at || x.updated_at) > month)
+    .filter((x) => jSaid === 'all' || (jSaid === 'auto' ? x.template_id : !x.template_id))
+    .sort((p, q) => Date.parse(q.published_at || q.updated_at) - Date.parse(p.published_at || p.updated_at));
+  document.querySelectorAll('#jSaidChips [data-said]').forEach((b) => b.classList.toggle('on', b.dataset.said === jSaid));
+  const auto7 = posts.filter((x) => x.kind === 'reply' && x.template_id && Date.parse(x.created_at) > Date.now() - 7 * 86400000).length;
+  $('jSaidCount').textContent = `${said.length} ב־30 יום · ${auto7} אוטומטיות השבוע`;
+  $('jSaid').innerHTML = said.slice(0, 60).map((x) => `<div class="said">
+      <div class="q"><span class="by">${esc(x.reply_author || 'מישהו')} · ${esc(WHERE[x.reply_where] || '')}</span>${esc(x.reply_context || '(התגובה נמחקה אחרי 30 יום)')}</div>
+      <div class="a"><span class="by">${x.template_id ? 'ענה לבד' : 'ענית'}</span>${esc(x.caption || '')}</div>
+      <div class="r">${x.template_id ? `<span class="pill auto">${esc((templates.find((t) => t.id === x.template_id) || {}).label || 'אוטומטית')}</span>` : '<span class="pill">אישרת</span>'}
+        <span>${x.status === 'published' ? esc(ago(x.published_at)) : x.status === 'failed' ? 'לא נשלח' : 'יוצא עכשיו'}</span>
+        ${isHttps(x.reply_link) ? `<a href="${esc(x.reply_link)}" target="_blank" rel="noopener noreferrer">לפתוח</a>` : ''}</div></div>`).join('')
+    || '<div class="empty">עוד לא ענו לאף אחד בחודש האחרון.</div>';
+
+  // ---- templates
+  $('jTplCount').textContent = templates.length ? `${templates.filter((t) => t.status === 'approved').length} פעילות מתוך ${templates.length}` : '';
+  $('jTemplates').innerHTML = templates.map((t) => `<div class="tpl" data-tpl="${t.id}">
+      <div><b>${esc(t.label)}</b><div class="words">כשכותבים: ${esc((t.words || []).join(', '))}</div>
+        <div class="words">${t.uses ? `נשלחה ${esc(t.uses)} פעמים${t.last_used_at ? `, האחרונה ${esc(ago(t.last_used_at))}` : ''}` : 'עוד לא נשלחה'}</div></div>
+      <textarea data-tbody="${t.id}" aria-label="התשובה">${esc(t.body)}</textarea>
+      <div class="acts">${t.status === 'approved' ? '<span class="pill ok">פעילה</span>' : t.status === 'off' ? '<span class="pill">כבויה</span>' : '<span class="pill auto">מחכה לאישור</span>'}
+        ${t.status === 'approved' ? `<button class="btn sm" type="button" data-toff="${t.id}">לכבות</button>` : `<button class="btn pri sm" type="button" data-tok="${t.id}">מאשר</button>`}</div></div>`).join('')
+    || '<div class="empty">ג\'וניור יציע את התשובות הקבועות הראשונות במוצאי שבת. עד שתאשר, כל תגובה מחכה לך.</div>';
+
+  // ---- the stock
+  const stock = posts.filter((x) => x.stock && !x.scheduled_at && ['draft', 'changes', 'approved'].includes(x.status));
+  $('jStockCount').textContent = `${stock.filter((x) => x.status === 'approved').length} מאושרים · ${stock.filter((x) => x.status !== 'approved').length} לאישור`;
+  $('jStock').innerHTML = stock.map(cardHtml).join('') || '<div class="empty">המלאי ריק.</div>';
+
+  const badge = waiting.length + props.filter((a) => a.status === 'draft').length + templates.filter((t) => t.status === 'draft').length
+    + stock.filter((x) => x.status === 'draft').length + pages.filter((a) => a.status === 'draft').length;
+  $('nJunior').textContent = badge || '';
+}
+
+function juniorCard() {
+  const today = ilDay(), sun = sundayOf(today), days = weekDays(sun).filter((d) => d <= today);
+  const any = dlHas('app_store', 'downloads', lastDays(14)) || dlHas('google_play', 'installs', lastDays(30));
+  const wait = weekItems(sun).filter(waitsForMe).length + weekItems(plusDays(sun, 7)).filter(waitsForMe).length;
+  const auto7 = posts.filter((x) => x.kind === 'reply' && x.template_id && Date.parse(x.created_at) > Date.now() - 7 * 86400000).length;
+  return mini('junior', "ג'וניור DM", any ? `${downloadsOn(days)}/${GOAL}` : '–', 'הורדות השבוע מול היעד',
+    mrow('מחכים לאישור', esc(wait), wait ? 'ta' : '') + mrow('תשובות אוטומטיות השבוע', esc(auto7))
+      + mrow('הדוח האחרון', meta.junior?.at ? esc(ago(meta.junior.at)) : 'עוד לא נכתב'),
+    "לג'וניור", wait > 0);
+}
+
+/** One change the owner may make to an agent item; the server's trigger decides what is allowed. */
+async function changeAgent(id, patch) {
+  const { data, error } = await sb.from('agent_items').update(patch).eq('id', id).select('*');
+  if (error || !data?.length) { $('err').textContent = 'לא הצלחתי לשמור. נסה שוב. (' + (error?.message || 'אין הרשאה') + ')'; $('err').hidden = false; return false; }
+  $('err').hidden = true;
+  const i = agent.findIndex((x) => x.id === Number(id)); if (i >= 0) agent[i] = data[0];
+  return true;
+}
+async function changeTemplate(id, patch) {
+  const { data, error } = await sb.from('reply_templates').update(patch).eq('id', id).select('*');
+  if (error || !data?.length) { $('err').textContent = 'לא הצלחתי לשמור. נסה שוב. (' + (error?.message || 'אין הרשאה') + ')'; $('err').hidden = false; return false; }
+  $('err').hidden = true;
+  const i = templates.findIndex((x) => x.id === Number(id)); if (i >= 0) templates[i] = data[0];
+  return true;
+}
+
+/** Approves every draft of the given days that has a time (reels, stories, posts) or is a page; community messages are sent by hand. */
+async function approveDays(days) {
+  const todo = weekItems(sundayOf(days[0])).filter((w) => days.includes(w.day) && waitsForMe(w));
+  let done = 0;
+  for (const w of todo) {
+    const ok = w.t === 's' ? await changePost(w.id, {status: 'approved'}) : await changeAgent(w.id, {status: 'approved'});
+    if (ok) done++;
+  }
+  renderJunior(); renderSocial(); renderBoard();
+  return done;
+}
+
+$('jWeekChips').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-week]'); if (!b) return;
+  jShift = Number(b.dataset.week); jPick = null; renderJunior();
+});
+$('jSaidChips').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-said]'); if (!b) return;
+  jSaid = b.dataset.said; renderJunior();
+});
+$('jApproveWeek').onclick = async () => {
+  $('jApproveWeek').disabled = true;
+  await approveDays(weekDays(plusDays(sundayOf(ilDay()), jShift)));
+};
+$('jWeek').addEventListener('click', async (e) => {
+  const day = e.target.closest('[data-approve-day]');
+  if (day) { day.disabled = true; await approveDays([day.dataset.approveDay]); return; }
+  const it = e.target.closest('[data-pick]'); if (!it) return;
+  const [t, id] = it.dataset.pick.split(':');
+  jPick = jPick && jPick.t === t && jPick.id === Number(id) ? null : {t, id: Number(id)};
+  renderJunior();
+  if (jPick) $('jDetail').scrollIntoView({behavior: 'smooth', block: 'nearest'});
+});
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('.acard[data-agent] button'); if (!b) return;
+  const card = b.closest('.acard'), id = Number(card.dataset.agent), a = agent.find((x) => x.id === id);
+  if (b.dataset.aask) {
+    if (card.querySelector('.askbox')) return;
+    const box = Object.assign(document.createElement('div'), {className: 'askbox'});
+    box.innerHTML = '<textarea placeholder="מה לשנות?"></textarea><div class="acts"><button class="btn pri sm" type="button" data-asend="1">לשלוח לג׳וניור</button></div>';
+    card.querySelector('.acts').before(box); box.querySelector('textarea').focus();
+    return;
+  }
+  if (b.dataset.acopy) {
+    const text = card.querySelector('[data-abody]')?.value || a.body || '';
+    try { await navigator.clipboard.writeText(text); b.textContent = 'הועתק'; }
+    catch { const t = card.querySelector('[data-abody]'); if (t) { t.removeAttribute('readonly'); t.select(); } b.textContent = 'סמן והעתק'; }
+    setTimeout(() => { b.textContent = 'להעתיק'; }, 2500);
+    return;
+  }
+  b.disabled = true;
+  const bodyEl = card.querySelector('[data-abody]');
+  const edits = () => bodyEl && !bodyEl.readOnly && bodyEl.value !== (a.body || '') ? {body: bodyEl.value} : {};
+  let ok = false;
+  if (b.dataset.aok) ok = await changeAgent(id, {...edits(), status: 'approved'});
+  else if (b.dataset.asent) ok = await changeAgent(id, {...edits(), status: 'sent'});
+  else if (b.dataset.ano) ok = await changeAgent(id, {status: 'rejected'});
+  else if (b.dataset.aundo) ok = await changeAgent(id, {status: 'draft'});
+  else if (b.dataset.aretry) ok = await changeAgent(id, {status: 'approved'});
+  else if (b.dataset.asend) {
+    const note = card.querySelector('.askbox textarea').value.trim();
+    if (!note) { b.disabled = false; return; }
+    ok = await changeAgent(id, {...edits(), status: 'changes', owner_note: note.slice(0, 600)});
+  }
+  if (ok) { renderJunior(); renderBoard(); } else b.disabled = false;
+});
+// A community message edited and left without sending is still saved.
+document.addEventListener('change', async (e) => {
+  const t = e.target;
+  if (t.dataset.abody && !t.readOnly) await changeAgent(Number(t.dataset.abody), {body: t.value});
+});
+$('jTemplates').addEventListener('click', async (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  const row = b.closest('[data-tpl]'), id = Number(row.dataset.tpl), t = templates.find((x) => x.id === id);
+  const text = row.querySelector('[data-tbody]').value.trim();
+  b.disabled = true;
+  let ok = false;
+  if (b.dataset.tok) ok = await changeTemplate(id, {...(text && text !== t.body ? {body: text.slice(0, 500)} : {}), status: 'approved'});
+  else if (b.dataset.toff) ok = await changeTemplate(id, {status: 'off'});
+  if (ok) renderJunior(); else b.disabled = false;
+});
+// Rewriting an active answer makes it wait for approval again (the server's trigger does the same).
+$('jTemplates').addEventListener('change', async (e) => {
+  const t = e.target; if (!t.dataset.tbody) return;
+  const id = Number(t.dataset.tbody), was = templates.find((x) => x.id === id);
+  const text = t.value.trim();
+  if (text && text !== was.body && await changeTemplate(id, {body: text.slice(0, 500)})) renderJunior();
 });
 
 setInterval(() => { if (!document.hidden && !$('app').hidden) load(); }, 5 * 60 * 1000);
