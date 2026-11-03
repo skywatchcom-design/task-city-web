@@ -203,6 +203,15 @@ tr.gone .btn{visibility:hidden}
 .orow .st{font-size:12.5px;font-weight:700}
 .st.s-work{color:var(--green)}.st.s-wait{color:var(--amber)}.st.s-bad{color:var(--red)}.st.s-rest{color:var(--muted)}
 .orow .what{font-size:14px;overflow-wrap:anywhere}
+.orow .what .lbl{display:inline-block;min-width:42px;font-size:12px;font-weight:700;color:var(--muted)}
+.oguide{margin-top:14px;border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:10px 14px;background:#FCFBF7}
+.oguide summary{cursor:pointer;font:600 15px var(--head);color:var(--ink)}
+.oguide summary:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.oguide .g{padding:10px 0;border-bottom:1px solid var(--line2);font-size:13.5px;display:flex;flex-direction:column;gap:3px}
+.oguide .gs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px}
+.oguide .g:last-child{border-bottom:0}
+.oguide .g b{font:600 14.5px var(--head)}
+.oguide .g ul{margin:2px 0 0;padding-inline-start:18px}
 .orow .num{font-size:13px;color:var(--muted)}
 .tl{position:relative;height:10px;background:var(--line2);border-radius:3px;margin-top:6px}
 .tl i{position:absolute;top:0;bottom:0;border-radius:2px;background:var(--ink);min-width:3px}
@@ -243,6 +252,7 @@ tr.gone .btn{visibility:hidden}
   .said .r,.tpl .acts{align-items:flex-start;text-align:start}
   .ogrid{grid-template-columns:1fr}
   .ofloor{order:-1}
+  .oguide .gs{grid-template-columns:1fr}
   .bub{display:none}
 }
 </style>
@@ -285,9 +295,29 @@ tr.gone .btn{visibility:hidden}
         </div>
         <div class="stopbar" id="oStopped" hidden><span id="oStoppedText">הכול עצור</span><button class="btn sm" id="oResume" type="button">להמשיך</button></div>
         <p class="note" id="oModeNote"></p>
+        <p class="note" id="oTokens"></p>
         <div class="ogrid" style="margin-top:10px">
           <div class="olist" id="oList"></div>
+          <div>
           <div class="ofloor" id="oFloor"></div>
+          <details class="oguide" id="oGuide" open>
+            <summary>מי עושה מה, ואיך לעבוד איתם</summary><div class="gs">
+            <div class="g"><b style="color:#1D2B55">ג'וניור, הראש</b>
+              <span>אחראי על התוכנית והיעד, המדריכים לגוגל, הדוח השבועי, וההוראות לשאר.</span>
+              <ul><li>מדברים איתו בשיחה עם /junior: "קדימה", "עצור", "תגיד לבמאי ש…".</li><li>במוצאי שבת קוראים את הדוח, ואומרים כן או לא להצעות שלו.</li></ul></div>
+            <div class="g"><b style="color:#C8503C">הבמאי</b>
+              <span>אחראי על הרילסים, הסטוריז, הפוסטים והמלאי.</span>
+              <ul><li>הוראה במשפט על נושא השבוע עוזרת לו יותר מכל דבר ("יותר על בגרות").</li><li>מה שלא עוצרים ב"לא" עולה לבד 6 שעות לפני הזמן. עוברים על השבוע ביומן למטה.</li></ul></div>
+            <div class="g"><b style="color:#3C8F5F">השגריר</b>
+              <span>אחראי על קבוצות, קהילות ושותפים: פנייה אחת ביום, ובדיקה מי ענה.</span>
+              <ul><li>מאשרים את הפנייה באותו יום, כדי שלא תתיישן.</li><li>מי ששולח בעצמו לוחץ "שלחתי", כדי שנמדוד כמה הביאה.</li></ul></div>
+            <div class="g"><b style="color:#6B5BD2">הקהילן</b>
+              <span>אחראי על התשובות בעמודים (שאלות עונה לבד), ועל תגובות בקבוצות וברדיט.</span>
+              <ul><li>עוברים פעם ביום על "הרשימה של הקהילן", ואפשר "לאשר הכול".</li><li>את התגובות לרדיט מעתיקים ומפרסמים מהחשבון שלך: כך החשבון צובר נקודות לפני הפוסטים.</li></ul></div>
+            <div class="g"><b style="color:#8A5A12">השולחן שלך</b>
+              <span>כל מה שמחכה לך. נגיעה בשולחן או בשורה פותחת את הבקשות. "עצור הכול" למעלה עוצר את כולם.</span></div>
+          </div></details>
+          </div>
         </div>
         <div class="opanel" id="oPanel" hidden></div>
       </section>
@@ -1207,34 +1237,48 @@ const WHO = {
 };
 // When each one runs by himself (the scheduled tasks, Israel time); day 6 is Saturday night.
 const SCHEDULE = {
-  junior: [{h: 9, m: 0}, {dow: 6, h: 21, m: 0}],
-  director: [{dow: 6, h: 21, m: 30}, {dow: 3, h: 10, m: 0}],
-  ambassador: [{h: 10, m: 0}],
+  junior: [{h: 9, m: 0, what: 'מעלה את הדפים לגוגל שאושרו, ומתקן מה שהחזרת'}, {dow: 6, h: 21, m: 0, what: 'הדוח השבועי, והתוכנית לשבוע הבא לבמאי ולשגריר'}],
+  director: [{dow: 6, h: 21, m: 30, what: 'רילסים, סטוריז ופוסטים לשבוע הבא, והמלאי'}, {dow: 3, h: 10, m: 0, what: 'רילס על הטרנד של השבוע'}],
+  ambassador: [{h: 10, m: 0, what: 'פנייה אחת לקהילה או לשותף, ובדיקה מי ענה'}],
   // Every 3 hours (owner, 3.11).
-  community: [0, 3, 6, 9, 12, 15, 18, 21].map((h) => ({h, m: 0})),
+  community: [0, 3, 6, 9, 12, 15, 18, 21].map((h) => ({h, m: 0, what: 'עונה בעמודים, ומכין תגובות לקבוצות ולרדיט'})),
 };
 const ilMinutes = (d = new Date()) => { const [h, m] = d.toLocaleTimeString('en-GB', {timeZone: 'Asia/Jerusalem', hour12: false}).split(':').map(Number); return h * 60 + m; };
 const pad2 = (n) => String(n).padStart(2, '0');
-function nextRun(agent) {
+/** The next scheduled run of a helper: when, and what it is for. */
+function nextJob(agent) {
   const today = ilDay(), now = ilMinutes();
   for (let d = 0; d < 8; d++) {
     const day = plusDays(today, d), dow = new Date(day + 'T12:00:00Z').getUTCDay();
     const hits = SCHEDULE[agent].filter((s) => (s.dow == null || s.dow === dow) && (d > 0 || s.h * 60 + s.m > now))
       .sort((a, b) => a.h * 60 + a.m - (b.h * 60 + b.m));
-    if (hits.length) return `${d === 0 ? 'היום' : d === 1 ? 'מחר' : `ביום ${DAYS[dow]}`} ב־${pad2(hits[0].h)}:${pad2(hits[0].m)}`;
+    if (hits.length) return {when: `${d === 0 ? 'היום' : d === 1 ? 'מחר' : `ביום ${DAYS[dow]}`} ב־${pad2(hits[0].h)}:${pad2(hits[0].m)}`, what: hits[0].what};
   }
-  return '';
+  return {when: '', what: ''};
 }
+const nextRun = (agent) => nextJob(agent).when;
 
 async function loadOffice(draw = true) {
   const since = new Date(Date.now() - 8 * 86400000).toISOString();
-  const [st, rn, od] = await Promise.all([
+  const [st, rn, od, us] = await Promise.all([
     sb.from('agent_state').select('*').eq('id', 1).maybeSingle(),
     sb.from('agent_runs').select('*').gte('asked_at', since).order('id', {ascending: false}).limit(300),
     sb.from('agent_orders').select('*').order('id', {ascending: false}).limit(60),
+    sb.from('agent_usage').select('*').gte('day', since.slice(0, 10)).limit(100),
   ]);
-  office = {state: st.error ? null : st.data, runs: rn.error ? [] : rn.data, orders: od.error ? [] : od.data, missing: !!st.error};
+  office = {state: st.error ? null : st.data, runs: rn.error ? [] : rn.data, orders: od.error ? [] : od.data, usage: us.error ? [] : us.data, missing: !!st.error};
   if (draw) renderOffice();
+}
+
+// ---- Tokens per helper per day (migration 20261104_agent_usage.sql, counted by tools/junior/usage.py from the runs'
+// transcripts every half hour). "All" includes what was read again from the cache, which costs much less than new text.
+const tokAll = (u) => (u.input_tokens || 0) + (u.output_tokens || 0) + (u.cache_read_tokens || 0) + (u.cache_write_tokens || 0);
+const tokNew = (u) => (u.input_tokens || 0) + (u.output_tokens || 0) + (u.cache_write_tokens || 0);
+const fmtTok = (n) => n >= 1e6 ? `${(n / 1e6).toFixed(n >= 1e7 ? 0 : 1)}M` : n >= 1e3 ? `${Math.round(n / 1e3)}K` : String(n);
+const usageOf = (agent, day = ilDay()) => (office.usage || []).find((u) => u.agent === agent && u.day === day);
+function tokLine(agent) {
+  const u = usageOf(agent);
+  return u ? `טוקנים היום: ${fmtTok(tokAll(u))} (${fmtTok(tokNew(u))} חדשים)` : 'טוקנים היום: 0';
 }
 
 /** What one helper is doing now: working, asking, failed lately, or resting until its next run. */
@@ -1410,16 +1454,22 @@ function renderOffice() {
   $('oStop').hidden = !!s.stopped;
   $('oStopped').hidden = !s.stopped;
   $('oStoppedText').textContent = s.stopped ? `הכול עצור ${ago(s.stopped_at)}: אף ריצה לא מתחילה, ושום דבר לא עולה לבד.` : '';
+  const officeTok = usageOf('office'), allTok = (office.usage || []).filter((u) => u.day === ilDay()).reduce((n, u) => n + tokAll(u), 0);
+  $('oTokens').textContent = allTok ? `טוקנים היום בכל המשרד: ${fmtTok(allTok)}${officeTok ? `, מתוכם ${fmtTok(tokAll(officeTok))} בבדיקות של כל חצי שעה` : ''}` : '';
   $('oModeNote').textContent = s.mode === 'auto'
     ? `אוטומטי ${ago(s.mode_since)}: הם מתחילים בלי לשאול, ושולחים לך עדכון כל 3 שעות${s.last_update_at ? ` (האחרון ${ago(s.last_update_at)})` : ''}. הודעות בקבוצות עדיין מחכות ל"כן" שלך.`
     : 'לפני כל ריצה הם מבקשים "קדימה" על השולחן שלך, ומעדכנים בסוף. הם עובדים רק כשהמחשב דלוק ו־Claude פתוח.';
   const STATE = {work: ['עובד', 's-work'], ask: ['מבקש להתחיל', 's-wait'], soon: ['קיבל קדימה', 's-work'], bad: ['נכשל', 's-bad'], rest: [s.stopped ? 'עצור' : 'בהפסקה', 's-rest']};
   $('oList').innerHTML = AGENT_IDS.map((a) => {
     const d = desks[a], [label, cls] = STATE[d.s];
-    const what = d.s === 'work' ? (d.run.doing || d.run.title) : d.s === 'ask' || d.s === 'soon' ? d.run.title : d.s === 'bad' ? (d.run.error || 'הריצה נכשלה') : `הריצה הבאה ${nextRun(a)}`;
+    const now = d.s === 'work' ? (d.run.doing || d.run.title) : d.s === 'ask' ? `מבקש להתחיל: ${d.run.title}` : d.s === 'soon' ? `מתחיל עוד רגע: ${d.run.title}`
+      : d.s === 'bad' ? `נכשל: ${d.run.error || 'הריצה נכשלה'}` : s.stopped ? 'עצור' : 'בין ריצות';
+    const n = nextJob(a);
     return `<button class="orow ${oPick === a ? 'sel' : ''}" type="button" data-oagent="${a}"><span class="av" style="background:${WHO[a].color}"></span>
       <span class="body"><span class="nm"><b>${esc(WHO[a].name)}</b><span class="st ${cls}">${label}</span></span>
-      <span class="what">${esc(what)}</span><span class="num">${esc(weekNumber(a))}</span>${dayLine(a)}</span></button>`;
+      <span class="what"><span class="lbl">עכשיו</span>${esc(now)}</span>
+      <span class="what"><span class="lbl">הבא</span>${esc(n.when ? `${n.when} · ${n.what}` : '')}</span>
+      <span class="num">${esc(weekNumber(a))}</span><span class="num">${esc(tokLine(a))}</span>${dayLine(a)}</span></button>`;
   }).join('') + `<button class="orow ${oPick === 'me' ? 'sel' : ''}" type="button" data-oagent="me"><span class="av" style="background:var(--sun)"></span>
       <span class="body"><span class="nm"><b>השולחן שלך</b><span class="st ${mine.total ? 's-bad' : 's-rest'}">${mine.total ? `${mine.total} מחכים` : 'ריק'}</span></span>
       <span class="what">${esc([mine.asking.length && `${mine.asking.length} מבקשים להתחיל`, mine.toSend && `${mine.toSend} הודעות לשלוח`, mine.props && `${mine.props} הצעות`, mine.tpls && `${mine.tpls} תשובות קבועות`].filter(Boolean).join(' · ') || 'אין מה שמחכה לך')}</span></span></button>`;
@@ -1448,7 +1498,9 @@ function renderPanel() {
   const orders = office.orders.filter((o) => o.agent === a).slice(0, 6);
   const RS = {asking: 'מחכה ל"קדימה"', approved: 'קיבל קדימה', running: 'עובד', done: 'הסתיים', failed: 'נכשל', declined: 'לא עכשיו'};
   const OS = {new: 'מחכה לריצה הבאה', read: 'נקרא', done: 'בוצע'};
+  const nj = nextJob(a);
   p.innerHTML = `<h3>${esc(w.name)} <span class="note">${esc(w.role)}</span></h3>
+    ${nj.when ? `<div class="note" style="color:var(--text)"><b>הבא:</b> ${esc(nj.when)} · ${esc(nj.what)}</div>` : ''}
     <div class="acts"><button class="btn pri sm" type="button" data-onow="${a}" ${busy || stopped ? 'disabled' : ''}>לעבוד עכשיו</button>
       <span class="note">${stopped ? 'הכול עצור.' : busy ? 'כבר באמצע, או מחכה לך.' : `מתחיל בבדיקה הבאה (עד חצי שעה), כשהמחשב דלוק ו־Claude פתוח. אחרת ${nextRun(a)}.`}</span>
       <button class="btn ghost sm" type="button" data-oclose="1">לסגור</button></div>
@@ -1457,6 +1509,10 @@ function renderPanel() {
       <div class="acts" style="margin-top:6px"><button class="btn sm" type="button" data-oorder="${a}">לשלוח</button></div></div>
     ${orders.length ? `<div><div class="note" style="color:var(--ink);font-weight:600">ההוראות שלך</div>${orders.map((o) => `<div class="li" style="display:block"><span>${esc(o.text)}</span>
       <span class="sumline">${esc(OS[o.status])} · ${esc(ago(o.created_at))}${o.reply ? ` · ${esc(o.reply)}` : ''}</span></div>`).join('')}</div>` : ''}
+    <div><div class="note" style="color:var(--ink);font-weight:600">טוקנים, 7 ימים</div>
+      ${lastDays(7).slice().reverse().map((day) => { const u = usageOf(a, day); return u ? `<div class="li"><span>${esc(new Date(day + 'T12:00:00').toLocaleDateString('he-IL', {weekday: 'long', day: 'numeric', month: 'numeric'}))}</span>
+        <span class="r">${esc(fmtTok(tokAll(u)))} · חדשים ${esc(fmtTok(tokNew(u)))} · ${esc(u.sessions)} ריצות</span></div>` : ''; }).join('') || '<div class="empty">עוד לא נספר.</div>'}
+      <span class="note">"חדשים" הם מה שנכתב ונקרא מחדש. השאר נקרא שוב מהזיכרון, וזה זול בהרבה.</span></div>
     <div class="runs"><div class="note" style="color:var(--ink);font-weight:600">הריצות בשבוע האחרון</div>
       ${runs.map((r) => `<div class="li"><span><span class="dot ${r.status === 'failed' ? 'r' : r.status === 'done' ? 'g' : ['asking', 'approved', 'running'].includes(r.status) ? 'a' : ''}"></span>${esc(r.title)}</span>
         <span class="sumline">${esc(RS[r.status])} · ${esc(ago(r.ended_at || r.started_at || r.asked_at))}${r.by_owner ? ' · ביקשת' : ''}</span>
