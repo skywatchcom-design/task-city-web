@@ -933,9 +933,10 @@ function renderJunior() {
       <span class="note">הורדות השבוע (${esc(shortDay(thisSun))}–${esc(shortDay(plusDays(thisSun, 6)))}), בשתי החנויות</span>
       <div class="big">${any ? got : '–'} <small>/ ${GOAL}</small></div>
       <div class="prog"><i style="width:${Math.min(100, 100 * got / GOAL)}%"></i></div>
-      <span class="note">${any ? `שבוע שעבר ${lastWeek}. עד ${esc(shortDay(GOAL_UNTIL))} צריך לגדול בכ־${step} בכל שבוע.` : 'אפל וגוגל מעדכנים פעם ביום, באיחור של יום או יומיים.'}</span>
-      <div class="srcs">${src.length ? src.map(([k, n]) => `<span>${esc(SRCNAME[k] || k)} <b>${esc(n)}</b></span>`).join('') : '<span>עוד אין כניסות עם מקור השבוע</span>'}</div>
-      <span class="note">המקורות הם כניסות לאתר, לא הורדות. ההורדות לפי מקור יופיעו ב־App Store Connect כשיהיה מספר הספק.</span>
+      <span class="note">${any ? `שבוע שעבר ${lastWeek}. עד ${esc(shortDay(GOAL_UNTIL))} צריך לגדול בכ־${step} בכל שבוע. ` : ''}אפל וגוגל מעדכנים פעם ביום, באיחור של יום או יומיים, ולכן הימים האחרונים עוד חסרים.</span>
+      <span class="note" style="margin-top:10px;display:block;color:var(--ink);font-weight:600">כניסות לאתר השבוע, לפי מקור</span>
+      <div class="srcs" style="margin-top:2px">${src.length ? src.map(([k, n]) => `<span>${esc(SRCNAME[k] || k)} <b>${esc(n)}</b></span>`).join('') : '<span>עוד אין כניסות עם מקור השבוע</span>'}</div>
+      <span class="note">אלה אנשים שנכנסו לאתר מקישור, לא הורדות. ההורדות לפי מקור: ב־App Store Connect, תחת Analytics ← Campaigns, אחרי שמגיעות כמה הורדות מאותו מקור.</span>
     </div><div class="chart">${chartSvg(thisSun)}</div>`;
 
   // ---- the report and the proposals
