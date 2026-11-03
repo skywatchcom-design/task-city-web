@@ -186,6 +186,44 @@ tr.gone .btn{visibility:hidden}
 .tpl .words{font-size:13px;color:var(--muted)}
 .tpl textarea{font:15px/1.45 var(--body);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:70px;resize:vertical;width:100%}
 .tpl .acts{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+/* The office (sketch 39: the floor of A with the day's line of C): ג'וניור, the director and the ambassador at their desks. */
+.ohead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.ohead .chips{margin:0}
+.stopbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#FBEDEA;border-radius:10px;padding:10px 14px;color:var(--red);font-weight:600;margin-bottom:12px}
+.ogrid{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:28px;align-items:start}
+.olist{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.orow{all:unset;box-sizing:border-box;cursor:pointer;display:flex;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line2)}
+.orow:hover{background:var(--hover)}
+.orow:focus-visible{outline:3px solid var(--sun);outline-offset:1px}
+.orow.sel{background:var(--sel)}
+.orow .av{width:12px;height:12px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.orow .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.orow .nm{display:flex;justify-content:space-between;gap:8px}
+.orow .nm b{font:600 15.5px var(--head);color:var(--ink)}
+.orow .st{font-size:12.5px;font-weight:700}
+.st.s-work{color:var(--green)}.st.s-wait{color:var(--amber)}.st.s-bad{color:var(--red)}.st.s-rest{color:var(--muted)}
+.orow .what{font-size:14px;overflow-wrap:anywhere}
+.orow .num{font-size:13px;color:var(--muted)}
+.tl{position:relative;height:10px;background:var(--line2);border-radius:3px;margin-top:6px}
+.tl i{position:absolute;top:0;bottom:0;border-radius:2px;background:var(--ink);min-width:3px}
+.tl i.t-bad{background:var(--red)}.tl i.t-wait{background:transparent;border:1.5px solid var(--amber);box-sizing:border-box}
+.tl .now{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--red)}
+.tlx{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);direction:ltr}
+.ofloor{position:relative;width:100%;aspect-ratio:820/520;background:#FAF8F4;border:1px solid var(--line);border-radius:12px 12px 12px 2px;overflow:hidden}
+.ofloor svg{position:absolute;inset:0;width:100%;height:100%}
+.ofloor .person{cursor:pointer}
+.bub{position:absolute;transform:translate(-50%,-100%);width:max-content;max-width:210px;background:var(--white);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:6px 10px;font-size:12.5px;line-height:1.35;box-shadow:0 2px 6px rgba(29,43,85,.08)}
+.bub b{display:block;font-size:12.5px;color:var(--ink)}
+.bub.b-bad{border-color:var(--red)}.bub.b-me{border-color:var(--sun);cursor:pointer;font:12.5px/1.35 var(--body);color:var(--text);text-align:start}
+.bub.b-me:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.bub .q{display:block;margin-top:4px}
+.bub .acts{display:flex;gap:4px;margin-top:4px}
+.opanel{margin-top:16px;border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.opanel h3{margin:0;font:600 16px var(--head);color:var(--ink);display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.opanel textarea{font:15px/1.45 var(--body);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:64px;resize:vertical;width:100%}
+.opanel .acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.runs .li{display:block}
+.runs .sum{white-space:pre-line;font-size:14px;color:var(--text);margin-top:4px}
 @media (max-width:1100px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
@@ -203,6 +241,9 @@ tr.gone .btn{visibility:hidden}
   .wday:last-child{border-bottom:0}
   .said,.tpl{grid-template-columns:1fr}
   .said .r,.tpl .acts{align-items:flex-start;text-align:start}
+  .ogrid{grid-template-columns:1fr}
+  .ofloor{order:-1}
+  .bub{display:none}
 }
 </style>
 </head>
@@ -231,6 +272,25 @@ tr.gone .btn{visibility:hidden}
     </div>
     <p class="err" id="err" hidden></p>
     <section class="tab" data-tab="junior" aria-label="ג'וניור DM">
+      <section class="sec" id="office" aria-labelledby="oTitle" style="margin-bottom:26px">
+        <div class="ohead">
+          <h2 style="margin:0"><span class="h" id="oTitle">המשרד</span></h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div class="chips" id="oMode" role="group" aria-label="איך הם עובדים">
+              <button class="chip" type="button" data-mode="ask">שואלים לפני כל ריצה</button>
+              <button class="chip" type="button" data-mode="auto">אוטומטי</button>
+            </div>
+            <button class="btn" id="oStop" type="button" style="color:var(--red);border-color:#EBC3BA">עצור הכול</button>
+          </div>
+        </div>
+        <div class="stopbar" id="oStopped" hidden><span id="oStoppedText">הכול עצור</span><button class="btn sm" id="oResume" type="button">להמשיך</button></div>
+        <p class="note" id="oModeNote"></p>
+        <div class="ogrid" style="margin-top:10px">
+          <div class="olist" id="oList"></div>
+          <div class="ofloor" id="oFloor"></div>
+        </div>
+        <div class="opanel" id="oPanel" hidden></div>
+      </section>
       <div class="goal" id="jGoal"></div>
       <section class="sec" style="margin-top:26px"><h2><span class="h">מה ג'וניור אומר השבוע</span><span id="jReportAt"></span></h2><div id="jReport"></div></section>
       <section class="sec" style="margin-top:30px">
@@ -605,7 +665,8 @@ async function load() {
     dl = dd.error ? [] : dd.data;
     agent = ag.error ? [] : ag.data;
     templates = tp.error ? [] : tp.data;
-    render(); renderSocial(); renderJunior();
+    await loadOffice(false);
+    render(); renderSocial(); renderJunior(); renderOffice();
   } catch (e) {
     $('err').textContent = 'לא הצלחתי להביא את הסיכום. בדוק את החיבור ולחץ "לבקש רענון" או טען את הדף מחדש. (' + e.message + ')';
     $('err').hidden = false;
@@ -1126,6 +1187,300 @@ $('jTemplates').addEventListener('change', async (e) => {
   const text = t.value.trim();
   if (text && text !== was.body && await changeTemplate(id, {body: text.slice(0, 500)})) renderJunior();
 });
+
+// ---- The office (migration 20261104_agents.sql, sketch 39: the floor of A with the day's line of C).
+// Drawn only from agent_runs: someone at a desk with the screen on is in the middle of a run, someone at the coffee corner
+// is between runs. In "ask" mode every run waits for the owner's "קדימה"; in "auto" mode they start by themselves.
+let office = {state: null, runs: [], orders: []}, oPick = null;
+const WHO = {
+  junior: {name: "ג'וניור", role: 'הראש: התוכנית, המדריכים לגוגל והדוח', color: '#1D2B55'},
+  director: {name: 'הבמאי', role: 'רילסים, סטוריז והמלאי', color: '#C8503C'},
+  ambassador: {name: 'השגריר', role: 'קהילות, שותפים ועיתונות', color: '#3C8F5F'},
+};
+// When each one runs by himself (the scheduled tasks, Israel time); day 6 is Saturday night.
+const SCHEDULE = {
+  junior: [{h: 9, m: 0}, {dow: 6, h: 21, m: 0}],
+  director: [{dow: 6, h: 21, m: 30}, {dow: 3, h: 10, m: 0}],
+  ambassador: [{h: 10, m: 0}],
+};
+const ilMinutes = (d = new Date()) => { const [h, m] = d.toLocaleTimeString('en-GB', {timeZone: 'Asia/Jerusalem', hour12: false}).split(':').map(Number); return h * 60 + m; };
+const pad2 = (n) => String(n).padStart(2, '0');
+function nextRun(agent) {
+  const today = ilDay(), now = ilMinutes();
+  for (let d = 0; d < 8; d++) {
+    const day = plusDays(today, d), dow = new Date(day + 'T12:00:00Z').getUTCDay();
+    const hits = SCHEDULE[agent].filter((s) => (s.dow == null || s.dow === dow) && (d > 0 || s.h * 60 + s.m > now))
+      .sort((a, b) => a.h * 60 + a.m - (b.h * 60 + b.m));
+    if (hits.length) return `${d === 0 ? 'היום' : d === 1 ? 'מחר' : `ביום ${DAYS[dow]}`} ב־${pad2(hits[0].h)}:${pad2(hits[0].m)}`;
+  }
+  return '';
+}
+
+async function loadOffice(draw = true) {
+  const since = new Date(Date.now() - 8 * 86400000).toISOString();
+  const [st, rn, od] = await Promise.all([
+    sb.from('agent_state').select('*').eq('id', 1).maybeSingle(),
+    sb.from('agent_runs').select('*').gte('asked_at', since).order('id', {ascending: false}).limit(300),
+    sb.from('agent_orders').select('*').order('id', {ascending: false}).limit(60),
+  ]);
+  office = {state: st.error ? null : st.data, runs: rn.error ? [] : rn.data, orders: od.error ? [] : od.data, missing: !!st.error};
+  if (draw) renderOffice();
+}
+
+/** What one helper is doing now: working, asking, failed lately, or resting until its next run. */
+function deskOf(agent) {
+  const mine = office.runs.filter((r) => r.agent === agent && r.job !== 'update');
+  const running = mine.find((r) => r.status === 'running');
+  if (running) return {s: 'work', run: running};
+  const asking = mine.find((r) => r.status === 'asking');
+  if (asking) return {s: 'ask', run: asking};
+  const approved = mine.find((r) => r.status === 'approved');
+  if (approved) return {s: 'soon', run: approved};
+  const last = mine.find((r) => ['done', 'failed'].includes(r.status));
+  if (last?.status === 'failed' && Date.parse(last.ended_at || last.updated_at) > Date.now() - 24 * 3600000) return {s: 'bad', run: last};
+  return {s: 'rest', run: last};
+}
+
+function weekNumber(agent) {
+  const sun = sundayOf(ilDay()), days = weekDays(sun).filter((d) => d <= ilDay());
+  if (agent === 'junior') return `הורדות השבוע ${downloadsOn(days)}/${GOAL}`;
+  if (agent === 'director') {
+    const stock = posts.filter((x) => x.stock && !x.scheduled_at && x.status === 'approved').length;
+    const reels = weekItems(sun).filter((w) => w.t === 's' && w.x.kind === 'reel').length;
+    return `מלאי ${stock}/10 · ${reels} רילסים השבוע`;
+  }
+  const fromCommunities = (sourcesIn(days).find(([k]) => k === 'community') || [0, 0])[1];
+  return `${agentItemsSentThisWeek()} פניות נשלחו השבוע · ${fromCommunities} כניסות מהן`;
+}
+function agentItemsSentThisWeek() {
+  const sun = sundayOf(ilDay());
+  return agent.filter((a) => a.kind === 'outreach' && a.status === 'sent' && a.done_at && isoIl(a.done_at) >= sun).length;
+}
+
+/** What waits on the owner's desk: runs that ask to start, community messages to send, proposals and new answers. */
+function onMyDesk() {
+  const asking = office.runs.filter((r) => r.status === 'asking');
+  const toSend = agent.filter((a) => a.kind === 'outreach' && ['draft', 'changes', 'approved'].includes(a.status)).length;
+  const props = agent.filter((a) => a.kind === 'proposal' && a.status === 'draft').length;
+  const tpls = templates.filter((t) => t.status === 'draft').length;
+  return {asking, toSend, props, tpls, total: asking.length + toSend + props + tpls};
+}
+
+const hoursIl = (iso) => ilMinutes(new Date(iso)) / 60;
+function dayLine(agent) {
+  const today = ilDay();
+  const runs = office.runs.filter((r) => r.agent === agent && r.job !== 'update' && isoIl(r.started_at || r.asked_at) === today);
+  const pos = (h) => Math.max(0, Math.min(100, (h - 6) / 18 * 100));
+  const bars = runs.map((r) => {
+    const from = hoursIl(r.started_at || r.asked_at), to = r.ended_at ? hoursIl(r.ended_at) : r.status === 'running' ? ilMinutes() / 60 : from + .25;
+    const cls = r.status === 'failed' ? 't-bad' : ['asking', 'approved'].includes(r.status) ? 't-wait' : '';
+    return `<i class="${cls}" style="left:${pos(from).toFixed(1)}%;width:${Math.max(1.2, pos(to) - pos(from)).toFixed(1)}%" title="${esc(r.title)}"></i>`;
+  }).join('');
+  return `<div class="tl" aria-hidden="true">${bars}<span class="now" style="left:${pos(ilMinutes() / 60).toFixed(1)}%"></span></div>
+    <div class="tlx" aria-hidden="true"><span>06</span><span>12</span><span>18</span><span>24</span></div>`;
+}
+
+// The floor of sketch 39 A, in the same coordinates (viewBox 40 20 820 520).
+const FLOOR = `<polygon points="450,150 830,340 450,530 70,340" fill="#E9DDC7" stroke="#D6C6A8"/>
+  ${[[497.5,173.8,117.5,363.8],[545,197.5,165,387.5],[592.5,221.2,212.5,411.2],[640,245,260,435],[687.5,268.8,307.5,458.8],[735,292.5,355,482.5],[782.5,316.2,402.5,506.2]].map(([a,b,c,d]) => `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#DCCCB0"/>`).join('')}
+  <polygon points="70,340 450,150 450,30 70,220" fill="#F2EFE8" stroke="#DDD8CC"/>
+  <polygon points="450,150 830,340 830,220 450,30" fill="#E8E3D8" stroke="#DDD8CC"/>
+  <polygon points="290.4,134.8 381.6,89.2 381.6,144.2 290.4,189.8" fill="#C5DCF0" stroke="#9DB4C8"/>
+  <polygon points="123.2,218.4 214.4,172.8 214.4,227.8 123.2,273.4" fill="#C5DCF0" stroke="#9DB4C8"/>
+  <line x1="336" y1="112" x2="336" y2="167" stroke="#9DB4C8"/><line x1="168.8" y1="195.6" x2="168.8" y2="250.6" stroke="#9DB4C8"/>
+  <polygon points="96,330 110,323 124,330 110,337" fill="#B98A5E"/><rect x="102" y="312" width="16" height="20" fill="#C9B08A"/>
+  <ellipse cx="110" cy="300" rx="16" ry="18" fill="#6E9B6A"/><ellipse cx="102" cy="292" rx="9" ry="11" fill="#7FAE79"/>`;
+// A desk whose corner is at (x0, y0) on the floor of sketch A, the laptop on it lit or dark.
+function deskSvg(dx, dy, lit) {
+  const P = (pts) => pts.map(([x, y]) => `${(x + dx).toFixed(1)},${(y + dy).toFixed(1)}`).join(' ');
+  return `<polygon points="${P([[271.4,260.9],[347.4,298.9],[347.4,322.9],[271.4,284.9]])}" fill="#D8C29E" stroke="#C9C3B6"/>
+    <polygon points="${P([[389.2,278],[347.4,298.9],[347.4,322.9],[389.2,302]])}" fill="#C9B08A" stroke="#C9C3B6"/>
+    <polygon points="${P([[313.2,240],[389.2,278],[347.4,298.9],[271.4,260.9]])}" fill="#EFE4D0" stroke="#C9C3B6"/>
+    <polygon points="${P([[301.8,262.7],[336,279.8],[358.8,268.4],[324.6,251.3]])}" fill="#3A4060"/>
+    <polygon points="${P([[324.6,251.3],[358.8,268.4],[358.8,244.4],[324.6,227.3]])}" fill="#2A3150" stroke="#23283A"/>
+    ${lit ? `<polygon points="${P([[338,244],[345,247.5],[345,253.5],[338,250]])}" fill="#F2C14E"/>` : ''}`;
+}
+const HAIR = {junior: '#3A2E28', director: '#2F3652', ambassador: '#1F1A17'};
+const SKIN = {junior: '#E8B98F', director: '#D9A47A', ambassador: '#C98E62'};
+function headSvg(agent, x, y) {
+  const top = agent === 'director'
+    ? `<ellipse cx="${x - 3}" cy="${y - 9}" rx="12" ry="5" fill="#2F3652"/><circle cx="${x - 10}" cy="${y - 11}" r="2.5" fill="#2F3652"/>`
+    : `<path d="M${x - 10} ${y - 2} Q${x} ${y - 15} ${x + 10} ${y - 2} Q${x + 5} ${y - 8} ${x} ${y - 7} Q${x - 6} ${y - 8} ${x - 10} ${y - 2} Z" fill="${HAIR[agent]}"/>`;
+  return `<circle cx="${x}" cy="${y}" r="10" fill="${SKIN[agent]}"/>${top}`;
+}
+/** Someone sitting behind a desk: base is the floor point behind it (as in sketch A). */
+function sitSvg(agent, x, base, lit) {
+  return `<g class="person" data-oagent="${agent}">
+    ${lit ? `<ellipse cx="${x}" cy="${base - 51}" rx="28" ry="22" fill="#9FD0F2" opacity=".35"/>` : ''}
+    <rect x="${x - 11}" y="${base - 56}" width="22" height="40" rx="9" fill="${WHO[agent].color}"/>
+    ${agent === 'junior' ? `<polygon points="${x - 3},${base - 55} ${x},${base - 41} ${x + 3},${base - 55}" fill="#E0A63A"/>` : ''}
+    ${headSvg(agent, x, base - 66)}</g>`;
+}
+/** Someone standing, feet at (x, y): at the coffee corner, or next to the owner's desk while asking. */
+function standSvg(agent, x, y, mug) {
+  return `<g class="person" data-oagent="${agent}">
+    <line x1="${x - 6}" y1="${y}" x2="${x - 4}" y2="${y - 25}" stroke="#2F3652" stroke-width="5" stroke-linecap="round"/>
+    <line x1="${x + 7}" y1="${y}" x2="${x + 5}" y2="${y - 25}" stroke="#2F3652" stroke-width="5" stroke-linecap="round"/>
+    <rect x="${x - 11}" y="${y - 59}" width="22" height="38" rx="9" fill="${WHO[agent].color}"/>
+    ${mug ? `<rect x="${x + 11}" y="${y - 47}" width="9" height="11" rx="2" fill="#FFFFFF" stroke="#80849A"/>` : ''}
+    ${headSvg(agent, x, y - 69)}</g>`;
+}
+// Where each one sits (the floor point behind the desk), the desks' offsets from the first one, and the standing spots.
+const SEAT = {junior: [363, 277, 0, 0], director: [636, 277, 273.6, 0], ambassador: [492, 357, 129.2, 79.8]};
+const COFFEE = [[655, 405], [606, 428], [557, 451]];
+const BY_ME = [[398, 236], [372, 224], [420, 250]];
+
+function floorSvg(desks, mine) {
+  let back = '', mid = '', front = '';
+  const bubbles = [];
+  const at = (x, y) => `left:${((x - 40) / 820 * 100).toFixed(2)}%;top:${((y - 20) / 520 * 100).toFixed(2)}%`;
+  // The owner's desk: an empty chair, a pile that grows with what waits, and the number on it.
+  const pile = Math.min(4, Math.ceil(mine.total / 2));
+  back += `<ellipse cx="499" cy="214" rx="16" ry="8" fill="#D8D2C4"/><rect x="489" y="178" width="20" height="30" rx="6" fill="#80849A"/>
+    <polygon points="408.2,184.9 484.2,222.9 484.2,246.9 408.2,208.9" fill="#D8C29E" stroke="#C9C3B6"/>
+    <polygon points="526,202 484.2,222.9 484.2,246.9 526,226" fill="#C9B08A" stroke="#C9C3B6"/>
+    <polygon points="450,164 526,202 484.2,222.9 408.2,184.9" fill="#EFE4D0" stroke="#C9C3B6"/>
+    ${Array.from({length: pile}, (_, i) => `<polygon points="430,${184 - i * 4} 452,${173 - i * 4} 474,${184 - i * 4} 452,${195 - i * 4}" fill="#FFFFFF" stroke="#C9C3B6"/>`).join('')}
+    ${mine.total ? `<circle cx="474" cy="${166 - pile * 2}" r="9" fill="#C8503C"/><text x="474" y="${170 - pile * 2}" text-anchor="middle" font-family="Rubik, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">${mine.total}</text>` : ''}
+    <g class="person" data-oagent="me"><rect x="404" y="160" width="126" height="90" fill="transparent"/></g>`;
+  // One line over the desk; the requests themselves (with "קדימה") open below the floor, so no bubble covers another.
+  bubbles.push(`<button class="bub b-me" type="button" data-oagent="me" style="${at(467, 128)}"><b>השולחן שלך · ${mine.total ? `${mine.total} מחכים לך` : 'אין מה שמחכה'}</b>${mine.asking.length ? `${mine.asking.length} מבקשים להתחיל · לאשר` : ''}</button>`);
+  // The board on the right wall: this week's downloads against the goal.
+  const got = downloadsOn(weekDays(sundayOf(ilDay())).filter((d) => d <= ilDay()));
+  back += `<g transform="matrix(1,0.5,0,1,723.6,186.8)"><rect x="0" y="0" width="95" height="55" fill="#FFFFFF" stroke="#C9C3B6"/>
+    <text x="88" y="16" direction="rtl" font-family="Rubik, sans-serif" font-size="10" font-weight="600" fill="#1D2B55">יעד השבוע</text>
+    <rect x="8" y="24" width="79" height="7" fill="#F3F3F1"/><rect x="${(87 - Math.max(2, 79 * Math.min(1, got / GOAL))).toFixed(1)}" y="24" width="${Math.max(2, 79 * Math.min(1, got / GOAL)).toFixed(1)}" height="7" fill="#E0A63A"/>
+    <text x="88" y="46" direction="rtl" font-family="Rubik, sans-serif" font-size="11" font-weight="700" fill="#1D2B55">${got} / ${GOAL}</text></g>`;
+  // The coffee corner.
+  mid += `<polygon points="685.6,321.4 723.6,340.4 723.6,370.4 685.6,351.4" fill="#C3CCDA" stroke="#C9C3B6"/>
+    <polygon points="761.6,321.4 723.6,340.4 723.6,370.4 761.6,351.4" fill="#AEB8C8" stroke="#C9C3B6"/>
+    <polygon points="723.6,302.4 761.6,321.4 723.6,340.4 685.6,321.4" fill="#E9EEF5" stroke="#C9C3B6"/>
+    <rect x="712" y="292" width="20" height="26" rx="3" fill="#3A4060"/><rect x="717" y="306" width="10" height="7" fill="#F2EFE8"/>`;
+  let coffee = 0, byMe = 0;
+  for (const a of ['junior', 'director', 'ambassador']) {
+    const d = desks[a], [x, base, dx, dy] = SEAT[a];
+    const lit = d.s === 'work';
+    const atDesk = d.s === 'work' || d.s === 'bad' || d.s === 'soon';
+    const person = atDesk ? sitSvg(a, x, base, lit) : '';
+    const desk = deskSvg(dx, dy, lit);
+    const layer = a === 'ambassador' ? 'front' : 'mid';
+    const chunk = person + desk;
+    if (layer === 'front') front += chunk; else mid = chunk + mid;
+    if (d.s === 'ask') {
+      const [sx, sy] = BY_ME[byMe++];
+      back += standSvg(a, sx, sy, false)
+        + `<circle cx="${sx}" cy="${sy - 92}" r="9" fill="#D9992B"/><text x="${sx}" y="${sy - 88}" text-anchor="middle" font-family="Rubik, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">?</text>`;
+    } else if (!atDesk) {
+      const [sx, sy] = COFFEE[coffee++];
+      front += standSvg(a, sx, sy, true);
+    } else {
+      const text = d.s === 'work' ? (d.run.doing || d.run.title) : d.s === 'soon' ? `מתחיל בדקות הקרובות: ${d.run.title}` : (d.run.error || 'הריצה נכשלה');
+      const head = d.s === 'work' ? 'עובד' : d.s === 'soon' ? 'קיבל קדימה' : 'נכשל';
+      bubbles.push(`<div class="bub ${d.s === 'bad' ? 'b-bad' : ''}" style="${at(x, base - 82)}"><b>${esc(WHO[a].name)} · ${head}</b>${esc(text)}</div>`);
+    }
+  }
+  return `<svg viewBox="40 20 820 520" role="img" aria-label="המשרד: מי עובד ליד השולחן ומי בפינת הקפה">${FLOOR}${back}${mid}${front}</svg>${bubbles.join('')}`;
+}
+
+function renderOffice() {
+  if (!$('office')) return;
+  if (office.missing) { $('office').hidden = true; return; }
+  $('office').hidden = false;
+  const s = office.state || {mode: 'ask', stopped: false};
+  const desks = Object.fromEntries(['junior', 'director', 'ambassador'].map((a) => [a, deskOf(a)]));
+  const mine = onMyDesk();
+  document.querySelectorAll('#oMode [data-mode]').forEach((b) => b.classList.toggle('on', b.dataset.mode === s.mode));
+  $('oStop').hidden = !!s.stopped;
+  $('oStopped').hidden = !s.stopped;
+  $('oStoppedText').textContent = s.stopped ? `הכול עצור ${ago(s.stopped_at)}: אף ריצה לא מתחילה, ושום דבר לא עולה לבד.` : '';
+  $('oModeNote').textContent = s.mode === 'auto'
+    ? `אוטומטי ${ago(s.mode_since)}: הם מתחילים בלי לשאול, ושולחים לך עדכון כל 3 שעות${s.last_update_at ? ` (האחרון ${ago(s.last_update_at)})` : ''}. הודעות בקבוצות עדיין מחכות ל"כן" שלך.`
+    : 'לפני כל ריצה הם מבקשים "קדימה" על השולחן שלך, ומעדכנים בסוף. הם עובדים רק כשהמחשב דלוק ו־Claude פתוח.';
+  const STATE = {work: ['עובד', 's-work'], ask: ['מבקש להתחיל', 's-wait'], soon: ['קיבל קדימה', 's-work'], bad: ['נכשל', 's-bad'], rest: [s.stopped ? 'עצור' : 'בהפסקה', 's-rest']};
+  $('oList').innerHTML = ['junior', 'director', 'ambassador'].map((a) => {
+    const d = desks[a], [label, cls] = STATE[d.s];
+    const what = d.s === 'work' ? (d.run.doing || d.run.title) : d.s === 'ask' || d.s === 'soon' ? d.run.title : d.s === 'bad' ? (d.run.error || 'הריצה נכשלה') : `הריצה הבאה ${nextRun(a)}`;
+    return `<button class="orow ${oPick === a ? 'sel' : ''}" type="button" data-oagent="${a}"><span class="av" style="background:${WHO[a].color}"></span>
+      <span class="body"><span class="nm"><b>${esc(WHO[a].name)}</b><span class="st ${cls}">${label}</span></span>
+      <span class="what">${esc(what)}</span><span class="num">${esc(weekNumber(a))}</span>${dayLine(a)}</span></button>`;
+  }).join('') + `<button class="orow ${oPick === 'me' ? 'sel' : ''}" type="button" data-oagent="me"><span class="av" style="background:var(--sun)"></span>
+      <span class="body"><span class="nm"><b>השולחן שלך</b><span class="st ${mine.total ? 's-bad' : 's-rest'}">${mine.total ? `${mine.total} מחכים` : 'ריק'}</span></span>
+      <span class="what">${esc([mine.asking.length && `${mine.asking.length} מבקשים להתחיל`, mine.toSend && `${mine.toSend} הודעות לשלוח`, mine.props && `${mine.props} הצעות`, mine.tpls && `${mine.tpls} תשובות קבועות`].filter(Boolean).join(' · ') || 'אין מה שמחכה לך')}</span></span></button>`;
+  $('oFloor').innerHTML = floorSvg(desks, mine);
+  renderPanel();
+}
+
+function renderPanel() {
+  const p = $('oPanel');
+  if (!oPick) { p.hidden = true; return; }
+  p.hidden = false;
+  if (oPick === 'me') {
+    const mine = onMyDesk();
+    p.innerHTML = `<h3>השולחן שלך <button class="btn ghost sm" type="button" data-oclose="1">לסגור</button></h3>
+      ${mine.asking.map((r) => `<div class="li"><span><b>${esc(WHO[r.agent].name)}</b> מבקש להתחיל: ${esc(r.title)}<span class="sumline">${esc(ago(r.asked_at))}</span></span>
+        <span class="acts"><button class="btn pri sm" type="button" data-ogo="${r.id}">קדימה</button><button class="btn ghost sm" type="button" data-ono="${r.id}">לא עכשיו</button></span></div>`).join('')}
+      ${mine.toSend ? `<div class="li"><span>${mine.toSend} הודעות לקהילות מחכות שתשלח</span><button class="btn sm" type="button" data-oscroll="jOutreach">אליהן</button></div>` : ''}
+      ${mine.props ? `<div class="li"><span>${mine.props} הצעות של ג'וניור</span><button class="btn sm" type="button" data-oscroll="jReport">אליהן</button></div>` : ''}
+      ${mine.tpls ? `<div class="li"><span>${mine.tpls} תשובות קבועות לאישור</span><button class="btn sm" type="button" data-oscroll="jTemplates">אליהן</button></div>` : ''}
+      ${mine.total ? '' : '<div class="empty">אין מה שמחכה לך.</div>'}`;
+    return;
+  }
+  const a = oPick, w = WHO[a], d = deskOf(a), stopped = office.state?.stopped;
+  const busy = ['work', 'ask', 'soon'].includes(d.s);
+  const runs = office.runs.filter((r) => r.agent === a && r.job !== 'update').slice(0, 12);
+  const orders = office.orders.filter((o) => o.agent === a).slice(0, 6);
+  const RS = {asking: 'מחכה ל"קדימה"', approved: 'קיבל קדימה', running: 'עובד', done: 'הסתיים', failed: 'נכשל', declined: 'לא עכשיו'};
+  const OS = {new: 'מחכה לריצה הבאה', read: 'נקרא', done: 'בוצע'};
+  p.innerHTML = `<h3>${esc(w.name)} <span class="note">${esc(w.role)}</span></h3>
+    <div class="acts"><button class="btn pri sm" type="button" data-onow="${a}" ${busy || stopped ? 'disabled' : ''}>לעבוד עכשיו</button>
+      <span class="note">${stopped ? 'הכול עצור.' : busy ? 'כבר באמצע, או מחכה לך.' : `מתחיל בבדיקה הבאה (עד חצי שעה), כשהמחשב דלוק ו־Claude פתוח. אחרת ${nextRun(a)}.`}</span>
+      <button class="btn ghost sm" type="button" data-oclose="1">לסגור</button></div>
+    <div><label class="note" for="oOrder">הוראה ל${esc(w.name)}: הוא קורא אותה בריצה הבאה ועונה כאן</label>
+      <textarea id="oOrder" maxlength="600" placeholder="${a === 'director' ? 'למשל: השבוע יותר רילסים על בגרות' : a === 'ambassador' ? 'למשל: לפנות לאגודת הסטודנטים בבן־גוריון' : 'למשל: השבוע להתמקד בסטודנטים'}"></textarea>
+      <div class="acts" style="margin-top:6px"><button class="btn sm" type="button" data-oorder="${a}">לשלוח</button></div></div>
+    ${orders.length ? `<div><div class="note" style="color:var(--ink);font-weight:600">ההוראות שלך</div>${orders.map((o) => `<div class="li" style="display:block"><span>${esc(o.text)}</span>
+      <span class="sumline">${esc(OS[o.status])} · ${esc(ago(o.created_at))}${o.reply ? ` · ${esc(o.reply)}` : ''}</span></div>`).join('')}</div>` : ''}
+    <div class="runs"><div class="note" style="color:var(--ink);font-weight:600">הריצות בשבוע האחרון</div>
+      ${runs.map((r) => `<div class="li"><span><span class="dot ${r.status === 'failed' ? 'r' : r.status === 'done' ? 'g' : ['asking', 'approved', 'running'].includes(r.status) ? 'a' : ''}"></span>${esc(r.title)}</span>
+        <span class="sumline">${esc(RS[r.status])} · ${esc(ago(r.ended_at || r.started_at || r.asked_at))}${r.by_owner ? ' · ביקשת' : ''}</span>
+        ${r.summary ? `<div class="sum">${esc(r.summary)}</div>` : ''}${r.status === 'failed' && r.error ? `<div class="sum" style="color:var(--red)">${esc(r.error)}</div>` : ''}</div>`).join('') || '<div class="empty">עוד לא היו ריצות.</div>'}</div>`;
+}
+
+async function officeChange(op) {
+  const { error } = await op;
+  if (error) { $('err').textContent = 'לא הצלחתי לשמור. נסה שוב. (' + error.message + ')'; $('err').hidden = false; return false; }
+  $('err').hidden = true;
+  await loadOffice();
+  return true;
+}
+$('office').addEventListener('click', async (e) => {
+  const b = e.target.closest('button, .person');
+  if (!b) return;
+  if (b.dataset.oagent) { oPick = oPick === b.dataset.oagent ? null : b.dataset.oagent; renderOffice(); if (oPick) $('oPanel').scrollIntoView({behavior: 'smooth', block: 'nearest'}); return; }
+  if (b.dataset.oclose) { oPick = null; renderOffice(); return; }
+  if (b.dataset.oscroll) { $(b.dataset.oscroll).scrollIntoView({behavior: 'smooth', block: 'start'}); return; }
+  if (b.dataset.mode) {
+    const mode = b.dataset.mode;
+    if (mode === office.state?.mode) return;
+    if (mode === 'auto' && !confirm('לעבור לאוטומטי? הם יתחילו לעבוד בלי לשאול, עד שתחזיר ל"שואלים" או תלחץ "עצור הכול". תקבל עדכון כל 3 שעות.')) return;
+    return officeChange(sb.from('agent_state').update({mode}).eq('id', 1));
+  }
+  b.disabled = true;
+  let ok = true;
+  if (b.id === 'oStop') ok = confirm('לעצור הכול? אף ריצה לא תתחיל, ושום פוסט לא יעלה לבד, עד שתלחץ "להמשיך".') && await officeChange(sb.from('agent_state').update({stopped: true}).eq('id', 1));
+  else if (b.id === 'oResume') ok = await officeChange(sb.from('agent_state').update({stopped: false}).eq('id', 1));
+  else if (b.dataset.ogo) ok = await officeChange(sb.from('agent_runs').update({status: 'approved'}).eq('id', Number(b.dataset.ogo)));
+  else if (b.dataset.ono) ok = await officeChange(sb.from('agent_runs').update({status: 'declined'}).eq('id', Number(b.dataset.ono)));
+  else if (b.dataset.onow) ok = await officeChange(sb.from('agent_runs').insert({agent: b.dataset.onow, job: 'now', title: 'ביקשת שיעבוד עכשיו', status: 'approved'}));
+  else if (b.dataset.oorder) {
+    const text = $('oOrder').value.trim();
+    ok = !!text && await officeChange(sb.from('agent_orders').insert({agent: b.dataset.oorder, text: text.slice(0, 600)}));
+  }
+  if (!ok) b.disabled = false;
+  renderBoard();
+});
+// The office is the one place on the page that changes by the minute.
+setInterval(() => { if (!document.hidden && !$('app').hidden && tab === 'junior') loadOffice(); }, 60 * 1000);
 
 setInterval(() => { if (!document.hidden && !$('app').hidden) load(); }, 5 * 60 * 1000);
 load();
