@@ -235,6 +235,7 @@ tr.gone .btn{visibility:hidden}
       <section class="sec" style="margin-top:26px"><h2><span class="h">מה ג'וניור אומר השבוע</span><span id="jReportAt"></span></h2><div id="jReport"></div></section>
       <section class="sec" style="margin-top:30px">
         <h2><span class="h" id="jWeekTitle">השבוע</span><span id="jWeekCount"></span></h2>
+        <p class="note">מה שלא עצרת עולה לבד: רילס, סטורי ופוסט מאושרים 6 שעות לפני הזמן שלהם, ודף לגוגל בבוקר שאחרי שנכתב. "לא" או "לשנות" עוצרים אותם.</p>
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin:4px 0 12px">
           <div class="chips" id="jWeekChips" role="group" aria-label="איזה שבוע" style="margin:0">
             <button class="chip" type="button" data-week="-7">השבוע שעבר</button>
@@ -887,7 +888,7 @@ function chip(w) {
   const sel = jPick && jPick.t === w.t && jPick.id === w.id;
   return `<button class="it k-${esc(k)} ${ok ? 'ok' : ''} ${st === 'failed' ? 'bad' : ''} ${sel ? 'sel' : ''}" type="button" data-pick="${w.t}:${w.id}">
     <span class="k">${esc(label)}${when ? ` ${esc(when)}` : ''}</span><span>${esc(name)}</span>
-    <span style="font-size:12px;color:var(--muted)">${esc({draft: 'לאישור', changes: 'נשלח לתיקון', approved: 'מאושר', publishing: 'עולה', published: 'עלה', sent: 'נשלח', failed: 'לא עלה'}[st] || st)}</span></button>`;
+    <span style="font-size:12px;color:var(--muted)">${esc({draft: w.t === 's' ? 'עולה לבד אם לא עוצרים' : w.a.kind === 'outreach' ? 'לשליחה' : 'עולה לבד מחר בבוקר', changes: 'נשלח לתיקון', approved: 'מאושר', publishing: 'עולה', published: 'עלה', sent: 'נשלח', failed: 'לא עלה'}[st] || st)}</span></button>`;
 }
 
 function agentCard(a) {
