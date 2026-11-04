@@ -62,6 +62,15 @@
     if (opts.bump !== false) { m.bumpMap = tx(name); m.bumpScale = opts.bumpScale == null ? 0.025 : opts.bumpScale; }
     return m;
   }
+  function grassTex() {
+    const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
+    g.fillStyle = '#6BAA4A'; g.fillRect(0, 0, 512, 512);
+    for (let i = 0; i < 16; i++) { g.fillStyle = i % 2 ? 'rgba(255,255,255,.07)' : 'rgba(0,40,0,.06)'; g.fillRect(i * 32, 0, 32, 512); }
+    for (let i = 0; i < 40; i++) { g.fillStyle = 'rgba(40,110,30,' + (0.05 + Math.random() * 0.1) + ')'; g.beginPath(); g.ellipse(Math.random() * 512, Math.random() * 512, 30 + Math.random() * 60, 15 + Math.random() * 35, Math.random() * 3, 0, Math.PI * 2); g.fill(); }
+    const im = g.getImageData(0, 0, 512, 512), d = im.data; for (let i = 0; i < d.length; i += 4) { const n = (Math.random() - 0.5) * 28; d[i] += n; d[i + 1] += n; d[i + 2] += n; } g.putImageData(im, 0, 0);
+    g.strokeStyle = 'rgba(30,80,20,.35)'; for (let i = 0; i < 1500; i++) { const x = Math.random() * 512, y = Math.random() * 512; g.beginPath(); g.moveTo(x, y); g.lineTo(x + 1, y - 3); g.stroke(); }
+    const t = new T.CanvasTexture(c); t.wrapS = t.wrapT = T.RepeatWrapping; t.encoding = T.sRGBEncoding; t.anisotropy = 8; return t;
+  }
   const M = (o) => new T.MeshStandardMaterial(Object.assign({ roughness: .85, metalness: 0 }, o));
   const Mr = (o) => { const m = new T.MeshStandardMaterial(o); reflective.push(m); return m; };
   const mats = {
@@ -69,7 +78,7 @@
     beige: tm('beige_wall_001', { bumpScale: .01 }), plaster: tm('grey_plaster'), brick: tm('brick_wall_005', { bumpScale: .04 }),
     concrete: tm('concrete_wall_008'), paving: tm('concrete_floor_02'), brickPave: tm('brick_pavement_02', { bumpScale: .03 }),
     asphalt: tm('asphalt_02', { bumpScale: .03, roughness: .95 }),
-    grass: tm('grass_ground', { roughness: 1, bumpScale: .03, color: 0x9ED07A }), bark: tm('bark_brown_01', { bumpScale: .04 }),
+    grass: (() => { const t = grassTex(); return new T.MeshStandardMaterial({ map: t, bumpMap: t, bumpScale: .015, roughness: 1, metalness: 0 }); })(), bark: tm('bark_brown_01', { bumpScale: .04 }),
     white: M({ color: 0xF4F2EC, roughness: .6 }), cream: M({ color: 0xEFE8DA, roughness: .7 }), frame: M({ color: 0xF6F4EE, roughness: .55 }),
     dark: M({ color: 0x2A2E36, roughness: .7 }), wood: M({ color: 0x7A4B2E, roughness: .6 }), doorBlue: M({ color: 0x2F4F75, roughness: .45 }),
     stone: M({ color: 0xD6D0C4, roughness: .8 }), gold: Mr({ color: 0xC9A227, roughness: .3, metalness: .85 }),
@@ -484,8 +493,12 @@
   requestAnimationFrame(loop);
 
   // ---------------- public API ----------------
+  const btnTop = document.getElementById('btnTop'), btnStreet = document.getElementById('btnStreet');
+  if (btnTop) btnTop.addEventListener('click', () => { top(true); send({ type: 'camera', top: true }); });
+  if (btnStreet) btnStreet.addEventListener('click', () => { if (!state) return; const W = state.cols * TILE, H = state.rows * TILE; animateTo({ tx: view.tx, ty: 1.5, tz: view.tz, pitch: 12, dist: Math.min(view.dist, 26) }, 800); send({ type: 'camera', street: true }); });
+  function labels(s) { if (btnTop && s.labels && s.labels.camTop) btnTop.lastChild.textContent = s.labels.camTop; if (btnStreet && s.labels && s.labels.camStreet) btnStreet.lastChild.textContent = s.labels.camStreet; if (btnStreet) btnStreet.style.display = s.street === false ? 'none' : ''; document.body.classList.toggle('night', !!s.night); document.body.dir = s.rtl === false ? 'ltr' : 'rtl'; }
   window.sky = {
-    setState(s) { if (typeof s === 'string') s = JSON.parse(s); if (s.quality) { quality.auto = s.quality === 'auto'; if (s.quality === 'low') { quality.level = 1; applyQuality(); } else if (s.quality === 'high') { quality.level = 3; applyQuality(); } } build(s); },
+    setState(s) { if (typeof s === 'string') s = JSON.parse(s); if (s.quality) { quality.auto = s.quality === 'auto'; if (s.quality === 'low') { quality.level = 1; applyQuality(); } else if (s.quality === 'high') { quality.level = 3; applyQuality(); } } labels(s); build(s); },
     setNight(on) { setNight(!!on); },
     top() { top(true); send({ type: 'camera', top: true }); },
     focus(i, j, lw) { focusTile(i, j, lw || 1); },
