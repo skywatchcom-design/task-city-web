@@ -16,8 +16,9 @@
 
   // ---------------- renderer, lights, sky ----------------
   const canvas = document.getElementById('c');
-  const R = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-  R.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  const R = new T.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+  R.setClearColor(0x000000, 0);
+  R.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
   R.shadowMap.enabled = true;
   R.shadowMap.type = T.PCFSoftShadowMap;
   R.outputEncoding = T.sRGBEncoding;
@@ -30,7 +31,7 @@
   scene.add(hemi);
   const sun = new T.DirectionalLight(DAY.sun[0], DAY.sun[1]);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(4096, 4096);
+  sun.shadow.mapSize.set(2048, 2048);
   sun.shadow.bias = -0.0006;
   sun.shadow.normalBias = 0.03;
   sun.shadow.radius = 1.6;
@@ -81,7 +82,7 @@
     metal: Mr({ color: 0xB9BDC4, roughness: .35, metalness: .7 }), pole: M({ color: 0x4A4D55, roughness: .5 }),
     lamp: M({ color: 0xD8D8D0, emissive: 0x000000 }), skin: M({ color: 0xE8B894, roughness: .7 }), pants: M({ color: 0x2A2F3A }),
     cross: M({ color: 0xD23B2E, emissive: 0x000000 }), curb: M({ color: 0xB8B3A8, roughness: .9 }), lane: M({ color: 0xE0A63A, roughness: .6 }),
-    crane: M({ color: 0xE0A63A, roughness: .6 }), fence: M({ color: 0x8A8E96, roughness: .7 }), slab: M({ color: 0xB9B6AE, roughness: .95 }),
+    crane: M({ color: 0xE0A63A, roughness: .6 }), stoneSide: tm('concrete_wall_008', { color: 0xE8E2D4, bumpScale: .01 }), fence: M({ color: 0x8A8E96, roughness: .7 }), slab: M({ color: 0xB9B6AE, roughness: .95 }),
   };
   const nightOn = []; // point lights and emissive materials switched by the night
 
@@ -108,8 +109,9 @@
     const gr = g.createRadialGradient(64, 64, 22, 64, 64, 64); gr.addColorStop(0, 'rgba(0,0,0,.5)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
     g.fillStyle = gr; g.fillRect(0, 0, 128, 128); return new T.CanvasTexture(c);
   })();
+  const aoMat = new T.MeshBasicMaterial({ map: aoTex, transparent: true, depthWrite: false });
   function contact(w, d, x, z, g, y = 0.165, k = 1.25) {
-    const m = new T.Mesh(new T.PlaneGeometry(w * k, d * k), new T.MeshBasicMaterial({ map: aoTex, transparent: true, depthWrite: false }));
+    const m = new T.Mesh(new T.PlaneGeometry(w * k, d * k), aoMat);
     m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); m.renderOrder = 1; g.add(m);
   }
   let litSeed = 1;
@@ -346,7 +348,7 @@
     state = s; clearRoot(); litSeed = 7;
     const L = s.labels || {}; const W = s.cols * TILE, H = s.rows * TILE;
     // Ground: the map's grass, the far grass, and a dark edge so the map reads as a model on a table.
-    const far = plane(W + 400, H + 400, mats.grass, W / 2, -0.02, H / 2, root, 3);
+    box(W, 1.4, H, mats.stoneSide, W / 2, -1.32, H / 2, root, 3);
     plane(W, H, mats.grass, W / 2, 0.15, H / 2, root, 3);
     // Roads with sidewalks, curbs and lane dashes.
     const roads = s.roads.slice(); if (s.rows > s.baseRows) roads.push({ alongI: true, at: s.quarterRoad, from: 0, to: s.cols }, ...(s.quarterLinks || []));
@@ -370,15 +372,41 @@
       for (let a = 0; a < z.wi && life > 0; a++) for (let b = 0; b < z.wj && life > 0; b++) { if (taken.has((z.i + a) + ',' + (z.j + b))) continue; const cx = (z.i + a) * TILE, cz = (z.j + b) * TILE; tree(root, cx + 2 + (k % 3) * 2.5, cz + 2.5, 1.0); if (life > 1) person(root, cx + 6, cz + 6, [0xC94F3F, 0x1D2B55, 0x5C9A48, 0xE0A63A][k % 4]); life -= 2; k++; }
       if (d.neglected && d.buildings.length) { const b = d.buildings[0]; signBoard(root, L.waiting || '', (b.i + 0.5) * TILE + 4.2, 1.6, (b.j + 0.5) * TILE + 4.6, 2.4, 0.5, 0xF6F4EE, '#1D2B55'); cyl(0.05, 0.05, 1.4, mats.pole, (b.i + 0.5) * TILE + 4.2, 0.16, (b.j + 0.5) * TILE + 4.6, root, 8); }
     }
-    far.receiveShadow = true;
     sun.shadow.camera.left = -Math.max(W, H) * 0.75; sun.shadow.camera.right = Math.max(W, H) * 0.75; sun.shadow.camera.top = Math.max(W, H) * 0.75; sun.shadow.camera.bottom = -Math.max(W, H) * 0.75; sun.shadow.camera.near = 1; sun.shadow.camera.far = 400; sun.shadow.camera.updateProjectionMatrix();
+    mergeStatic(root);
     setNight(!!s.night);
     if (!view.placed) { top(false); view.placed = true; }
+  }
+  function mergeStatic(group) {
+    group.updateMatrixWorld(true);
+    const byMat = new Map(); const lights = [];
+    group.traverse(o => {
+      if (o.isLight) { lights.push(o); return; }
+      if (!o.isMesh) return;
+      const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
+      g.applyMatrix4(o.matrixWorld);
+      const key = o.material.uuid; let e = byMat.get(key);
+      if (!e) { e = { mat: o.material, pos: [], nor: [], uv: [], n: 0, cast: o.castShadow, order: o.renderOrder }; byMat.set(key, e); }
+      const pa = g.attributes.position.array; e.pos.push(pa); e.n += pa.length / 3;
+      e.nor.push(g.attributes.normal ? g.attributes.normal.array : new Float32Array(pa.length));
+      e.uv.push(g.attributes.uv ? g.attributes.uv.array : new Float32Array(pa.length / 3 * 2));
+      g.dispose();
+    });
+    for (const l of lights) { const p = new T.Vector3(); l.getWorldPosition(p); l.parent.remove(l); l.position.copy(p); }
+    for (const c of group.children.slice()) group.remove(c);
+    for (const l of lights) group.add(l);
+    tappable.length = 0;
+    for (const e of byMat.values()) {
+      const cat = (arrs, per) => { const out = new Float32Array(e.n * per); let k = 0; for (const a of arrs) { out.set(a, k); k += a.length; } return out; };
+      const geo = new T.BufferGeometry();
+      geo.setAttribute('position', new T.BufferAttribute(cat(e.pos, 3), 3)); geo.setAttribute('normal', new T.BufferAttribute(cat(e.nor, 3), 3)); geo.setAttribute('uv', new T.BufferAttribute(cat(e.uv, 2), 2));
+      const m = new T.Mesh(geo, e.mat); m.castShadow = e.cast; m.receiveShadow = true; m.renderOrder = e.order || 0; m.frustumCulled = false; group.add(m); tappable.push(m);
+    }
   }
   function setNight(on) {
     night = on; const k = on ? NIGHT : DAY;
     sun.color.set(k.sun[0]); sun.intensity = k.sun[1]; hemi.color.set(k.hemi[0]); hemi.groundColor.set(k.hemi[1]); hemi.intensity = k.hemi[2];
-    const key = on ? 'n' : 'd'; if (!envOf[key]) envOf[key] = pmrem.fromEquirectangular(on ? skyNight : skyDay).texture; for (const m of reflective) { m.envMap = envOf[key]; m.needsUpdate = true; } scene.background = on ? skyNight : skyDay;
+    const key = on ? 'n' : 'd'; if (!envOf[key]) envOf[key] = pmrem.fromEquirectangular(on ? skyNight : skyDay).texture; for (const m of reflective) { m.envMap = envOf[key]; m.needsUpdate = true; } scene.background = null;
     mats.glassLit.emissive.set(on ? 0xFFC46B : 0x000000); mats.glassLit.emissiveIntensity = on ? 1.1 : 0; mats.lamp.emissive.set(on ? 0xFFE2A0 : 0x000000); mats.lamp.emissiveIntensity = on ? 1.6 : 0; mats.cross.emissive.set(on ? 0xFF4040 : 0x000000); mats.cross.emissiveIntensity = on ? 1.4 : 0;
     for (const l of nightOn) { if (l.isLight) l.intensity = on ? (quality.lights ? 1.4 : 0) : 0; else { l.emissive.set(on ? 0xFFFFFF : 0x000000); l.emissiveIntensity = on ? 0.9 : 0; } }
   }
@@ -431,7 +459,7 @@
   function tap(px, py) {
     const r = canvas.getBoundingClientRect(); const v = new T.Vector2(((px - r.left) / r.width) * 2 - 1, -((py - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(v, cam); const hit = ray.intersectObjects(tappable, false)[0];
-    if (hit) { const b = hit.object.userData.building; send({ type: 'tap', district: hit.object.userData.district, kind: b.kind, i: b.i, j: b.j, projectId: b.projectId || null }); return; }
+    if (hit) { send({ type: 'tap', i: Math.floor(hit.point.x / TILE), j: Math.floor(hit.point.z / TILE), y: hit.point.y }); return; }
     // the ground: which tile
     const g = new T.Plane(new T.Vector3(0, 1, 0), -0.16); const pt = new T.Vector3(); if (ray.ray.intersectPlane(g, pt)) send({ type: 'tap', district: null, i: Math.floor(pt.x / TILE), j: Math.floor(pt.z / TILE) });
   }
@@ -440,8 +468,8 @@
   const quality = { level: 3, lights: true };
   let slow = 0, frames = 0, tAcc = 0;
   function applyQuality() {
-    if (quality.level === 3) { R.shadowMap.enabled = true; R.shadowMap.type = T.PCFSoftShadowMap; sun.shadow.mapSize.set(4096, 4096); R.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); quality.lights = true; }
-    else if (quality.level === 2) { R.shadowMap.enabled = true; R.shadowMap.type = T.PCFShadowMap; sun.shadow.mapSize.set(2048, 2048); R.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5)); quality.lights = true; }
+    if (quality.level === 3) { R.shadowMap.enabled = true; R.shadowMap.type = T.PCFSoftShadowMap; sun.shadow.mapSize.set(2048, 2048); R.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5)); quality.lights = true; }
+    else if (quality.level === 2) { R.shadowMap.enabled = true; R.shadowMap.type = T.PCFShadowMap; sun.shadow.mapSize.set(1024, 1024); R.setPixelRatio(1); quality.lights = true; }
     else { R.shadowMap.enabled = false; R.setPixelRatio(1); quality.lights = false; }
     if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; }
     scene.traverse(o => { if (o.material) o.material.needsUpdate = true; });
