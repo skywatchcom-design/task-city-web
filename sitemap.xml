@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Written by tools/junior.py publish: the public pages on skytasks.pages.dev,
+     the guides and the tools. Cloudflare drops ".html", so the addresses here are the final ones. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://skytasks.pages.dev/</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://skytasks.pages.dev/get/</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://skytasks.pages.dev/get/en/</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://skytasks.pages.dev/about/</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://skytasks.pages.dev/privacy</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://skytasks.pages.dev/terms</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://skytasks.pages.dev/delete-account</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://skytasks.pages.dev/guides/</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://skytasks.pages.dev/tools/study-plan/</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://skytasks.pages.dev/guides/study-plan-for-exam/</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://skytasks.pages.dev/guides/weekly-study-schedule/</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://skytasks.pages.dev/guides/semester-deadlines/</loc><lastmod>2026-11-03</lastmod></url>
+</urlset>

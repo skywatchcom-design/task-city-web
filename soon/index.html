@@ -3,9 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="SkyTasks: המשימות, היומן והלימודים במקום אחד, ועיר שנבנית ממה שעשית. בקרוב באנדרואיד ובאייפון.">
+<meta name="description" content="SkyTasks: המשימות, היומן והלימודים במקום אחד. משפט אחד או הקלטה הופכים למשימה עם תזכורת, מערכת שעות ומבחנים, ועיר שנבנית ממה שעשית. חינם באייפון.">
 <link rel="icon" href="../favicon.png">
-<title>SkyTasks Coming Soon</title>
+<title>SkyTasks: משימות, יומן ולימודים במקום אחד</title>
+<!-- Search and share (seo-basics, 3.11): the root and /soon/ are the same page, so both point at the root. -->
+<link rel="canonical" href="https://skytasks.pages.dev/">
+<meta name="apple-itunes-app" content="app-id=6826658767">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SkyTasks">
+<meta property="og:locale" content="he_IL">
+<meta property="og:url" content="https://skytasks.pages.dev/">
+<meta property="og:title" content="SkyTasks: משימות, יומן ולימודים במקום אחד">
+<meta property="og:description" content="משפט אחד הופך למשימה עם תזכורת, היומנים שלך מתחברים, וכל משימה בונה לך עיר. חינם.">
+<meta property="og:image" content="https://skytasks.pages.dev/og.png">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="500">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"MobileApplication","name":"SkyTasks","url":"https://skytasks.pages.dev/",
+"description":"המשימות, היומן והלימודים במקום אחד: משפט אחד או הקלטה הופכים למשימה עם תזכורת, מערכת שעות ומבחנים, ועיר שנבנית ממה שעשית.",
+"applicationCategory":"ProductivityApplication","operatingSystem":"iOS, Android","inLanguage":["he","en"],
+"image":"https://skytasks.pages.dev/og.png","downloadUrl":"https://apps.apple.com/app/id6826658767",
+"installUrl":"https://apps.apple.com/app/id6826658767",
+"offers":{"@type":"Offer","price":"0","priceCurrency":"ILS"},
+"publisher":{"@type":"Organization","name":"SkyWatch","email":"skywatchcom@gmail.com"}}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Rubik:wght@500;700;800&display=swap">
 <style>
@@ -123,7 +145,7 @@ a.store{text-decoration:none;cursor:pointer}a.store:hover{filter:brightness(1.12
     document.getElementById('bHe').setAttribute('aria-pressed',l==='he');
     document.getElementById('bEn').setAttribute('aria-pressed',l==='en');
     var live=window.SKY&&SKY.live;
-    document.title=live?(l==='he'?'SkyTasks, להורדה':'SkyTasks, download'):(l==='he'?'SkyTasks, בקרוב':'SkyTasks, coming soon');
+    document.title=live?(l==='he'?'SkyTasks: משימות, יומן ולימודים במקום אחד':'SkyTasks: tasks, calendar and studies in one place'):(l==='he'?'SkyTasks, בקרוב':'SkyTasks, coming soon');
   }
   // Launch day (../launch.js): the iPhone tile opens the App Store, the Android tile the way into the test.
   if(window.SKY&&SKY.live){
@@ -135,11 +157,11 @@ a.store{text-decoration:none;cursor:pointer}a.store:hover{filter:brightness(1.12
       b.setAttribute('data-he',big[0]);b.setAttribute('data-en',big[1]);
       d.replaceWith(a);
     }
-    link('sApple',SKY.appStore,['להורדה ב־App Store','Download on the App Store'],['אייפון ואייפד','iPhone and iPad']);
+    link('sApple',SKY.store?SKY.store('home'):SKY.appStore,['להורדה ב־App Store','Download on the App Store'],['אייפון ואייפד','iPhone and iPad']);
     // Android is a closed test: the button opens the request form on /get/, and we reply with the link.
     link('sAndroid','../get/#android',['גרסת בדיקה, לבקש הצטרפות','Test version, ask to join'],['אנדרואיד','Android']);
     var m=document.querySelector('meta[name=description]');
-    if(m)m.content='SkyTasks: המשימות, היומן והלימודים במקום אחד, ועיר שנבנית ממה שעשית. עכשיו באייפון, ובגרסת בדיקה באנדרואיד.';
+    if(m)m.content='SkyTasks: המשימות, היומן והלימודים במקום אחד. משפט אחד או הקלטה הופכים למשימה עם תזכורת, מערכת שעות ומבחנים, ועיר שנבנית ממה שעשית. חינם באייפון, ובגרסת בדיקה באנדרואיד.';
   }
   // Whoever asked for less motion sees the city still.
   if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){var c=document.getElementById('city');c.removeAttribute('autoplay');c.pause();}

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>תוכנית למידה למבחן: כמה ימים נשארו ומה ללמוד בכל יום · SkyTasks</title>
+<meta name="description" content="כלי חינמי: מכניסים את תאריך המבחן ואת הנושאים, ומקבלים תוכנית למידה יום אחרי יום, עם ימי חזרה ובחינות קודמות. לבגרות, למבחן באוניברסיטה ולכל מבחן.">
+<link rel="canonical" href="https://skytasks.pages.dev/tools/study-plan/">
+<link rel="icon" href="../../favicon.png">
+<meta name="apple-itunes-app" content="app-id=6826658767">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SkyTasks">
+<meta property="og:locale" content="he_IL">
+<meta property="og:url" content="https://skytasks.pages.dev/tools/study-plan/">
+<meta property="og:title" content="תוכנית למידה למבחן, יום אחרי יום">
+<meta property="og:description" content="מכניסים תאריך ונושאים, ומקבלים תוכנית מוכנה. חינם.">
+<meta property="og:image" content="https://skytasks.pages.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebApplication","name":"תוכנית למידה למבחן","url":"https://skytasks.pages.dev/tools/study-plan/","applicationCategory":"EducationalApplication","operatingSystem":"Any","inLanguage":"he","offers":{"@type":"Offer","price":"0","priceCurrency":"ILS"},"publisher":{"@type":"Organization","name":"SkyTasks"}},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"כמה זמן לפני מבחן להתחיל ללמוד?","acceptedAnswer":{"@type":"Answer","text":"לרוב שבועיים עד שלושה מספיקים לחזרה מסודרת על חומר שכבר נלמד בכיתה. מי שמתחיל חומר מאפס צריך יותר, ובבגרות כדאי להתחיל חודש לפני."}},
+{"@type":"Question","name":"כמה שעות ביום ללמוד למבחן?","acceptedAnswer":{"@type":"Answer","text":"שעה וחצי עד שעתיים ביום, בשני חלקים עם הפסקה, עדיפות על יום אחד ארוך לפני המבחן. ביומיים האחרונים פותרים בחינות קודמות."}},
+{"@type":"Question","name":"מה עושים ביום האחרון לפני המבחן?","acceptedAnswer":{"@type":"Answer","text":"לא לומדים חומר חדש. עוברים על הסיכומים ועל הטעויות מהבחינות הקודמות, מכינים את הציוד והולכים לישון מוקדם."}}]}]}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Rubik:wght@700;800&display=swap">
+<style>
+/* A small tool that answers the search "תוכנית למידה למבחן" (ג'וניור DM, sketch 36, page direction B): it works on the
+   page, and at the end the plan can go into SkyTasks. Same calm day look as the landing page and the guides. */
+:root{--bg:#F7F7F4;--card:#FFFFFF;--ink:#1D2B55;--sub:#4A5268;--line:#E3E5EA;--sun:#E0A63A;--f-head:"Rubik",system-ui,sans-serif;--f-body:"Assistant",system-ui,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--f-body)}
+.in{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{border-bottom:1px solid var(--line)}
+header .in{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:12px}
+.logo{display:flex;align-items:center;gap:8px;font:800 italic 20px var(--f-head);color:var(--ink);text-decoration:none}
+.logo svg{width:26px;height:20px}
+.dl{font:700 14px var(--f-body);background:var(--ink);color:#fff;text-decoration:none;padding:9px 16px;border-radius:16px 16px 16px 4px}
+main .in{padding-block:26px 40px;display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:32px;align-items:start}
+article{display:flex;flex-direction:column;gap:16px;min-width:0}
+.crumbs{font-size:14px;color:var(--sub)}
+.crumbs a{color:var(--sub)}
+h1{font:800 clamp(26px,4vw,36px)/1.2 var(--f-head);margin:0;text-wrap:balance}
+h2{font:700 21px var(--f-head);margin:10px 0 0}
+p{margin:0;max-width:66ch}
+.rail{display:flex;flex-direction:column;gap:4px;width:52px}
+.rail i{display:block;height:3px;background:var(--sun);border-radius:2px}
+.tool{background:var(--card);border:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:14px;border-radius:24px 24px 24px 6px}
+.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+label{font-weight:600;font-size:15px;display:flex;flex-direction:column;gap:5px}
+input,select,textarea{font:16px var(--f-body);padding:9px 11px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);width:100%}
+textarea{min-height:120px;resize:vertical;line-height:1.5}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.check{flex-direction:row;align-items:center;gap:8px;font-weight:400}
+.check input{width:18px;height:18px;accent-color:var(--ink)}
+.count{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.count b{font:800 46px/1 var(--f-head);font-variant-numeric:tabular-nums}
+.count span{color:var(--sub)}
+.plan{border-top:1px solid var(--line)}
+.plan div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:16px}
+.plan div span:first-child{color:var(--sub);font-variant-numeric:tabular-nums}
+.plan div.rev span:last-child{font-weight:700}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:700 15px var(--f-body);border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:9px 16px;border-radius:16px 16px 16px 4px;cursor:pointer}
+.msg{font-size:14px;color:var(--sub)}
+.cta{background:var(--ink);color:#fff;padding:18px 20px;border-radius:24px 24px 24px 6px;display:flex;flex-direction:column;gap:10px}
+.cta h2{color:#fff;margin:0}
+.cta p{color:#D9DDEA}
+.cta a{align-self:flex-start;background:#fff;color:var(--ink);font:700 15px var(--f-body);padding:10px 18px;border-radius:16px 16px 16px 4px;text-decoration:none}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px 12px 12px 3px}
+summary{cursor:pointer;padding:11px 14px;font-weight:700}
+details p{padding:0 14px 12px}
+aside{border:1px solid var(--line);background:var(--card);padding:14px 16px;font-size:15px;display:flex;flex-direction:column;gap:8px;position:sticky;top:12px;border-radius:12px 12px 12px 3px}
+aside b{font:700 15px var(--f-head)}
+aside a{color:var(--ink)}
+footer{border-top:1px solid var(--line);color:var(--sub);font-size:14px}
+footer .in{padding-block:16px;display:flex;gap:16px;flex-wrap:wrap}
+footer a{color:var(--sub)}
+@media (max-width:820px){main .in{grid-template-columns:1fr}aside{position:static}.fields{grid-template-columns:1fr}.plan div{grid-template-columns:96px minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <a class="logo" href="../../"><svg viewBox="0 0 26 20" aria-hidden="true"><rect x="0" y="12" width="6" height="8" fill="#1D2B55"/><rect x="9" y="7" width="6" height="13" fill="#1D2B55"/><rect x="18" y="0" width="7" height="20" fill="#1D2B55"/><rect x="20" y="3" width="3" height="3" fill="#E0A63A"/></svg>SkyTasks.</a>
+  <a class="dl" id="dlTop" href="../../get/">להורדה</a>
+</div></header>
+<main><div class="in">
+<article>
+  <nav class="crumbs" aria-label="איפה אני"><a href="../../">SkyTasks</a> › כלים › לימודים</nav>
+  <h1>תוכנית למידה למבחן, יום אחרי יום</h1>
+  <div class="rail"><i></i><i></i><i></i></div>
+  <p><b>בקצרה:</b> כותבים את תאריך המבחן ואת הנושאים, והכלי מחלק אותם בין הימים שנשארו. היומיים האחרונים נשמרים לבחינות קודמות, והיום שלפני המבחן לחזרה קלה.</p>
+
+  <form class="tool" id="form" autocomplete="off">
+    <div class="fields">
+      <label for="exam">תאריך המבחן<input type="date" id="exam" required></label>
+      <label for="subject">המקצוע<input type="text" id="subject" value="מתמטיקה" maxlength="40"></label>
+      <label for="hours">שעות ביום<select id="hours"><option value="1">שעה</option><option value="1.5" selected>שעה וחצי</option><option value="2">שעתיים</option><option value="3">שלוש שעות</option></select></label>
+    </div>
+    <label for="topics">הנושאים, אחד בכל שורה (הקשים קודם)<textarea id="topics">פונקציות
+הסתברות
+גאומטריה אנליטית
+סדרות
+טריגונומטריה
+חשבון דיפרנציאלי</textarea></label>
+    <label class="check" for="rest"><input type="checkbox" id="rest" checked>בלי ללמוד בשבת</label>
+    <div class="count"><b id="days">–</b><span id="daysText">ימים עד המבחן</span></div>
+    <div class="plan" id="plan" aria-live="polite"></div>
+    <div class="row"><button class="btn" type="button" id="copy">להעתיק את התוכנית</button><span class="msg" id="msg"></span></div>
+  </form>
+
+  <section class="cta" aria-labelledby="ctaH">
+    <h2 id="ctaH">להכניס את התוכנית ל־SkyTasks</h2>
+    <p>כל יום בתוכנית הוא משפט אחד באפליקציה, למשל "ללמוד הסתברות ביום שני ב־17:00": SkyTasks מבין את היום והשעה ושולח תזכורת לפני. כל זמן למידה שסימנת "בוצע" בונה קומה בעיר שלך. חינם באייפון.</p>
+    <a id="store" href="../../get/">להורדה ב־App Store</a>
+  </section>
+
+  <h2>שאלות נפוצות</h2>
+  <details><summary>כמה זמן לפני מבחן להתחיל ללמוד?</summary><p>לרוב שבועיים עד שלושה מספיקים לחזרה מסודרת על חומר שכבר נלמד בכיתה. מי שמתחיל חומר מאפס צריך יותר, ובבגרות כדאי להתחיל חודש לפני.</p></details>
+  <details><summary>כמה שעות ביום ללמוד למבחן?</summary><p>שעה וחצי עד שעתיים ביום, בשני חלקים עם הפסקה, עדיפות על יום אחד ארוך לפני המבחן. ביומיים האחרונים פותרים בחינות קודמות.</p></details>
+  <details><summary>מה עושים ביום האחרון לפני המבחן?</summary><p>לא לומדים חומר חדש. עוברים על הסיכומים ועל הטעויות מהבחינות הקודמות, מכינים את הציוד והולכים לישון מוקדם.</p></details>
+</article>
+<aside aria-label="עוד">
+  <b>עוד ב־SkyTasks</b>
+  <a href="../../guides/">מדריכים ללימודים ולניהול זמן</a>
+  <a href="../../">מה זה SkyTasks</a>
+</aside>
+</div></main>
+<footer><div class="in"><span>© SkyTasks</span><a href="../../privacy">מדיניות פרטיות</a><a href="../../terms">תנאי שימוש</a></div></footer>
+<script src="../../launch.js"></script>
+<script>
+(function(){
+  var S = window.SKY || {};
+  if (S.hit) S.hit('tool', 't0');
+  // An iPhone goes to the App Store with this tool's tag; Android and computers to /get/, which explains both.
+  if (S.store && /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)) document.getElementById('store').href = S.store('t0');
+  else document.getElementById('store').href = '../../get/?s=t0';
+  var $ = function (id) { return document.getElementById(id); };
+  var DAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var start = new Date(today); start.setDate(start.getDate() + 21);
+  var iso = function (d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  $('exam').value = iso(start);
+  $('exam').min = iso(today);
+  var label = function (d) { return 'יום ' + DAYS[d.getDay()] + ' ' + d.getDate() + '.' + (d.getMonth() + 1); };
+  var lines = [];
+
+  function draw() {
+    var plan = $('plan'); plan.textContent = ''; lines = [];
+    var e = new Date($('exam').value + 'T00:00:00');
+    var left = Math.round((e - today) / 86400000);
+    $('days').textContent = isNaN(left) ? '–' : Math.max(left, 0);
+    if (isNaN(left) || left < 1) { $('daysText').textContent = 'בוחרים תאריך עתידי'; return; }
+    $('daysText').textContent = 'ימים עד המבחן · ' + $('hours').selectedOptions[0].text + ' ביום';
+    // The days we study: from tomorrow to the day before the exam, without Shabbat if asked.
+    var days = [];
+    for (var d = new Date(today), i = 0; i < left; i++) {
+      d = new Date(today); d.setDate(d.getDate() + 1 + i);
+      if (d >= e) break;
+      if ($('rest').checked && d.getDay() === 6) continue;
+      days.push(d);
+    }
+    var topics = $('topics').value.split('\n').map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 40);
+    if (!topics.length) topics = ['החומר'];
+    var subject = $('subject').value.trim();
+    var rows = [];
+    if (days.length <= 2) {
+      days.forEach(function (d, i) { rows.push([d, i === days.length - 1 ? 'חזרה על הסיכומים, בלי חומר חדש' : 'בחינה קודמת אחת וחזרה על הטעויות', true]); });
+    } else {
+      // The last day is a light review, the two before it past exams, and the topics share the rest in order.
+      var study = days.slice(0, days.length - 3), past = days.slice(days.length - 3, days.length - 1), last = days[days.length - 1];
+      if (!study.length) study = [days[0]];
+      study.forEach(function (d, i) {
+        var from = Math.floor(i * topics.length / study.length), to = Math.max(from + 1, Math.floor((i + 1) * topics.length / study.length));
+        var part = topics.slice(from, to);
+        // More days than topics: the extra days go back over the topic just learned.
+        var text = part.length ? 'ללמוד: ' + part.join(', ') : 'תרגול: ' + topics[Math.min(topics.length - 1, Math.floor(i * topics.length / study.length))];
+        rows.push([d, text, false]);
+      });
+      past.forEach(function (d) { rows.push([d, 'בחינה קודמת, בזמן אמת', true]); });
+      rows.push([last, 'חזרה קלה על הסיכומים והטעויות, ולישון מוקדם', true]);
+    }
+    rows.forEach(function (r) {
+      var div = document.createElement('div'); if (r[2]) div.className = 'rev';
+      var a = document.createElement('span'); a.textContent = label(r[0]);
+      var b = document.createElement('span'); b.textContent = r[1];
+      div.append(a, b); plan.append(div);
+      lines.push(label(r[0]) + ': ' + r[1]);
+    });
+    var div = document.createElement('div'); div.className = 'rev';
+    var a = document.createElement('span'); a.textContent = label(e);
+    var b = document.createElement('span'); b.textContent = 'המבחן' + (subject ? ' ב' + subject : '') + '. בהצלחה!';
+    div.append(a, b); plan.append(div);
+    lines.push(label(e) + ': ' + b.textContent);
+  }
+  ['exam', 'subject', 'hours', 'topics', 'rest'].forEach(function (id) { $(id).addEventListener('input', draw); $(id).addEventListener('change', draw); });
+  $('form').addEventListener('submit', function (e) { e.preventDefault(); });
+  $('copy').onclick = function () {
+    var text = 'תוכנית למידה' + ($('subject').value.trim() ? ' ל' + $('subject').value.trim() : '') + '\n' + lines.join('\n') + '\n\nנבנה ב־skytasks.pages.dev/tools/study-plan/';
+    var done = function (ok) { $('msg').textContent = ok ? 'הועתק. אפשר להדביק בוואטסאפ או בפתקים.' : 'לא הצלחתי להעתיק. אפשר לסמן את התוכנית ולהעתיק.'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+    else done(false);
+  };
+  draw();
+})();
+</script>
+</body>
+</html>

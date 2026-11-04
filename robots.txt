@@ -1,0 +1,6 @@
+# skytasks.pages.dev (tools/cloudflare_pages.sh). Every public page may be indexed; the admin, stats and join pages
+# are not on this address at all, and carry noindex where they are (github.io).
+User-agent: *
+Allow: /
+
+Sitemap: https://skytasks.pages.dev/sitemap.xml

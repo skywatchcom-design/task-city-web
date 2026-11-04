@@ -5,6 +5,9 @@ window.SKY = {
   live: true,
   // iPhone and iPad: public once Apple approves version 0.1.0.
   appStore: 'https://apps.apple.com/app/id6826658767',
+  // Apple's provider token (App Store Connect, Analytics, Acquisition, Campaigns: the "pt" of a campaign link). With it
+  // every App Store link carries ct=<page>-<source>, and App Store Connect shows downloads per campaign. Empty: plain link.
+  provider: '129671230',
   // Android stays a closed test (Alpha) until 12 testers have had it 14 days. Testers type their Gmail address on /get/
   // (owner, 30.10); the tester-request function emails it to us, we add it to the testers list in Play Console and reply
   // with the link. A mailto link was tried first and closed the tab on Android phones without a mail app set up.
@@ -14,14 +17,39 @@ window.SKY = {
   visits: 'https://wlsvwtvinopzuodpmqsj.supabase.co/functions/v1/downloads'
 };
 
-// Counts one visit for the admin page's downloads tab: the page, the kind of phone, and where the link came from
-// (?s=fb in a post's link). Only counts reach the server; nothing about the visitor is sent or kept.
-window.SKY.hit = function (page) {
+// Where the visitor came from: ?s=fb in a post's link first, otherwise the site that sent them (a Google or Bing search,
+// YouTube, Facebook...). Only the short name is kept, never the address. Empty when nothing says.
+window.SKY.source = function () {
+  try {
+    var s = (new URLSearchParams(location.search).get('s') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12);
+    if (s) return s;
+    var host = document.referrer ? new URL(document.referrer).hostname.replace(/^www\.|^m\.|^l\./, '') : '';
+    if (!host || host === location.hostname) return '';
+    var known = [['google', /(^|\.)google\./], ['bing', /(^|\.)bing\.com$/], ['ddg', /(^|\.)duckduckgo\.com$/],
+      ['chatgpt', /(^|\.)(chatgpt|openai)\.com$/], ['yt', /(^|\.)(youtube\.com|youtu\.be)$/], ['fb', /(^|\.)facebook\.com$/],
+      ['ig', /(^|\.)instagram\.com$/], ['x', /(^|\.)(x\.com|t\.co|twitter\.com)$/], ['github', /(^|\.)github\.io$/]];
+    for (var i = 0; i < known.length; i++) if (known[i][1].test(host)) return known[i][0];
+    return 'other';
+  } catch (e) { return ''; }
+};
+
+// The App Store link for a page ('home', 'get'), tagged with the campaign <page>-<source> once `provider` is set.
+window.SKY.store = function (page) {
+  var S = window.SKY;
+  if (!S.provider) return S.appStore;
+  var ct = (page + '-' + (S.source() || 'direct')).slice(0, 40);
+  return S.appStore + '?pt=' + encodeURIComponent(S.provider) + '&ct=' + encodeURIComponent(ct) + '&mt=8';
+};
+
+// Counts one visit for the admin page's downloads tab: the page, the kind of phone, and where the visitor came from
+// (SKY.source). A guide or a tool for Google passes its own code too (g12, t1). Only counts reach the server; nothing
+// about the visitor is sent or kept.
+window.SKY.hit = function (page, code) {
   try {
     var ua = navigator.userAgent || '';
     var os = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? 'ios' : /Android/.test(ua) ? 'android' : 'other';
-    var src = (new URLSearchParams(location.search).get('s') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12);
-    var body = JSON.stringify({ action: 'hit', page: page, os: os, src: src || undefined });
+    var src = window.SKY.source();
+    var body = JSON.stringify({ action: 'hit', page: page, os: os, src: src || undefined, code: code || undefined });
     if (navigator.sendBeacon) navigator.sendBeacon(window.SKY.visits, new Blob([body], { type: 'text/plain' }));
     else fetch(window.SKY.visits, { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'text/plain' } });
   } catch (e) { /* counting never gets in the way of the page */ }
