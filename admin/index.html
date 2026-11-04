@@ -232,6 +232,46 @@ tr.gone .btn{visibility:hidden}
 .opanel textarea{font:15px/1.45 var(--body);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:64px;resize:vertical;width:100%}
 .opanel .acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .runs .li{display:block}
+/* The week's board (office version 2, sketch 44 A) and its "how he works" table (B). */
+.wk{border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:14px 16px;margin-bottom:12px}
+.wk .gl{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.wk .big{font:700 26px var(--head);color:var(--ink);font-variant-numeric:tabular-nums}
+.meter{height:9px;background:var(--line2);border-radius:5px;overflow:hidden;margin:8px 0 6px}
+.meter i{display:block;height:100%;background:var(--sun);border-radius:5px}
+.wcards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.wcard{border:1px solid var(--line);border-top:3px solid var(--c);border-radius:12px 12px 12px 2px;padding:11px 12px;display:flex;flex-direction:column;gap:5px;font-size:13.5px;min-width:0}
+.wcard b{font:600 15px var(--head);color:var(--ink)}
+.wcard .need{color:var(--text);overflow-wrap:anywhere}
+.wcard .k{display:flex;justify-content:space-between;gap:8px;color:var(--muted)}
+.wcard .k span:last-child{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;text-align:end}
+.tokbar{height:5px;background:var(--line2);border-radius:3px;overflow:hidden}
+.tokbar i{display:block;height:100%;background:var(--c)}
+.tokbar.warn i{background:var(--amber)}
+.wtwo{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:12px;margin-bottom:12px}
+.wbox{border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:12px 14px}
+.wbox h3{margin:0 0 6px;font:600 15.5px var(--head);color:var(--ink);display:flex;gap:8px;align-items:center}
+.wbox .count{background:var(--red);color:#fff;font:600 12px var(--head);border-radius:9px;padding:1px 7px}
+.wrule{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line2);font-size:14px}
+.wrule:first-of-type{border-top:0}
+.wrule .wlock{font-size:12.5px;color:var(--muted)}
+.tgl{all:unset;cursor:pointer;width:38px;height:21px;border-radius:11px;background:var(--line);position:relative;flex-shrink:0}
+.tgl::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.tgl[aria-checked="true"]{background:var(--ink)}
+.tgl[aria-checked="true"]::after{inset-inline-start:20px}
+.tgl:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.wtab{width:100%;border-collapse:collapse;font-size:14px}
+.wtab th{font:600 12.5px var(--head);color:var(--muted);text-align:start;padding:7px 8px;border-bottom:1px solid var(--line)}
+.wtab td{padding:9px 8px;border-bottom:1px solid var(--line2);vertical-align:middle}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{all:unset;cursor:pointer;font:600 12.5px var(--head);color:var(--muted);padding:4px 9px}
+.seg button.on{background:var(--ink);color:#fff}
+.seg button.on.off{background:var(--red)}
+.seg button:focus-visible{outline:3px solid var(--sun);outline-offset:-2px}
+.wtab select{font:13px var(--body);border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--white);color:var(--ink)}
+.light{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:6px;vertical-align:middle}
+.l-g{background:var(--green)}.l-y{background:var(--amber)}.l-r{background:var(--red)}.l-x{background:#C9CBD4}
+@media (max-width:900px){.wcards{grid-template-columns:repeat(2,minmax(0,1fr))}.wtwo{grid-template-columns:1fr}}
+@media (max-width:520px){.wtab .hide-ph{display:none}}
 .runs .sum{white-space:pre-line;font-size:14px;color:var(--text);margin-top:4px}
 @media (max-width:1100px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:900px){
@@ -284,16 +324,15 @@ tr.gone .btn{visibility:hidden}
     <section class="tab" data-tab="junior" aria-label="ג'וניור DM">
       <section class="sec" id="office" aria-labelledby="oTitle" style="margin-bottom:26px">
         <div class="ohead">
-          <h2 style="margin:0"><span class="h" id="oTitle">המשרד</span></h2>
+          <h2 style="margin:0"><span class="h" id="oTitle">השבוע במשרד</span></h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-            <div class="chips" id="oMode" role="group" aria-label="איך הם עובדים">
-              <button class="chip" type="button" data-mode="ask">שואלים לפני כל ריצה</button>
-              <button class="chip" type="button" data-mode="auto">אוטומטי</button>
-            </div>
+            <button class="btn" id="oHow" type="button" aria-expanded="false" aria-controls="wHow">איך הם עובדים</button>
             <button class="btn" id="oStop" type="button" style="color:var(--red);border-color:#EBC3BA">עצור הכול</button>
           </div>
         </div>
         <div class="stopbar" id="oStopped" hidden><span id="oStoppedText">הכול עצור</span><button class="btn sm" id="oResume" type="button">להמשיך</button></div>
+        <div id="wBoard"></div>
+        <div class="wbox" id="wHow" hidden style="margin-bottom:12px"></div>
         <p class="note" id="oModeNote"></p>
         <p class="note" id="oTokens"></p>
         <div class="ogrid" style="margin-top:10px">
@@ -304,18 +343,20 @@ tr.gone .btn{visibility:hidden}
             <summary>מי עושה מה, ואיך לעבוד איתם</summary><div class="gs">
             <div class="g"><b style="color:#1D2B55">ג'וניור, הראש</b>
               <span>אחראי על התוכנית והיעד, המדריכים לגוגל, הדוח השבועי, וההוראות לשאר.</span>
-              <ul><li>מדברים איתו בשיחה עם /junior: "קדימה", "עצור", "תגיד לבמאי ש…".</li><li>במוצאי שבת קוראים את הדוח, ואומרים כן או לא להצעות שלו.</li></ul></div>
+              <ul><li>מדברים איתו בשיחה עם /junior: "עצור הכול", "תגיד לבמאי ש…", "מה המצב?".</li><li>במוצאי שבת קוראים את הדוח ואת לוח השבוע, ואומרים כן או לא להצעות שלו.</li></ul></div>
             <div class="g"><b style="color:#C8503C">הבמאי</b>
               <span>אחראי על הרילסים, הסטוריז, הפוסטים והמלאי.</span>
               <ul><li>הוראה במשפט על נושא השבוע עוזרת לו יותר מכל דבר ("יותר על בגרות").</li><li>מה שלא עוצרים ב"לא" עולה לבד 6 שעות לפני הזמן. עוברים על השבוע ביומן למטה.</li></ul></div>
             <div class="g"><b style="color:#3C8F5F">השגריר</b>
-              <span>אחראי על קבוצות, קהילות ושותפים: פנייה אחת ביום, ובדיקה מי ענה.</span>
+              <span>אחראי על קבוצות, קהילות ושותפים: 3 פניות בשבוע (ראשון, שלישי, חמישי), ובדיקה מי ענה.</span>
               <ul><li>מאשרים את הפנייה באותו יום, כדי שלא תתיישן.</li><li>מי ששולח בעצמו לוחץ "שלחתי", כדי שנמדוד כמה הביאה.</li></ul></div>
             <div class="g"><b style="color:#6B5BD2">הקהילן</b>
               <span>אחראי על התשובות בעמודים (שאלות עונה לבד), ועל תגובות בקבוצות וברדיט.</span>
               <ul><li>עוברים פעם ביום על "הרשימה של הקהילן", ואפשר "לאשר הכול".</li><li>את התגובות לרדיט מעתיקים ומפרסמים מהחשבון שלך: כך החשבון צובר נקודות לפני הפוסטים.</li></ul></div>
             <div class="g"><b style="color:#8A5A12">השולחן שלך</b>
               <span>כל מה שמחכה לך. נגיעה בשולחן או בשורה פותחת את הבקשות. "עצור הכול" למעלה עוצר את כולם.</span></div>
+            <div class="g"><b style="color:var(--ink)">הישיבה</b>
+              <span>ב־08:00, 13:00, 18:00 ו־23:00 הם נפגשים. בדיקה אחת אומרת למי יש עבודה, ורק הוא עובד. הם גם משאירים הוראות זה לזה.</span></div>
           </div></details>
           </div>
         </div>
@@ -1235,14 +1276,24 @@ const WHO = {
   ambassador: {name: 'השגריר', role: 'קהילות, שותפים ועיתונות', color: '#3C8F5F'},
   community: {name: 'הקהילן', role: 'תשובות בעמודים, תגובות בקבוצות וברדיט', color: '#6B5BD2'},
 };
-// When each one runs by himself (the scheduled tasks, Israel time); day 6 is Saturday night.
+// When each one may work (office version 2, Israel time): the meeting at 08, 13, 18 and 23 calls only who has work, and
+// the weekly runs on Saturday night (day 6) and Wednesday (day 3).
+const MEET = (what, hours = [8, 13, 18, 23]) => hours.map((h) => ({h, m: 0, what}));
 const SCHEDULE = {
-  junior: [{h: 9, m: 0, what: 'מעלה את הדפים לגוגל שאושרו, ומתקן מה שהחזרת'}, {dow: 6, h: 21, m: 0, what: 'הדוח השבועי, והתוכנית לשבוע הבא לבמאי ולשגריר'}],
+  junior: [...MEET('בדיקת הבוקר: הדפים לגוגל, ומה שהחזרת', [8]), {dow: 6, h: 21, m: 0, what: 'הדוח, לוח השבוע וההוראות לכל אחד'}],
   director: [{dow: 6, h: 21, m: 30, what: 'רילסים, סטוריז ופוסטים לשבוע הבא, והמלאי'}, {dow: 3, h: 10, m: 0, what: 'רילס על הטרנד של השבוע'}],
-  ambassador: [{h: 10, m: 0, what: 'פנייה אחת לקהילה או לשותף, ובדיקה מי ענה'}],
-  // Every 3 hours (owner, 3.11).
-  community: [0, 3, 6, 9, 12, 15, 18, 21].map((h) => ({h, m: 0, what: 'עונה בעמודים, ומכין תגובות לקבוצות ולרדיט'})),
+  ambassador: [0, 2, 4].map((dow) => ({dow, h: 8, m: 0, what: 'פנייה לקהילה או לשותף, ובדיקה מי ענה'})),
+  community: MEET('בישיבה, אם יש תגובות חדשות'),
 };
+const MODE_HE = {on: 'לבד', ask: 'שואל', off: 'כבוי'};
+const RULES = [
+  ['posts', 'רילס, סטורי ופוסט בעמודים שלנו', '6 שעות לפני הזמן'],
+  ['stock', 'פריט מהמלאי ביום שקט', 'מ־19:00'],
+  ['templates', 'תשובות מתבניות שאישרת', ''],
+  ['community', 'הקהילן עונה על שאלות בפוסטים שלנו', ''],
+  ['guides', 'דפים לגוגל', '12 שעות אחרי שנכתבו'],
+];
+const CAPS = [300000, 600000, 800000, 1000000, 1500000, 2000000, 3000000, 4000000, 6000000];
 const ilMinutes = (d = new Date()) => { const [h, m] = d.toLocaleTimeString('en-GB', {timeZone: 'Asia/Jerusalem', hour12: false}).split(':').map(Number); return h * 60 + m; };
 const pad2 = (n) => String(n).padStart(2, '0');
 /** The next scheduled run of a helper: when, and what it is for. */
@@ -1260,13 +1311,16 @@ const nextRun = (agent) => nextJob(agent).when;
 
 async function loadOffice(draw = true) {
   const since = new Date(Date.now() - 8 * 86400000).toISOString();
-  const [st, rn, od, us] = await Promise.all([
+  const [st, rn, od, us, wk] = await Promise.all([
     sb.from('agent_state').select('*').eq('id', 1).maybeSingle(),
     sb.from('agent_runs').select('*').gte('asked_at', since).order('id', {ascending: false}).limit(300),
     sb.from('agent_orders').select('*').order('id', {ascending: false}).limit(60),
     sb.from('agent_usage').select('*').gte('day', since.slice(0, 10)).limit(100),
+    // The week's board (migration 20261104_office2.sql); before that migration it is simply missing.
+    sb.from('agent_week').select('*').eq('week', sundayOf(ilDay())).maybeSingle(),
   ]);
-  office = {state: st.error ? null : st.data, runs: rn.error ? [] : rn.data, orders: od.error ? [] : od.data, usage: us.error ? [] : us.data, missing: !!st.error};
+  office = {state: st.error ? null : st.data, runs: rn.error ? [] : rn.data, orders: od.error ? [] : od.data, usage: us.error ? [] : us.data,
+    week: wk.error ? null : wk.data, missing: !!st.error};
   if (draw) renderOffice();
 }
 
@@ -1450,15 +1504,13 @@ function renderOffice() {
   const s = office.state || {mode: 'ask', stopped: false};
   const desks = Object.fromEntries(AGENT_IDS.map((a) => [a, deskOf(a)]));
   const mine = onMyDesk();
-  document.querySelectorAll('#oMode [data-mode]').forEach((b) => b.classList.toggle('on', b.dataset.mode === s.mode));
   $('oStop').hidden = !!s.stopped;
   $('oStopped').hidden = !s.stopped;
   $('oStoppedText').textContent = s.stopped ? `הכול עצור ${ago(s.stopped_at)}: אף ריצה לא מתחילה, ושום דבר לא עולה לבד.` : '';
   const officeTok = usageOf('office'), allTok = (office.usage || []).filter((u) => u.day === ilDay()).reduce((n, u) => n + tokAll(u), 0);
-  $('oTokens').textContent = allTok ? `טוקנים היום בכל המשרד: ${fmtTok(allTok)}${officeTok ? `, מתוכם ${fmtTok(tokAll(officeTok))} בבדיקות של כל חצי שעה` : ''}` : '';
-  $('oModeNote').textContent = s.mode === 'auto'
-    ? `אוטומטי ${ago(s.mode_since)}: הם מתחילים בלי לשאול, ושולחים לך עדכון כל 3 שעות${s.last_update_at ? ` (האחרון ${ago(s.last_update_at)})` : ''}. הודעות בקבוצות עדיין מחכות ל"כן" שלך.`
-    : 'לפני כל ריצה הם מבקשים "קדימה" על השולחן שלך, ומעדכנים בסוף. הם עובדים רק כשהמחשב דלוק ו־Claude פתוח.';
+  $('oTokens').textContent = allTok ? `טוקנים היום בכל המשרד: ${fmtTok(allTok)}${officeTok ? `, מתוכם ${fmtTok(tokAll(officeTok))} בישיבות עצמן` : ''}` : '';
+  $('oModeNote').textContent = 'הם נפגשים ב־08:00, 13:00, 18:00 ו־23:00, ורק מי שיש לו עבודה עובד. הם עובדים כשהמחשב דלוק ו־Claude פתוח. מה שעולה לבד עולה מהשרת גם כשהמחשב כבוי.';
+  renderWeekBoard(desks, mine);
   const STATE = {work: ['עובד', 's-work'], ask: ['מבקש להתחיל', 's-wait'], soon: ['קיבל קדימה', 's-work'], bad: ['נכשל', 's-bad'], rest: [s.stopped ? 'עצור' : 'בהפסקה', 's-rest']};
   $('oList').innerHTML = AGENT_IDS.map((a) => {
     const d = desks[a], [label, cls] = STATE[d.s];
@@ -1475,6 +1527,67 @@ function renderOffice() {
       <span class="what">${esc([mine.asking.length && `${mine.asking.length} מבקשים להתחיל`, mine.toSend && `${mine.toSend} הודעות לשלוח`, mine.props && `${mine.props} הצעות`, mine.tpls && `${mine.tpls} תשובות קבועות`].filter(Boolean).join(' · ') || 'אין מה שמחכה לך')}</span></span></button>`;
   $('oFloor').innerHTML = floorSvg(desks, mine);
   renderPanel();
+}
+
+// ---- The week's board (office version 2, sketch 44 A): the goal and ג'וניור's line, a card per helper with what he was
+// asked this week, his number and his tokens against the cap, what waits for the owner, and what goes out by itself.
+// "איך הם עובדים" opens the table of B: each helper by himself, asking, or off, and his daily cap.
+const capOf = (a) => Number((office.state?.caps || {})[a]) || 0;
+const modeOf = (a) => (office.state?.agents || {})[a] || (a === 'ambassador' ? 'ask' : 'on');
+function tokBar(a) {
+  const used = usageOf(a) ? tokAll(usageOf(a)) : 0, cap = capOf(a), pct = cap ? Math.min(100, used / cap * 100) : 0;
+  return {used, cap, pct, html: `<div class="k"><span>טוקנים היום</span><span>${esc(fmtTok(used))}${cap ? ` / ${esc(fmtTok(cap))}` : ''}</span></div>
+    <div class="tokbar ${pct >= 85 ? 'warn' : ''}" style="--c:${WHO[a].color}"><i style="width:${pct.toFixed(0)}%"></i></div>`};
+}
+function renderWeekBoard(desks, mine) {
+  const s = office.state || {}, wk = office.week, rules = s.rules || {};
+  const sun = sundayOf(ilDay()), days = weekDays(sun).filter((d) => d <= ilDay());
+  const goal = wk?.goal || GOAL, got = downloadsOn(days), left = Math.max(0, goal - got);
+  const daysLeft = Math.max(1, 7 - days.length + 1);
+  const STATE = {work: 'עובד עכשיו', ask: 'מבקש להתחיל', soon: 'מתחיל עוד רגע', bad: 'נכשל', rest: ''};
+  const cards = AGENT_IDS.map((a) => {
+    const p = (wk?.plan || {})[a] || {}, t = tokBar(a), d = desks[a], m = modeOf(a);
+    const state = m === 'off' ? 'כבוי' : t.cap && t.used >= t.cap ? 'הגיע לתקרה, חוזר מחר' : STATE[d.s] || `הבא: ${nextJob(a).when}`;
+    return `<div class="wcard" style="--c:${WHO[a].color}"><b>${esc(WHO[a].name)}</b>
+      <span class="need">${esc(p.need || (wk ? '' : 'לוח השבוע נכתב במוצ"ש'))}</span>
+      ${p.target != null ? `<div class="k"><span>יעד השבוע</span><span>${esc(p.target)} ${esc(p.metric || '')}</span></div>` : ''}
+      <span class="note" style="margin:0">${esc(weekNumber(a))}</span>
+      ${t.html}<span class="note" style="margin:0">${esc(MODE_HE[m])} · ${esc(state)}</span></div>`;
+  }).join('');
+  const waits = [mine.asking.length && `${mine.asking.length} מבקשים להתחיל`, mine.toSend && `${mine.toSend} הודעות לשלוח`,
+    mine.props && `${mine.props} הצעות של ג'וניור`, mine.tpls && `${mine.tpls} תשובות קבועות`].filter(Boolean);
+  const community = communityItems(), cWait = community.comments.length + community.replies.length;
+  if (cWait) waits.push(`${cWait} ברשימה של הקהילן`);
+  $('wBoard').innerHTML = `<div class="wk"><div class="gl"><span><span class="big">${esc(got)}</span> <span class="note" style="margin:0">מתוך ${esc(goal)} הורדות השבוע</span></span>
+      <span class="note" style="margin:0">${left ? `צריך עוד ${esc(Math.ceil(left / daysLeft))} ביום` : 'היעד של השבוע הושג'}</span></div>
+      <div class="meter"><i style="width:${Math.min(100, got / goal * 100).toFixed(0)}%"></i></div>
+      <span class="note" style="margin:0">${wk?.note ? `ג'וניור: ${esc(wk.note)}` : 'ג\'וניור כותב את לוח השבוע במוצאי שבת.'}</span></div>
+    <div class="wcards">${cards}</div>
+    <div class="wtwo"><div class="wbox"><h3>מחכה לך ${waits.length ? `<span class="count">${esc(mine.total + cWait)}</span>` : ''}</h3>
+      ${waits.length ? `<div class="note" style="margin:0 0 8px">${esc(waits.join(' · '))}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn pri sm" type="button" data-oagent="me">לשולחן שלך</button>${cWait ? '<button class="btn sm" type="button" data-oscroll="cList">לרשימה של הקהילן</button>' : ''}</div>`
+        : '<div class="empty">אין מה שמחכה לך.</div>'}</div>
+      <div class="wbox"><h3>עולה לבד</h3>
+      ${RULES.map(([k, label, when]) => `<div class="wrule"><span>${esc(label)}${when ? ` <span class="wlock">${esc(when)}</span>` : ''}</span>
+        <button class="tgl" type="button" role="switch" aria-checked="${rules[k] !== false}" aria-label="${esc(label)}" data-rule="${k}"></button></div>`).join('')}
+      <div class="wrule"><span>קבוצות של אחרים, שותפים ועיתונות</span><span class="wlock">תמיד שואלים</span></div></div></div>`;
+  const open = !$('wHow').hidden;
+  $('oHow').setAttribute('aria-expanded', open);
+  if (open) $('wHow').innerHTML = `<h3>איך כל אחד עובד</h3><div style="overflow-x:auto"><table class="wtab"><thead><tr>
+      <th>מי</th><th>מצב</th><th class="hide-ph">השבוע</th><th>תקרה ביום</th><th>איך</th></tr></thead><tbody>
+      ${AGENT_IDS.map((a) => {
+        const m = modeOf(a), t = tokBar(a), d = desks[a];
+        const light = m === 'off' ? 'l-x' : d.s === 'bad' ? 'l-r' : d.s === 'ask' || t.pct >= 85 ? 'l-y' : 'l-g';
+        const caps = [...new Set([...CAPS, t.cap].filter(Boolean))].sort((x, y) => x - y);
+        return `<tr><td><b style="color:${WHO[a].color};font-family:var(--head)">${esc(WHO[a].name)}</b></td>
+          <td><span class="light ${light}"></span>${esc(STATE[d.s] || (m === 'off' ? 'כבוי' : 'בין ישיבות'))}</td>
+          <td class="hide-ph">${esc(weekNumber(a))}</td>
+          <td><select data-cap="${a}" aria-label="תקרה ל${esc(WHO[a].name)}">${caps.map((c) => `<option value="${c}" ${c === t.cap ? 'selected' : ''}>${esc(fmtTok(c))}</option>`).join('')}</select>
+            <span class="note" style="margin:0"> היום ${esc(fmtTok(t.used))}</span></td>
+          <td><span class="seg" role="group" aria-label="איך ${esc(WHO[a].name)} עובד">${['on', 'ask', 'off'].map((v) =>
+            `<button type="button" class="${v === m ? 'on' : ''} ${v === 'off' ? 'off' : ''}" data-amode="${a}:${v}" aria-pressed="${v === m}">${MODE_HE[v]}</button>`).join('')}</span></td></tr>`;
+      }).join('')}</tbody></table></div>
+      <p class="note" style="margin:8px 0 0">לבד: מתחיל בישיבה בלי לשאול. שואל: מבקש "קדימה" על השולחן שלך. כבוי: לא עובד. מי שעבר את התקרה חוזר מחר.</p>`;
 }
 
 function renderPanel() {
@@ -1586,6 +1699,23 @@ $('office').addEventListener('click', async (e) => {
   if (b.dataset.oagent) { oPick = oPick === b.dataset.oagent ? null : b.dataset.oagent; renderOffice(); if (oPick) $('oPanel').scrollIntoView({behavior: 'smooth', block: 'nearest'}); return; }
   if (b.dataset.oclose) { oPick = null; renderOffice(); return; }
   if (b.dataset.oscroll) { $(b.dataset.oscroll).scrollIntoView({behavior: 'smooth', block: 'start'}); return; }
+  if (b.id === 'oHow') { $('wHow').hidden = !$('wHow').hidden; renderOffice(); return; }
+  // The owner's switches (office version 2): what goes out by itself, and how each helper works. The server checks both.
+  if (b.dataset.rule) {
+    const rules = {...(office.state?.rules || {})}, k = b.dataset.rule, on = rules[k] !== false;
+    if (on && k === 'posts' && !confirm('לכבות? רילס, סטורי ופוסט לא יאושרו לבד, וכל אחד יחכה ל"מאשר" שלך.')) return;
+    rules[k] = !on;
+    b.disabled = true;
+    if (!await officeChange(sb.from('agent_state').update({rules}).eq('id', 1))) b.disabled = false;
+    return;
+  }
+  if (b.dataset.amode) {
+    const [a, v] = b.dataset.amode.split(':');
+    if (modeOf(a) === v) return;
+    b.disabled = true;
+    if (!await officeChange(sb.from('agent_state').update({agents: {...(office.state?.agents || {}), [a]: v}}).eq('id', 1))) b.disabled = false;
+    return;
+  }
   if (b.dataset.mode) {
     const mode = b.dataset.mode;
     if (mode === office.state?.mode) return;
@@ -1605,6 +1735,13 @@ $('office').addEventListener('click', async (e) => {
   }
   if (!ok) b.disabled = false;
   renderBoard();
+});
+$('office').addEventListener('change', async (e) => {
+  const sel = e.target.closest('select[data-cap]');
+  if (!sel) return;
+  const caps = {...(office.state?.caps || {}), [sel.dataset.cap]: Number(sel.value)};
+  sel.disabled = true;
+  if (!await officeChange(sb.from('agent_state').update({caps}).eq('id', 1))) sel.disabled = false;
 });
 // The office is the one place on the page that changes by the minute.
 setInterval(() => { if (!document.hidden && !$('app').hidden && tab === 'junior') loadOffice(); }, 60 * 1000);
