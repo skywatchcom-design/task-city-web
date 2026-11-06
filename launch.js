@@ -21,12 +21,21 @@ window.SKY = {
 // YouTube, Facebook...). Only the short name is kept, never the address. Empty when nothing says.
 window.SKY.source = function () {
   try {
-    var s = (new URLSearchParams(location.search).get('s') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12);
+    var q = new URLSearchParams(location.search);
+    var s = (q.get('s') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12);
     if (s) return s;
-    var host = document.referrer ? new URL(document.referrer).hostname.replace(/^www\.|^m\.|^l\./, '') : '';
+    // AI assistants (geo, 6.11): ChatGPT adds utm_source=chatgpt.com to the links it gives and often sends no
+    // referrer, Perplexity and Copilot do the same. The tag is read like a referring site.
+    var utm = (q.get('utm_source') || '').toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
+    var host = utm || (document.referrer ? new URL(document.referrer).hostname : '');
+    host = host.replace(/^www\.|^m\.|^l\./, '');
     if (!host || host === location.hostname) return '';
-    var known = [['google', /(^|\.)google\./], ['bing', /(^|\.)bing\.com$/], ['ddg', /(^|\.)duckduckgo\.com$/],
-      ['chatgpt', /(^|\.)(chatgpt|openai)\.com$/], ['yt', /(^|\.)(youtube\.com|youtu\.be)$/], ['fb', /(^|\.)facebook\.com$/],
+    // Gemini before Google: gemini.google.com would otherwise count as a Google search.
+    var known = [['gemini', /(^|\.)gemini(\.google\.com)?$/], ['google', /(^|\.)google\./], ['bing', /(^|\.)bing\.com$/], ['ddg', /(^|\.)duckduckgo\.com$/],
+      ['chatgpt', /(^|\.)(chatgpt|openai)(\.com)?$/], ['perplexity', /(^|\.)perplexity(\.ai)?$/],
+      ['claude', /(^|\.)claude(\.ai)?$/],
+      ['copilot', /(^|\.)copilot(\.microsoft)?(\.com)?$/],
+      ['yt', /(^|\.)(youtube\.com|youtu\.be)$/], ['fb', /(^|\.)facebook\.com$/],
       ['ig', /(^|\.)instagram\.com$/], ['x', /(^|\.)(x\.com|t\.co|twitter\.com)$/], ['github', /(^|\.)github\.io$/]];
     for (var i = 0; i < known.length; i++) if (known[i][1].test(host)) return known[i][0];
     return 'other';

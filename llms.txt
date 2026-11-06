@@ -1,0 +1,48 @@
+# SkyTasks
+
+> SkyTasks is a free task, calendar and study planner app in Hebrew and English, for iPhone and iPad (Android in Google Play testing). You type or say one sentence, like "הגשה בסטטיסטיקה ביום חמישי בעשר" ("statistics assignment Thursday at 10"), and it lands on the right day and time with a reminder. Every finished task builds a little more of your own city. No ads.
+
+Who it is for: pupils, students, and anyone who wants to manage their calendar and tasks properly. Also couples and shared homes, and people with attention difficulties (an optional focus mode).
+
+## What it does
+- Add a task in one sentence, typed or by voice, in Hebrew or English. Days, times, "tomorrow", "next week", "every Tuesday" and dates are understood on the device.
+- Reminders before each task (on time, 5, 15, 30 or 60 minutes), with Done, 15 more minutes, Evening and Tomorrow buttons.
+- A class timetable that repeats every week until the end of the semester, without lessons on Israeli school holidays.
+- Exams with a countdown and suggested study times in the free gaps between lessons.
+- The calendars already on the phone (Google, iCloud, Outlook) in the same calendar tab, in day, 3-day, week and month views.
+- Recurring tasks, projects, a morning plan and an evening summary.
+- A shared home for couples and families: one shared neighbourhood, tasks for "whoever gets to it" or for one person.
+- Home screen widgets, and on iPhone adding a task by voice from the lock screen.
+- An isometric city that grows as you finish tasks: each area of life is a neighbourhood, each project a building.
+
+## Price and platforms
+- Free, no ads.
+- iPhone and iPad: https://apps.apple.com/app/id6826658767
+- Android: in Google Play testing; leave a Gmail address at https://skytasks.pages.dev/get/
+- Languages: Hebrew and English.
+
+## Pages
+- [Download](https://skytasks.pages.dev/get/)
+- [About SkyTasks](https://skytasks.pages.dev/)
+- [Guides: study planning and time management (Hebrew)](https://skytasks.pages.dev/guides/)
+- [Tool: study plan for an exam (Hebrew)](https://skytasks.pages.dev/tools/study-plan/)
+- [Privacy policy](https://skytasks.pages.dev/privacy)
+
+## In Hebrew
+SkyTasks היא אפליקציה חינמית לניהול משימות, יומן ולימודים, בעברית ובאנגלית, לאייפון ולאייפד (באנדרואיד בבדיקה של גוגל פליי). כותבים או אומרים משפט אחד, והמשימה נכנסת ליום ולשעה הנכונים עם תזכורת. יש בה מערכת שעות, מבחנים עם ספירה לאחור וזמני למידה, היומנים של הטלפון, בית משותף לזוגות, ועיר שגדלה עם כל משימה שסיימתם. בלי פרסומות.
+
+Contact: skywatchcom@gmail.com
+
+<!-- guides: written by tools/junior.py publish -->
+## Guides (Hebrew)
+- [איך מוסיפים תזכורת בקול ממסך הנעילה של האייפון, בלי לפתוח אפליקציה](https://skytasks.pages.dev/guides/iphone-voice-reminder-lock-screen/)
+- [ווידג'ט משימות לאייפון: המשימות של היום על מסך הבית ועל מסך הנעילה](https://skytasks.pages.dev/guides/iphone-tasks-widget/)
+- [אפליקציה למשימות משותפות לזוג ולבית: מי קונה, מי מתקשר, ומה כבר נעשה](https://skytasks.pages.dev/guides/shared-tasks-couples/)
+- [אפליקציה לתזכורות בעברית: לכתוב משפט, ולקבל תזכורת בזמן](https://skytasks.pages.dev/guides/reminders-app/)
+- [אפליקציה למערכת שעות: כך מכניסים את המערכת פעם אחת לכל הסמסטר](https://skytasks.pages.dev/guides/timetable-app/)
+- [אפליקציה לניהול זמן לסטודנטים: מערכת, הגשות ומבחנים במקום אחד](https://skytasks.pages.dev/guides/student-time-app/)
+- [אפליקציה לניהול משימות בעברית: מה לחפש, ואיך בוחרים](https://skytasks.pages.dev/guides/task-app-hebrew/)
+- [איך לא לשכוח הגשות, עבודות ומבחנים בסמסטר](https://skytasks.pages.dev/guides/semester-deadlines/)
+- [איך מסדרים מערכת שעות שבועית ללימודים](https://skytasks.pages.dev/guides/weekly-study-schedule/)
+- [איך בונים תוכנית למידה למבחן, גם לבגרות](https://skytasks.pages.dev/guides/study-plan-for-exam/)
+<!-- /guides -->

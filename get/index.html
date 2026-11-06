@@ -68,6 +68,12 @@ button.btn[disabled]{opacity:.6;cursor:default}
 .done{border-inline-start:4px solid var(--sun);padding:4px 12px;margin-bottom:18px}
 .done b{font:800 18px var(--f-head)}
 .done p{margin:4px 0 0}
+/* On a computer: a QR code that opens this page on the phone, with the same source and "qr" after it (5.11). */
+.qr{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.qr .code{width:148px;height:148px;padding:8px;background:#fff;border-radius:10px;border:1px solid var(--line)}
+.qr .code svg{display:block;width:100%;height:100%}
+.qr h2{margin-bottom:6px}.qr p{margin:0}
+@media (max-width:420px){.qr{grid-template-columns:1fr;justify-items:center;text-align:center}}
 .foot{margin-top:28px;font-size:14px;color:var(--sub);display:flex;flex-wrap:wrap;gap:14px}
 .foot a{color:var(--sub)}
 </style>
@@ -81,6 +87,14 @@ button.btn[disabled]{opacity:.6;cursor:default}
   <h1 data-he="המשימות שלך, והעיר שהן בונות" data-en="Your tasks, and the city they build"></h1>
   <div class="rail"><i></i><i></i><i></i></div>
   <p class="lead" data-he="בחרו את הטלפון שלכם." data-en="Pick your phone."></p>
+
+  <section class="card qr" id="qr" hidden>
+    <div class="code" id="qrCode" aria-hidden="true"></div>
+    <div>
+      <h2 data-he="סרקו עם הטלפון" data-en="Scan with your phone"></h2>
+      <p data-he="פותחים את המצלמה, מכוונים לריבוע, והדף נפתח בטלפון: באייפון ישר ב־App Store." data-en="Open the camera, point it at the square, and this page opens on your phone: on an iPhone, straight in the App Store."></p>
+    </div>
+  </section>
 
   <section class="card" id="ios">
     <h2 data-he="אייפון ואייפד" data-en="iPhone and iPad"></h2>
@@ -127,6 +141,17 @@ button.btn[disabled]{opacity:.6;cursor:default}
   if(apple&&location.hash!=='#android'){location.replace(store);return;}
   document.getElementById('appStore').href=store;
   if(android||location.hash==='#android'){document.getElementById('ios').hidden=true;document.querySelector('.lead').hidden=true;}
+  // A computer cannot install the app: show a QR code of this page for the phone, tagged "<source>qr" so we count who moved over.
+  if(!android&&location.hash!=='#android'){
+    var src=((S.source&&S.source())||'pc').slice(0,10)+'qr';
+    var url='https://skytasks.pages.dev/get/?s='+src;
+    var q=document.createElement('script');
+    q.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+    q.onload=function(){try{var c=qrcode(0,'M');c.addData(url);c.make();
+      document.getElementById('qrCode').innerHTML=c.createSvgTag({cellSize:4,margin:0,scalable:true});
+      document.getElementById('qr').hidden=false;}catch(e){}};
+    document.head.appendChild(q);
+  }
   var r=document.documentElement;
   function set(l){
     r.lang=l;r.dir=l==='he'?'rtl':'ltr';
