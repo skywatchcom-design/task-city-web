@@ -248,6 +248,30 @@ tr.gone .btn{visibility:hidden}
 .tokbar i{display:block;height:100%;background:var(--c)}
 .tokbar.warn i{background:var(--amber)}
 .wtwo{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:12px;margin-bottom:12px}
+.meet{border:1px solid var(--sun);background:#FFFBF2;border-radius:14px 14px 14px 2px;padding:14px 16px;margin-bottom:14px}
+.meet h3{margin:0;font:700 17px var(--head);color:var(--ink)}
+.meet .mtop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.meet .left{font:700 24px var(--head);color:var(--ink);font-variant-numeric:tabular-nums}
+.meet .q{padding:10px 0;border-bottom:1px solid var(--line)}
+.meet .q:last-of-type{border-bottom:0}
+.meet .who{font:600 13px var(--head);display:inline-flex;align-items:center;gap:6px;margin-inline-end:6px}
+.meet .who::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
+.meet .opts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.meet .opt{all:unset;cursor:pointer;font:600 14px var(--body);border:1px solid var(--line);background:#fff;color:var(--ink);padding:6px 12px;border-radius:10px 10px 10px 2px}
+.meet .opt.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.meet .opt:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.meet textarea{width:100%;box-sizing:border-box;min-height:64px;margin-top:6px;border:1px solid var(--line);border-radius:10px 10px 10px 2px;padding:9px 10px;font:15px var(--body);resize:vertical}
+.meet .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.mins{margin-bottom:14px}
+.mins details{border:1px solid var(--line);border-radius:12px 12px 12px 2px;margin-top:8px}
+.mins summary{cursor:pointer;padding:10px 14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font:600 15px var(--head);color:var(--ink)}
+.mins summary:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.mins .ln{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:8px 14px;border-top:1px solid var(--line2);font-size:14.5px}
+.mins .ln b{font:600 13px var(--head);color:var(--c)}
+.mins .dec{margin:0;padding:10px 14px 12px 14px;border-top:1px solid var(--line2);font-size:14.5px}
+.mins .dec li{margin:2px 0}
+.mins .dec .me{color:var(--red);font-weight:600}
+@media (max-width:640px){.mins .ln{grid-template-columns:1fr;gap:2px}}
 .wbox{border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:12px 14px}
 .wbox h3{margin:0 0 6px;font:600 15.5px var(--head);color:var(--ink);display:flex;gap:8px;align-items:center}
 .wbox .count{background:var(--red);color:#fff;font:600 12px var(--head);border-radius:9px;padding:1px 7px}
@@ -331,7 +355,9 @@ tr.gone .btn{visibility:hidden}
           </div>
         </div>
         <div class="stopbar" id="oStopped" hidden><span id="oStoppedText">הכול עצור</span><button class="btn sm" id="oResume" type="button">להמשיך</button></div>
+        <div id="oMeet"></div>
         <div id="wBoard"></div>
+        <div class="mins" id="oMinutes"></div>
         <div class="wbox" id="wHow" hidden style="margin-bottom:12px"></div>
         <p class="note" id="oModeNote"></p>
         <p class="note" id="oTokens"></p>
@@ -984,7 +1010,7 @@ function sourcesIn(days) {
   });
   return Object.entries(out).sort((a, b) => b[1] - a[1]);
 }
-const SRCNAME = {fb: 'פייסבוק', ig: 'אינסטגרם', yt: 'יוטיוב', google: 'גוגל', bing: 'Bing', ddg: 'DuckDuckGo', chatgpt: 'ChatGPT', community: 'קהילות', wa: 'וואטסאפ', x: 'X', github: 'האתר הישן', other: 'אחר'};
+const SRCNAME = {fb: 'פייסבוק', ig: 'אינסטגרם', yt: 'יוטיוב', google: 'גוגל', bing: 'Bing', ddg: 'DuckDuckGo', chatgpt: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', claude: 'Claude', copilot: 'Copilot', community: 'קהילות', wa: 'וואטסאפ', x: 'X', github: 'האתר הישן', other: 'אחר'};
 
 function chartSvg(sun) {
   // Weeks from 8 weeks back to the goal's week, the downloads of each, and the dashed line of the pace the goal needs.
@@ -1078,6 +1104,16 @@ function renderJunior() {
       <span class="note">אלה אנשים שנכנסו לאתר מקישור, לא הורדות. ההורדות לפי מקור: ב־App Store Connect, תחת Analytics ← Campaigns, אחרי שמגיעות כמה הורדות מאותו מקור.</span>
     </div><div class="chart">${chartSvg(thisSun)}</div>`;
 
+  // In the answers of AI assistants (geo, 6.11: tools/junior/ai_check.py): the same questions every week, and in how many
+  // of them SkyTasks came up. Written into the weekly report as "ai".
+  function aiLine(ai) {
+    if (!ai || !ai.asked) return '';
+    const prev = (ai.trend || []).slice(-2, -1)[0];
+    const was = prev ? ` · בשבוע שעבר ${esc(String(prev.mentioned))}` : '';
+    const list = (t, xs) => xs?.length ? `<p><b>${t}</b></p><ul>${xs.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+    return `<details class="letter" style="margin-top:12px"><summary>בתשובות של AI: מופיעים ב־${esc(String(ai.mentioned))} מתוך ${esc(String(ai.asked))} שאלות${was}</summary>
+      ${list('מופיעים', ai.found)}${list('עוד לא', ai.missing)}${ai.rivals?.length ? `<p><b>מי כן מופיע:</b> ${esc(ai.rivals.join(', '))}</p>` : ''}</details>`;
+  }
   // ---- the report and the proposals
   const r = meta.junior;
   const props = agent.filter((a) => a.kind === 'proposal' && ['draft', 'changes', 'approved'].includes(a.status));
@@ -1086,6 +1122,7 @@ function renderJunior() {
   $('jReport').innerHTML = (paras.length
       ? `<div class="letter">${paras.map((t, i) => `<p class="${i === 0 ? 'lead' : ''}">${esc(t)}</p>`).join('')}</div>`
       : '<div class="empty">הדוח הראשון ייכתב במוצאי שבת, יחד עם השבוע הבא.</div>')
+    + aiLine(r?.ai)
     + (props.length ? `<div class="alist" style="margin-top:14px">${props.map(agentCard).join('')}</div>` : '');
 
   // ---- the week
@@ -1316,16 +1353,19 @@ const nextRun = (agent) => nextJob(agent).when;
 
 async function loadOffice(draw = true) {
   const since = new Date(Date.now() - 8 * 86400000).toISOString();
-  const [st, rn, od, us, wk] = await Promise.all([
+  const [st, rn, od, us, wk, mt] = await Promise.all([
     sb.from('agent_state').select('*').eq('id', 1).maybeSingle(),
     sb.from('agent_runs').select('*').gte('asked_at', since).order('id', {ascending: false}).limit(300),
     sb.from('agent_orders').select('*').order('id', {ascending: false}).limit(60),
     sb.from('agent_usage').select('*').gte('day', since.slice(0, 10)).limit(100),
     // The week's board (migration 20261104_office2.sql); before that migration it is simply missing.
     sb.from('agent_week').select('*').eq('week', sundayOf(ilDay())).maybeSingle(),
+    // The meetings (migration 20261106_meetings.sql): the one that waits for the owner, and the last two days' minutes.
+    sb.from('agent_meetings').select('*').gte('day', new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10))
+      .order('day', {ascending: false}).order('slot', {ascending: false}).limit(12),
   ]);
   office = {state: st.error ? null : st.data, runs: rn.error ? [] : rn.data, orders: od.error ? [] : od.data, usage: us.error ? [] : us.data,
-    week: wk.error ? null : wk.data, missing: !!st.error};
+    week: wk.error ? null : wk.data, meetings: mt.error ? [] : mt.data, missing: !!st.error};
   if (draw) renderOffice();
 }
 
@@ -1514,8 +1554,9 @@ function renderOffice() {
   $('oStoppedText').textContent = s.stopped ? `הכול עצור ${ago(s.stopped_at)}: אף ריצה לא מתחילה, ושום דבר לא עולה לבד.` : '';
   const officeTok = usageOf('office'), allTok = (office.usage || []).filter((u) => u.day === ilDay()).reduce((n, u) => n + tokAll(u), 0);
   $('oTokens').textContent = allTok ? `טוקנים היום בכל המשרד: ${fmtTok(allTok)}${officeTok ? `, מתוכם ${fmtTok(tokAll(officeTok))} בישיבות עצמן` : ''}` : '';
-  $('oModeNote').textContent = 'הם נפגשים ב־08:00, 13:00, 18:00 ו־23:00, ורק מי שיש לו עבודה עובד. הם עובדים כשהמחשב דלוק ו־Claude פתוח. מה שעולה לבד עולה מהשרת גם כשהמחשב כבוי.';
+  $('oModeNote').textContent = 'הם נפגשים ב־08:00, 13:00, 18:00 ו־23:00, ורק מי שיש לו עבודה עובד. ב־08:00 וב־18:00 הישיבה מחכה לך עד 10 דקות, ותקבל התראה. הם עובדים כשהמחשב דלוק ו־Claude פתוח. מה שעולה לבד עולה מהשרת גם כשהמחשב כבוי.';
   renderWeekBoard(desks, mine);
+  renderMeeting();
   const STATE = {work: ['עובד', 's-work'], ask: ['מבקש להתחיל', 's-wait'], soon: ['מחכה לישיבה', 's-wait'], bad: ['נכשל', 's-bad'], rest: [s.stopped ? 'עצור' : 'בהפסקה', 's-rest']};
   $('oList').innerHTML = AGENT_IDS.map((a) => {
     const d = desks[a], [label, cls] = STATE[d.s];
@@ -1691,6 +1732,61 @@ $('cList').addEventListener('click', async (e) => {
   if (!ok) b.disabled = false;
 });
 
+// ---- The meeting with the owner (sketch 45 B): 08:00 and 18:00 wait up to 10 minutes for his taps and a line. His
+// choices stay on this phone until "סיימתי"; then they go once. Below, the minutes of each meeting (sketch 45 A).
+let meetPick = {}, meetFor = null, meetNote = '';
+const SLOT_NAME = {'08': 'הבוקר', '13': 'הצהריים', '18': 'הערב', '23': 'הלילה'};
+const whoName = (a) => a === 'owner' ? 'אתה' : (WHO[a] ? WHO[a].name : a);
+const whoColor = (a) => a === 'owner' ? 'var(--sun)' : (WHO[a] ? WHO[a].color : 'var(--muted)');
+function waitingMeeting() {
+  return (office.meetings || []).find((m) => m.status === 'waiting' && !m.owner_reply && m.answer_until && Date.parse(m.answer_until) > Date.now() - 60000);
+}
+function leftText(m) {
+  const left = Math.max(0, Math.round((Date.parse(m.answer_until) - Date.now()) / 1000));
+  return `${String(Math.floor(left / 60)).padStart(2, '0')}:${String(left % 60).padStart(2, '0')}`;
+}
+function renderMeeting(force = false) {
+  const m = waitingMeeting();
+  if (!m) { $('oMeet').innerHTML = ''; meetFor = null; }
+  // The office reloads every 15 seconds while a meeting waits: the card is drawn again only when it changes, so a line
+  // the owner is typing keeps its place.
+  else if (!force && meetFor === m.id && $('oMeet').firstElementChild) { /* unchanged */ }
+  else {
+    if (meetFor !== m.id) { meetFor = m.id; meetNote = ''; meetPick = Object.fromEntries((m.questions || []).map((q, i) => [i, q.pick || 0])); }
+    const qs = (m.questions || []).map((q, i) => `<div class="q"><span class="who" style="--c:${whoColor(q.agent)}">${esc(whoName(q.agent))}</span>${esc(q.text)}
+      <div class="opts">${(q.options || []).map((o, j) => `<button type="button" class="opt ${meetPick[i] === j ? 'on' : ''}" data-mq="${i}:${j}" aria-pressed="${meetPick[i] === j}">${esc(o)}${j === q.pick ? ' (ההמלצה)' : ''}</button>`).join('')}</div></div>`).join('');
+    $('oMeet').innerHTML = `<div class="meet" role="region" aria-label="ישיבה איתך">
+      <div class="mtop"><h3>ישיבת ${esc(SLOT_NAME[m.slot] || m.slot)} מחכה לך</h3><span class="left" id="meetLeft" aria-label="הזמן שנשאר">${leftText(m)}</span></div>
+      <p class="note">כשהזמן נגמר, הישיבה ממשיכה לפי ההמלצות. מה שתבחר נשלח בלחיצה על "סיימתי".</p>
+      ${qs}
+      <div class="q"><span class="who" style="--c:var(--sun)">אתה</span>משהו להגיד לצוות?
+        <textarea id="meetNote" maxlength="600" placeholder="למשל: השבוע להתמקד בבגרויות">${esc(meetNote)}</textarea></div>
+      <div class="acts"><button class="btn pri" type="button" data-mdone="${m.id}">סיימתי</button><button class="btn" type="button" data-mskip="${m.id}">שימשיכו בלעדיי</button></div>
+    </div>`;
+  }
+  const done = (office.meetings || []).filter((x) => x.status === 'done' || x.status === 'failed' || (x.status === 'running' && x.owner_reply));
+  $('oMinutes').innerHTML = done.length ? `<h3 style="margin:0;font:600 15.5px var(--head);color:var(--ink)">הישיבות האחרונות</h3>` + done.slice(0, 6).map((x, n) => {
+    const waits = (x.decisions || []).filter((d) => d.owner).length;
+    const when = x.day === ilDay() ? 'היום' : new Date(x.day + 'T12:00:00').toLocaleDateString('he-IL', {weekday: 'long', day: 'numeric', month: 'numeric'});
+    const you = x.with_owner ? (x.owner_reply === 'answered' ? ' · ענית' : x.owner_reply === 'skip' ? ' · המשיכו בלעדיך' : ' · בלי תשובה ממך') : '';
+    const status = x.status === 'running' ? 'עובדים עכשיו' : x.status === 'failed' ? 'נכשלה' : waits ? `${waits} מחכים לך` : '';
+    return `<details ${n === 0 ? 'open' : ''}><summary><span>${esc(when)}, ${esc(x.slot)}:00${esc(you)}</span><span class="note" style="${waits ? 'color:var(--red);font-weight:600' : ''}">${esc(status)}</span></summary>
+      ${(x.lines || []).map((l) => `<div class="ln"><b style="--c:${whoColor(l.agent)}">${esc(whoName(l.agent))}</b><span>${esc(l.text)}</span></div>`).join('')}
+      ${x.error ? `<div class="ln"><b style="--c:var(--red)">תקלה</b><span>${esc(x.error)}</span></div>` : ''}
+      ${(x.decisions || []).length ? `<ul class="dec">${x.decisions.map((d) => `<li class="${d.owner ? 'me' : ''}">${d.owner ? 'מחכה לך: ' : ''}${esc(d.text)}</li>`).join('')}</ul>` : ''}
+      ${!(x.lines || []).length && x.status === 'running' ? '<div class="ln"><span></span><span class="note">הפרוטוקול יופיע כשהישיבה תסתיים.</span></div>' : ''}
+    </details>`;
+  }).join('') : '';
+}
+setInterval(() => {
+  const el = $('meetLeft'), m = waitingMeeting();
+  if (el && m) el.textContent = leftText(m);
+  else if (el && !m) renderMeeting();
+}, 1000);
+// While a meeting waits, the page asks the server every 15 seconds, so a meeting that went on stops waiting here too.
+setInterval(() => { if (!document.hidden && !$('app').hidden && tab === 'junior' && waitingMeeting()) loadOffice(); }, 15 * 1000);
+$('office').addEventListener('input', (e) => { if (e.target.id === 'meetNote') meetNote = e.target.value; });
+
 async function officeChange(op) {
   const { error } = await op;
   if (error) { $('err').textContent = 'לא הצלחתי לשמור. נסה שוב. (' + error.message + ')'; $('err').hidden = false; return false; }
@@ -1701,6 +1797,19 @@ async function officeChange(op) {
 $('office').addEventListener('click', async (e) => {
   const b = e.target.closest('button, .person');
   if (!b) return;
+  if (b.dataset.mq) {
+    const [i, j] = b.dataset.mq.split(':').map(Number);
+    meetPick[i] = j;
+    renderMeeting(true);
+    return;
+  }
+  if (b.dataset.mdone || b.dataset.mskip) {
+    const skip = !!b.dataset.mskip, id = Number(b.dataset.mdone || b.dataset.mskip);
+    const row = skip ? {owner_reply: 'skip'} : {owner_reply: 'answered', answers: meetPick, owner_note: (meetNote || '').trim().slice(0, 600) || null};
+    b.disabled = true;
+    if (!await officeChange(sb.from('agent_meetings').update(row).eq('id', id))) b.disabled = false;
+    return;
+  }
   if (b.dataset.oagent) { oPick = oPick === b.dataset.oagent ? null : b.dataset.oagent; renderOffice(); if (oPick) $('oPanel').scrollIntoView({behavior: 'smooth', block: 'nearest'}); return; }
   if (b.dataset.oclose) { oPick = null; renderOffice(); return; }
   if (b.dataset.oscroll) { $(b.dataset.oscroll).scrollIntoView({behavior: 'smooth', block: 'start'}); return; }
