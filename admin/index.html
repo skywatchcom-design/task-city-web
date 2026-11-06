@@ -350,6 +350,7 @@ tr.gone .btn{visibility:hidden}
         <div class="ohead">
           <h2 style="margin:0"><span class="h" id="oTitle">השבוע במשרד</span></h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <button class="btn" id="oUrgent" type="button">ישיבה דחופה</button>
             <button class="btn" id="oHow" type="button" aria-expanded="false" aria-controls="wHow">איך הם עובדים</button>
             <button class="btn" id="oStop" type="button" style="color:var(--red);border-color:#EBC3BA">עצור הכול</button>
           </div>
@@ -1745,9 +1746,19 @@ function leftText(m) {
   const left = Math.max(0, Math.round((Date.parse(m.answer_until) - Date.now()) / 1000));
   return `${String(Math.floor(left / 60)).padStart(2, '0')}:${String(left % 60).padStart(2, '0')}`;
 }
+// An urgent meeting the owner called that the computer has not opened yet (migration 20261106_urgent_meeting.sql).
+function urgentOnWay() {
+  return (office.meetings || []).find((m) => ['requested', 'starting'].includes(m.status) && Date.parse(m.started_at) > Date.now() - 30 * 60000);
+}
 function renderMeeting(force = false) {
-  const m = waitingMeeting();
-  if (!m) { $('oMeet').innerHTML = ''; meetFor = null; }
+  const m = waitingMeeting(), u = urgentOnWay();
+  $('oUrgent').hidden = !!(m || u);
+  if (!m && u) {
+    meetFor = null;
+    $('oMeet').innerHTML = `<div class="meet" role="status"><div class="mtop"><h3>${u.status === 'requested' ? 'ביקשת ישיבה דחופה' : "ג'וניור מכין את סדר היום"}</h3><span class="note">${esc(u.slot)}</span></div>
+      <p class="note">${u.status === 'requested' ? 'המחשב בודק כל 5 דקות, ופותח אותה אם הוא דלוק. כשהיא מוכנה יגיע אליך מייל.' : 'עוד כמה דקות השאלות יופיעו כאן, ויגיע אליך מייל.'}</p></div>`;
+  }
+  else if (!m) { $('oMeet').innerHTML = ''; meetFor = null; }
   // The office reloads every 15 seconds while a meeting waits: the card is drawn again only when it changes, so a line
   // the owner is typing keeps its place.
   else if (!force && meetFor === m.id && $('oMeet').firstElementChild) { /* unchanged */ }
@@ -1756,7 +1767,7 @@ function renderMeeting(force = false) {
     const qs = (m.questions || []).map((q, i) => `<div class="q"><span class="who" style="--c:${whoColor(q.agent)}">${esc(whoName(q.agent))}</span>${esc(q.text)}
       <div class="opts">${(q.options || []).map((o, j) => `<button type="button" class="opt ${meetPick[i] === j ? 'on' : ''}" data-mq="${i}:${j}" aria-pressed="${meetPick[i] === j}">${esc(o)}${j === q.pick ? ' (ההמלצה)' : ''}</button>`).join('')}</div></div>`).join('');
     $('oMeet').innerHTML = `<div class="meet" role="region" aria-label="ישיבה איתך">
-      <div class="mtop"><h3>ישיבת ${esc(SLOT_NAME[m.slot] || m.slot)} מחכה לך</h3><span class="left" id="meetLeft" aria-label="הזמן שנשאר">${leftText(m)}</span></div>
+      <div class="mtop"><h3>${m.slot.includes(':') ? 'הישיבה הדחופה' : `ישיבת ${esc(SLOT_NAME[m.slot] || m.slot)}`} מחכה לך</h3><span class="left" id="meetLeft" aria-label="הזמן שנשאר">${leftText(m)}</span></div>
       <p class="note">כשהזמן נגמר, הישיבה ממשיכה לפי ההמלצות. מה שתבחר נשלח בלחיצה על "סיימתי".</p>
       ${qs}
       <div class="q"><span class="who" style="--c:var(--sun)">אתה</span>משהו להגיד לצוות?
@@ -1764,13 +1775,14 @@ function renderMeeting(force = false) {
       <div class="acts"><button class="btn pri" type="button" data-mdone="${m.id}">סיימתי</button><button class="btn" type="button" data-mskip="${m.id}">שימשיכו בלעדיי</button></div>
     </div>`;
   }
-  const done = (office.meetings || []).filter((x) => x.status === 'done' || x.status === 'failed' || (x.status === 'running' && x.owner_reply));
+  const done = (office.meetings || []).filter((x) => x.status === 'done' || x.status === 'failed' || (x.status === 'running' && (x.owner_reply || !x.with_owner)));
   $('oMinutes').innerHTML = done.length ? `<h3 style="margin:0;font:600 15.5px var(--head);color:var(--ink)">הישיבות האחרונות</h3>` + done.slice(0, 6).map((x, n) => {
     const waits = (x.decisions || []).filter((d) => d.owner).length;
     const when = x.day === ilDay() ? 'היום' : new Date(x.day + 'T12:00:00').toLocaleDateString('he-IL', {weekday: 'long', day: 'numeric', month: 'numeric'});
     const you = x.with_owner ? (x.owner_reply === 'answered' ? ' · ענית' : x.owner_reply === 'skip' ? ' · המשיכו בלעדיך' : ' · בלי תשובה ממך') : '';
     const status = x.status === 'running' ? 'עובדים עכשיו' : x.status === 'failed' ? 'נכשלה' : waits ? `${waits} מחכים לך` : '';
-    return `<details ${n === 0 ? 'open' : ''}><summary><span>${esc(when)}, ${esc(x.slot)}:00${esc(you)}</span><span class="note" style="${waits ? 'color:var(--red);font-weight:600' : ''}">${esc(status)}</span></summary>
+    const hour = x.slot.includes(':') ? `${x.slot}, דחופה` : `${x.slot}:00`;
+    return `<details ${n === 0 ? 'open' : ''}><summary><span>${esc(when)}, ${esc(hour)}${esc(you)}</span><span class="note" style="${waits ? 'color:var(--red);font-weight:600' : ''}">${esc(status)}</span></summary>
       ${(x.lines || []).map((l) => `<div class="ln"><b style="--c:${whoColor(l.agent)}">${esc(whoName(l.agent))}</b><span>${esc(l.text)}</span></div>`).join('')}
       ${x.error ? `<div class="ln"><b style="--c:var(--red)">תקלה</b><span>${esc(x.error)}</span></div>` : ''}
       ${(x.decisions || []).length ? `<ul class="dec">${x.decisions.map((d) => `<li class="${d.owner ? 'me' : ''}">${d.owner ? 'מחכה לך: ' : ''}${esc(d.text)}</li>`).join('')}</ul>` : ''}
@@ -1784,7 +1796,7 @@ setInterval(() => {
   else if (el && !m) renderMeeting();
 }, 1000);
 // While a meeting waits, the page asks the server every 15 seconds, so a meeting that went on stops waiting here too.
-setInterval(() => { if (!document.hidden && !$('app').hidden && tab === 'junior' && waitingMeeting()) loadOffice(); }, 15 * 1000);
+setInterval(() => { if (!document.hidden && !$('app').hidden && tab === 'junior' && (waitingMeeting() || urgentOnWay())) loadOffice(); }, 15 * 1000);
 $('office').addEventListener('input', (e) => { if (e.target.id === 'meetNote') meetNote = e.target.value; });
 
 async function officeChange(op) {
@@ -1801,6 +1813,13 @@ $('office').addEventListener('click', async (e) => {
     const [i, j] = b.dataset.mq.split(':').map(Number);
     meetPick[i] = j;
     renderMeeting(true);
+    return;
+  }
+  if (b.id === 'oUrgent') {
+    if (!confirm('לקרוא לישיבה דחופה עכשיו? המחשב יפתח אותה תוך 5 דקות אם הוא דלוק, ויגיע אליך מייל עם השאלות.')) return;
+    b.disabled = true;
+    await officeChange(sb.from('agent_meetings').insert({status: 'requested'}));
+    b.disabled = false;
     return;
   }
   if (b.dataset.mdone || b.dataset.mskip) {
