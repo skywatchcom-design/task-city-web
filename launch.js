@@ -13,6 +13,9 @@ window.SKY = {
   // with the link. A mailto link was tried first and closed the tab on Android phones without a mail app set up.
   androidMail: 'skywatchcom@gmail.com',
   androidStore: 'https://play.google.com/store/apps/details?id=com.skywatchcom.skytasks',
+  // Android in Google Play for everyone (production access granted 7.11.2026). Until the release is live in the store this
+  // stays false and Android visitors get the tester form; true sends them straight to Google Play.
+  androidLive: true,
   testerRequest: 'https://wlsvwtvinopzuodpmqsj.supabase.co/functions/v1/tester-request',
   visits: 'https://wlsvwtvinopzuodpmqsj.supabase.co/functions/v1/downloads'
 };
@@ -48,6 +51,33 @@ window.SKY.store = function (page) {
   if (!S.provider) return S.appStore;
   var ct = (page + '-' + (S.source() || 'direct')).slice(0, 40);
   return S.appStore + '?pt=' + encodeURIComponent(S.provider) + '&ct=' + encodeURIComponent(ct) + '&mt=8';
+};
+
+// The Google Play link for a page, tagged with utm_source=<source> and utm_campaign=<page> in the install referrer, so
+// Play Console shows where installs came from (Acquisition reports).
+window.SKY.playRef = function (page) {
+  return 'utm_source=' + (window.SKY.source() || 'direct') + '&utm_campaign=' + page;
+};
+window.SKY.play = function (page) {
+  var S = window.SKY;
+  return S.androidStore + '&referrer=' + encodeURIComponent(S.playRef(page));
+};
+
+// The same, as an intent:// address that opens the Play Store app itself (store-links, 8.11). Inside Facebook's or
+// Instagram's own browser on Android a play.google.com address can stay a web page in that browser; an intent:// address
+// is handed to the phone. Without the Play Store app (some Huawei phones) the phone opens the web address instead.
+window.SKY.playIntent = function (page) {
+  var S = window.SKY;
+  var id = (S.androidStore.split('id=')[1] || '').split('&')[0];
+  return 'intent://details?id=' + id + '&referrer=' + encodeURIComponent(S.playRef(page)) +
+    '#Intent;scheme=market;package=com.android.vending;S.browser_fallback_url=' + encodeURIComponent(S.play(page)) + ';end';
+};
+
+// True inside an app's own browser (Facebook, Instagram, Messenger, LinkedIn, TikTok, Snapchat, Telegram, LINE, WhatsApp,
+// or any Android WebView, which says "; wv)"), where a jump to a store is less sure than in Chrome or Safari.
+window.SKY.inApp = function () {
+  var ua = navigator.userAgent || '';
+  return /FBAN|FBAV|FB_IAB|FBIOS|FB4A|Instagram|Messenger|LinkedInApp|TikTok|musical_ly|BytedanceWebview|Snapchat|Telegram|Line\/|WhatsApp|; wv\)/i.test(ua);
 };
 
 // Counts one visit for the admin page's downloads tab: the page, the kind of phone, and where the visitor came from
