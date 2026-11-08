@@ -6,7 +6,7 @@
 set -euo pipefail
 rm -rf cf
 mkdir cf
-cp -r soon get about favicon.png launch.js privacy.html terms.html delete-account.html cf/
+cp -r soon get ios android about favicon.png launch.js privacy.html terms.html delete-account.html cf/
 # The landing page at the root too: its relative links (../launch.js, ../get/) resolve to the same files from there.
 cp -r soon/. cf/
 echo "pages: $(find cf -type f | wc -l)"

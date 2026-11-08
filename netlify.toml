@@ -5,4 +5,4 @@
 [build]
   command = "bash site-build.sh"
   publish = "cf"
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- soon get about launch.js favicon.png privacy.html terms.html delete-account.html site-build.sh netlify.toml"
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- soon get ios android about launch.js favicon.png privacy.html terms.html delete-account.html site-build.sh netlify.toml"
