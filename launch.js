@@ -25,7 +25,8 @@ window.SKY = {
 window.SKY.source = function () {
   try {
     var q = new URLSearchParams(location.search);
-    var s = (q.get('s') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12);
+    // ?from= is an older form of the same code (a launch message, 1.11: /get/?from=fb-students counts as fbstudents).
+    var s = (q.get('s') || q.get('from') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12);
     if (s) return s;
     // AI assistants (geo, 6.11): ChatGPT adds utm_source=chatgpt.com to the links it gives and often sends no
     // referrer, Perplexity and Copilot do the same. The tag is read like a referring site.
