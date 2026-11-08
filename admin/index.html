@@ -990,7 +990,7 @@ document.addEventListener('change', async (e) => {
 // Claude's weekly run fills the week; the owner approves a day or the whole week here; the server publishes.
 let agent = [], templates = [];
 let jShift = 0, jPick = null, jSaid = 'all';
-const GOAL = 500, GOAL_ABROAD = 100, GOAL_UNTIL = '2026-12-27';
+const GOAL = 500, GOAL_UNTIL = '2026-12-27';
 const AKIND = {guide: 'דף לגוגל', tool: 'כלי לגוגל', outreach: 'קהילה', proposal: 'הצעה', comment: 'תגובה'};
 const DAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
 const ilDay = (d = new Date()) => d.toLocaleDateString('en-CA', {timeZone: 'Asia/Jerusalem'});
@@ -999,9 +999,6 @@ const sundayOf = (day) => { const d = new Date(day + 'T12:00:00Z'); d.setUTCDate
 const shortDay = (day) => { const d = new Date(day + 'T12:00:00Z'); return `${d.getUTCDate()}.${d.getUTCMonth() + 1}`; };
 const weekDays = (sun) => Array.from({length: 7}, (_, i) => plusDays(sun, i));
 const downloadsOn = (days) => dlSum('app_store', 'downloads', days) + dlSum('google_play', 'installs', days);
-// First downloads in Israel and abroad, from both stores (downloads function, 7.11). Abroad has its own goal of 100 a week.
-const israelOn = (days) => dlSum('app_store', 'downloads_il', days) + dlSum('google_play', 'installs_il', days);
-const abroadOn = (days) => dlSum('app_store', 'downloads_abroad', days) + dlSum('google_play', 'installs_abroad', days);
 const isoIl = (iso) => iso ? ilDay(new Date(iso)) : null;
 
 /** Visits this week by where they came from: an item's code counts for its channel (r31fb is Facebook, k12 a community). */
@@ -1102,7 +1099,6 @@ function renderJunior() {
       <span class="note">הורדות השבוע (${esc(shortDay(thisSun))}–${esc(shortDay(plusDays(thisSun, 6)))}), בשתי החנויות</span>
       <div class="big">${any ? got : '–'} <small>/ ${GOAL}</small></div>
       <div class="prog"><i style="width:${Math.min(100, 100 * got / GOAL)}%"></i></div>
-      ${dlHas('app_store', 'downloads_il', lastDays(30)) ? `<div class="srcs" style="margin:6px 0 8px"><span>ישראל <b>${esc(israelOn(soFar))}</b></span><span>חו"ל <b>${esc(abroadOn(soFar))}</b> מתוך ${GOAL_ABROAD}</span></div>` : ''}
       <span class="note">${any ? `שבוע שעבר ${lastWeek}. עד ${esc(shortDay(GOAL_UNTIL))} צריך לגדול בכ־${step} בכל שבוע. ` : ''}אפל וגוגל מעדכנים פעם ביום, באיחור של יום או יומיים, ולכן הימים האחרונים עוד חסרים.</span>
       <span class="note" style="margin-top:10px;display:block;color:var(--ink);font-weight:600">כניסות לאתר השבוע, לפי מקור</span>
       <div class="srcs" style="margin-top:2px">${src.length ? src.map(([k, n]) => `<span>${esc(SRCNAME[k] || k)} <b>${esc(n)}</b></span>`).join('') : '<span>עוד אין כניסות עם מקור השבוע</span>'}</div>

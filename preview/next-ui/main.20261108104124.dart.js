@@ -40301,7 +40301,7 @@ m=p.b
 if(m!==200)throw A.p(A.dc("version.json: "+m))
 o=A.a_(t.P.a(B.N.er(A.kO(A.kK(p.e)).bK(p.w),null)).h(0,"stamp"))
 if(o==null)o=""
-n=B.c.aK(o,"20261107221715")>0
+n=B.c.aK(o,"20261108104124")>0
 if(n)$.adR().sn(o)
 s=4
 return A.c(A.aM2(),$async$Du)
@@ -127261,22 +127261,20 @@ n=q<n*0.6
 q=n}}if(q){c=f.Hq()
 c.toString
 f.a6F(c)
-return}m=f.aHs(s,a0)
-if(m!=null){A.ql(m)
-return}l=f.apq(a,s,a0)
-if(l!=null){k=l.a
-A:{if(B.cf===k){c=B.asv
-break A}if(B.hU===k){c=B.asw
+return}m=f.apq(a,s,a0)
+if(m!=null){l=m.a
+A:{if(B.cf===l){c=B.asv
+break A}if(B.hU===l){c=B.asw
 break A}c=B.asx
 break A}A.ql(c)
-j=f.go0()
-c=l.c
-q=k===B.cf||k===B.cq?2:1
-f.Gv(j.aai(c.a+q/2,c.b+0.6,Math.max(j.c,2.2)))
-f.aD6(l)
-return}i=c.f
-if(i.d<=0){c=i.a
-q=i.b
+k=f.go0()
+c=m.c
+q=l===B.cf||l===B.cq?2:1
+f.Gv(k.aai(c.a+q/2,c.b+0.6,Math.max(k.c,2.2)))
+f.aD6(m)
+return}j=c.f
+if(j.d<=0){c=j.a
+q=j.b
 n=s.w
 n===$&&A.b()
 q=n.K(c,q,0)
@@ -127286,7 +127284,9 @@ c=new A.i(q.a+0,q.b+-c*0.12).a5(0,a0).gcr()<c*0.3}else c=!1
 if(c){f.D(new A.aWN(f))
 return}if(f.fx){f.D(new A.aWO(f))
 return}if(b){f.asl(a,a0,a1)
-return}h=s.aLn(a0)
+return}i=f.aHs(s,a0)
+if(i!=null)A.ql(i)
+h=s.aLn(a0)
 g=A.f1(new A.J(a,new A.aWP(h),A.T(a).i("J<1>")))
 if(h==null||h===f.id||g==null){f.D(new A.aWQ(f,h))
 return}f.Qm(g)},
@@ -130764,7 +130764,7 @@ A.b2(this.a,!1).br(s)
 return null},
 $S:0}
 A.aG1.prototype={
-$3(a,b,c){var s,r,q,p="20261107221715",o=this.b,n=o.nA(B.Xs,A.d("upd_check"),new A.aG_(this.a,a))
+$3(a,b,c){var s,r,q,p="20261108104124",o=this.b,n=o.nA(B.Xs,A.d("upd_check"),new A.aG_(this.a,a))
 if(A.yc()==null){s=A.d("upd_yours")
 r=A.bh3(p)
 s=A.ag(s,"{v}",r)}else{s=A.d("upd_here_preview")
