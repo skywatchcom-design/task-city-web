@@ -1,5 +1,10 @@
 [
  {
+  "name": "teams",
+  "title": "צוותים קטנים",
+  "stamp": "20261111085635"
+ },
+ {
   "name": "shared-calendar",
   "title": "יומן משותף",
   "stamp": "20261110175113"
@@ -33,11 +38,6 @@
   "name": "payments",
   "title": "SkyTasks+ (קנייה מדומה)",
   "stamp": "20261103174452"
- },
- {
-  "name": "teams",
-  "title": "צוותים",
-  "stamp": "20261103083339"
  },
  {
   "name": "sky",

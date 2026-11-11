@@ -4,15 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SkyTasks לצוותים</title>
-<meta name="description" content="SkyTasks לעסקים קטנים: משימות לצוות, אישור אחרי ביצוע, והתקדמות שרואים בעיר אחת משותפת.">
+<meta name="description" content="SkyTasks לצוותים קטנים: משימות לצוות, יומן צוות, אישור אחרי ביצוע, ופותחים לבד בשתי דקות.">
 <link rel="icon" href="../favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Rubik:wght@700;800&display=swap">
 <script src="../launch.js"></script>
 <style>
-/* Teams (salami 1.11): a small business asks to open a team. The request goes to the team-request function, which keeps
-   it and emails it to us; once the owner approves it on the admin page, the opening code goes to this email. Same look
-   as /get/. */
+/* Teams for small teams (owner, 11.11): a team opens alone in the app, so this page explains how and sends to /get/.
+   The old request form (team-request) is gone from here. Same look as /get/. */
 :root{--bg:#F7F7F4;--ink:#1D2B55;--sub:#5C6683;--line:#E2E1DA;--card:#FFFFFF;--sun:#E0A63A;
   --f-head:"Rubik","Assistant",system-ui,sans-serif;--f-body:"Assistant","Rubik",system-ui,sans-serif}
 @media (prefers-color-scheme:dark){:root{--bg:#0F1626;--ink:#E8ECF6;--sub:#9AA4C0;--line:#263049;--card:#172036;--sun:#F2C14E}}
@@ -45,7 +44,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 input[aria-invalid="true"]{border-color:#C0392B}
 #email{direction:ltr;text-align:left}
 .hp{position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);opacity:0}
-button.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;margin-top:16px;border:0;border-radius:6px 22px 6px 6px;background:var(--ink);color:var(--bg);font:700 17px var(--f-head);cursor:pointer}
+ol.steps{margin:0;padding-inline-start:22px;display:grid;gap:8px}
+.btn{text-decoration:none}
+button.btn,a.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;margin-top:16px;border:0;border-radius:6px 22px 6px 6px;background:var(--ink);color:var(--bg);font:700 17px var(--f-head);cursor:pointer}
 button.btn[disabled]{opacity:.6;cursor:default}
 .btn:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
 .msg{margin:10px 0 0;font-size:14.5px;color:#C0392B}
@@ -67,64 +68,24 @@ button.btn[disabled]{opacity:.6;cursor:default}
 
   <h1 data-he="המשימות של הצוות, במקום אחד" data-en="Your team's tasks, in one place">המשימות של הצוות, במקום אחד</h1>
   <div class="rail" aria-hidden="true"><i></i><i></i><i></i></div>
-  <p class="lead" data-he="לעסקים קטנים, עד 15 אנשים: במקום משימות בוואטסאפ, כל אחד רואה מה שלו היום, והמנהל רואה מה בוצע." data-en="For small businesses, up to 15 people: instead of tasks over WhatsApp, everyone sees what is theirs today, and the manager sees what got done.">לעסקים קטנים, עד 15 אנשים: במקום משימות בוואטסאפ, כל אחד רואה מה שלו היום, והמנהל רואה מה בוצע.</p>
+  <p class="lead" data-he="לצוותים קטנים, עד 15 אנשים: במקום משימות בוואטסאפ, כל אחד רואה מה שלו היום, והמנהל רואה מה בוצע." data-en="For small teams, up to 15 people: instead of tasks over WhatsApp, everyone sees what is theirs today, and the manager sees what got done.">לצוותים קטנים, עד 15 אנשים: במקום משימות בוואטסאפ, כל אחד רואה מה שלו היום, והמנהל רואה מה בוצע.</p>
   <ul class="points">
     <li><span data-he="משימה במשפט אחד: &quot;דני להתקשר לספק מחר ב־10&quot;." data-en="A task in one sentence: &quot;Dani call the supplier tomorrow at 10&quot;.">משימה במשפט אחד: "דני להתקשר לספק מחר ב־10".</span></li>
-    <li><span data-he="אישור אחרי ביצוע, או החזרה עם הערה." data-en="Approve when done, or send back with a note.">אישור אחרי ביצוע, או החזרה עם הערה.</span></li>
-    <li><span data-he="רשימות קבועות למשמרת: פתיחה, סגירה, ניקיון." data-en="Shift lists that come back every day: opening, closing, cleaning.">רשימות קבועות למשמרת: פתיחה, סגירה, ניקיון.</span></li>
-    <li><span data-he="עיר צוות: לכל אחד בניין, ומגדל החברה עולה עם היעד של השבוע." data-en="A team city: a building for everyone, and the company tower rises with the week's goal.">עיר צוות: לכל אחד בניין, ומגדל החברה עולה עם היעד של השבוע.</span></li>
+    <li><span data-he="אישור אחרי ביצוע, או החזרה עם הערה. ומשימות קבועות שחוזרות לבד." data-en="Approve when done, or send back with a note. And recurring tasks that come back on their own.">אישור אחרי ביצוע, או החזרה עם הערה. ומשימות קבועות שחוזרות לבד.</span></li>
+    <li><span data-he="יומן צוות: מי פנוי מתי, ומציאת זמן לפגישה." data-en="A team calendar: who is free when, and finding a time to meet.">יומן צוות: מי פנוי מתי, ומציאת זמן לפגישה.</span></li>
+    <li><span data-he="משרד מצויר: שולחן לכל אחד, והיעד של השבוע על הקיר." data-en="A drawn office: a desk for everyone, and the week's goal on the wall.">משרד מצויר: שולחן לכל אחד, והיעד של השבוע על הקיר.</span></li>
     <li><span data-he="פרטיות: המנהל רואה רק משימות של הצוות. כל השאר נשאר של העובד." data-en="Privacy: managers see team tasks only. Everything else stays the worker's own.">פרטיות: המנהל רואה רק משימות של הצוות. כל השאר נשאר של העובד.</span></li>
   </ul>
 
   <div class="card">
-    <h2 data-he="לבקש פתיחת צוות" data-en="Ask to open a team">לבקש פתיחת צוות</h2>
-    <form id="ask" novalidate>
-      <label for="business" data-he="שם העסק" data-en="Business name">שם העסק</label>
-      <input id="business" name="business" maxlength="80" autocomplete="organization" required>
-      <label for="email" data-he="המייל שלך (איתו תיכנסו לאפליקציה)" data-en="Your email (the one you will sign in with)">המייל שלך (איתו תיכנסו לאפליקציה)</label>
-      <input id="email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="120" required>
-      <label for="kind" data-he="סוג העסק" data-en="Kind of business">סוג העסק</label>
-      <select id="kind" name="kind">
-        <option value="hitech" data-he="הייטק ותוכנה" data-en="High-tech and software">הייטק ותוכנה</option>
-        <option value="office" data-he="משרד" data-en="Office">משרד</option>
-        <option value="accounting" data-he="הנהלת חשבונות ורו&quot;ח" data-en="Accounting">הנהלת חשבונות ורו&quot;ח</option>
-        <option value="law" data-he="משרד עורכי דין" data-en="Law office">משרד עורכי דין</option>
-        <option value="marketing" data-he="שיווק ופרסום" data-en="Marketing and advertising">שיווק ופרסום</option>
-        <option value="realestate" data-he="נדל&quot;ן" data-en="Real estate">נדל&quot;ן</option>
-        <option value="insurance" data-he="ביטוח ופיננסים" data-en="Insurance and finance">ביטוח ופיננסים</option>
-        <option value="design" data-he="עיצוב ואדריכלות" data-en="Design and architecture">עיצוב ואדריכלות</option>
-        <option value="renovation" data-he="שיפוצים" data-en="Renovation">שיפוצים</option>
-        <option value="construction" data-he="בנייה" data-en="Construction">בנייה</option>
-        <option value="electric" data-he="חשמל ואינסטלציה" data-en="Electrics and plumbing">חשמל ואינסטלציה</option>
-        <option value="cleaning" data-he="ניקיון" data-en="Cleaning">ניקיון</option>
-        <option value="delivery" data-he="הובלות ושליחויות" data-en="Delivery and moving">הובלות ושליחויות</option>
-        <option value="garage" data-he="מוסך" data-en="Garage">מוסך</option>
-        <option value="salon" data-he="מספרה וטיפוח" data-en="Salon">מספרה וטיפוח</option>
-        <option value="clinic" data-he="קליניקה ומרפאה" data-en="Clinic">קליניקה ומרפאה</option>
-        <option value="fitness" data-he="כושר וסטודיו" data-en="Fitness studio">כושר וסטודיו</option>
-        <option value="restaurant" data-he="מסעדה ובית קפה" data-en="Restaurant or café">מסעדה ובית קפה</option>
-        <option value="catering" data-he="קייטרינג ואירועים" data-en="Catering and events">קייטרינג ואירועים</option>
-        <option value="shop" data-he="חנות" data-en="Shop">חנות</option>
-        <option value="ecommerce" data-he="חנות אונליין" data-en="Online shop">חנות אונליין</option>
-        <option value="education" data-he="חינוך והדרכה" data-en="Education and tutoring">חינוך והדרכה</option>
-        <option value="kindergarten" data-he="גן ילדים" data-en="Kindergarten">גן ילדים</option>
-        <option value="nonprofit" data-he="עמותה" data-en="Nonprofit">עמותה</option>
-        <option value="agriculture" data-he="חקלאות" data-en="Farm">חקלאות</option>
-        <option value="other" data-he="אחר" data-en="Other" selected>אחר</option>
-      </select>
-      <label for="people" data-he="כמה אנשים בצוות" data-en="How many people">כמה אנשים בצוות</label>
-      <input id="people" name="people" type="number" inputmode="numeric" min="1" max="500" value="5">
-      <label for="note" data-he="משהו שכדאי שנדע (לא חובה)" data-en="Anything we should know (optional)">משהו שכדאי שנדע (לא חובה)</label>
-      <textarea id="note" name="note" maxlength="500"></textarea>
-      <input class="hp" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <button class="btn" id="send" type="submit" data-he="לשלוח בקשה" data-en="Send the request">לשלוח בקשה</button>
-      <p class="msg" id="msg" role="alert"></p>
-    </form>
-    <div class="done" id="done" hidden>
-      <b data-he="הבקשה התקבלה" data-en="Request received">הבקשה התקבלה</b>
-      <p data-he="אחרי שנאשר, יגיע למייל קוד פתיחה. באפליקציה: הגדרות ← צוות ← לפתוח צוות." data-en="Once we approve it, an opening code comes to your email. In the app: Settings > Team > Open a team.">אחרי שנאשר, יגיע למייל קוד פתיחה. באפליקציה: הגדרות ← צוות ← לפתוח צוות.</p>
-    </div>
-    <p class="note" data-he="החודש הראשון בחינם." data-en="The first month is free.">החודש הראשון בחינם.</p>
+    <h2 data-he="פותחים צוות בשתי דקות" data-en="Open a team in two minutes">פותחים צוות בשתי דקות</h2>
+    <ol class="steps">
+      <li data-he="מורידים את SkyTasks ונכנסים לחשבון." data-en="Get SkyTasks and sign in.">מורידים את SkyTasks ונכנסים לחשבון.</li>
+      <li data-he="הגדרות ← צוות ← לפתוח צוות: שם וסוג העסק." data-en="Settings › Team › Open a team: a name and the kind of business.">הגדרות ← צוות ← לפתוח צוות: שם וסוג העסק.</li>
+      <li data-he="שולחים לצוות קישור בוואטסאפ. מי שנוגע בו נכנס מיד." data-en="Send the team a link on WhatsApp. Whoever taps it is in at once.">שולחים לצוות קישור בוואטסאפ. מי שנוגע בו נכנס מיד.</li>
+    </ol>
+    <a class="btn" href="../get/" data-he="להורדת האפליקציה" data-en="Get the app">להורדת האפליקציה</a>
+    <p class="note" data-he="חינם. עד 15 אנשים בצוות." data-en="Free. Up to 15 people in a team.">חינם. עד 15 אנשים בצוות.</p>
   </div>
 
   <div class="foot">
@@ -144,22 +105,6 @@ button.btn[disabled]{opacity:.6;cursor:default}
     document.title=l==='he'?'SkyTasks לצוותים':'SkyTasks for teams';
     lang=l;
   }
-  var form=document.getElementById('ask'),msg=document.getElementById('msg'),send=document.getElementById('send');
-  function say(he,en){msg.textContent=lang==='he'?he:en}
-  form.onsubmit=function(e){
-    e.preventDefault();
-    var biz=document.getElementById('business'),mail=document.getElementById('email');
-    biz.removeAttribute('aria-invalid');mail.removeAttribute('aria-invalid');
-    if(!biz.value.trim()){biz.setAttribute('aria-invalid','true');say('חסר שם לעסק','The business needs a name');biz.focus();return;}
-    if(!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(mail.value.trim())){mail.setAttribute('aria-invalid','true');say('צריך כתובת מייל מלאה','A full email address, please');mail.focus();return;}
-    msg.textContent='';send.disabled=true;
-    fetch(S.teamRequest,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      business:biz.value.trim(),email:mail.value.trim(),kind:document.getElementById('kind').value,
-      people:Number(document.getElementById('people').value)||null,note:document.getElementById('note').value.trim(),
-      lang:lang,website:document.getElementById('website').value})})
-      .then(function(r){if(!r.ok)throw r.status;form.hidden=true;document.getElementById('done').hidden=false;})
-      .catch(function(){send.disabled=false;say('לא הצלחנו לשלוח. נסו שוב, או כתבו לנו ל־skywatchcom@gmail.com','Could not send. Try again, or write to skywatchcom@gmail.com');});
-  };
   document.getElementById('bHe').onclick=function(){set('he')};
   document.getElementById('bEn').onclick=function(){set('en')};
   var q=new URLSearchParams(location.search).get('lang');
