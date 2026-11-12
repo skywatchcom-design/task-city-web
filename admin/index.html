@@ -576,6 +576,7 @@ details.jmore .oguide{margin:0;border:0;background:none;padding:0}
       <p class="note">"מאשר" מתזמן את הפריט, והשרת מפרסם אותו בשעה שלו. בלי הלחיצה הזאת שום דבר לא עולה.</p>
     </section>
     <section class="tab" data-tab="downloads" hidden>
+      <div id="dlRange" role="group" aria-label="טווח" style="display:flex;gap:8px;margin-bottom:12px"></div>
       <div class="kpis" id="dlKpis"></div>
       <p class="soc-line" id="dlLine" style="margin-top:10px"></p>
       <section class="sec" style="margin-top:18px">
@@ -583,7 +584,7 @@ details.jmore .oguide{margin:0;border:0;background:none;padding:0}
         <div id="dlBars" class="wide"></div>
         <div class="tw"><table><thead><tr><th>יום</th><th>App Store</th><th>Google Play</th><th>כניסות לדף ההורדה</th><th>מאייפון</th><th>מאנדרואיד</th><th>בקשות לבדיקה</th></tr></thead><tbody id="dlRows"></tbody></table></div>
       </section>
-      <section class="sec" style="margin-top:28px"><h2><span class="h">מאיפה הגיעו לאתר, 7 ימים</span></h2><div id="dlSrc"></div></section>
+      <section class="sec" style="margin-top:28px"><h2><span class="h" id="dlSrcTitle">מאיפה הגיעו לאתר</span></h2><div id="dlSrc"></div></section>
       <p class="note">השרת בודק כל רבע שעה, אבל אפל וגוגל מפרסמים מספרים פעם ביום, באיחור של יום או יומיים. כניסות לאתר נספרות מיד, והדף מתרענן כל 5 דקות.</p>
     </section>
     <section class="tab" data-tab="stores" hidden>
@@ -823,16 +824,31 @@ function storeState(name, s) {
   return `${name}: מחובר`;
 }
 
+// The range of the downloads tab (owner, 12.11: from the start by default, and a switch to 30 or 7 days).
+const DL_RANGES = [['all', 'מההתחלה'], ['30', '30 ימים'], ['7', '7 ימים']];
+let dlRange = store.get('dl_range') || 'all';
+function rangeDays() {
+  if (dlRange !== 'all') return lastDays(Number(dlRange));
+  const first = dl.map((x) => x.day).sort()[0];
+  if (!first) return lastDays(7);
+  const n = Math.round((Date.parse(lastDays(1)[0] + 'T12:00:00Z') - Date.parse(first + 'T12:00:00Z')) / 86400000) + 1;
+  return lastDays(Math.max(1, n));
+}
+function setDlRange(v) { dlRange = v; store.set('dl_range', v); renderDownloads(); }
+
 function renderDownloads() {
-  const week = lastDays(7), two = lastDays(14), y = lastDays(2)[0];
+  const label = (DL_RANGES.find((r) => r[0] === dlRange) || DL_RANGES[0])[1];
+  $('dlRange').innerHTML = DL_RANGES.map(([v, l]) => `<button class="chip${v === dlRange ? ' on' : ''}" aria-pressed="${v === dlRange}" data-range="${v}">${l}</button>`).join('');
+  const week = rangeDays(), two = dlRange === '7' ? lastDays(14) : week, y = lastDays(2)[0];
   const k = (label, v, sub) => `<div class="kpi"><span class="l">${label}</span><span class="v">${v}</span><span class="d">${sub || ''}</span></div>`;
   const apple = dlHas('app_store', 'downloads', week) ? dlSum('app_store', 'downloads', week) : '–';
   const play = dlHas('google_play', 'installs', two) ? dlSum('google_play', 'installs', week) : '–';
   const lastActive = two.slice().reverse().map((d) => dlVal('google_play', 'active', d)).find((v) => v != null);
-  $('dlKpis').innerHTML = k('App Store, 7 ימים', esc(apple), dlVal('app_store', 'downloads', y) != null ? `אתמול ${esc(dlVal('app_store', 'downloads', y))} · הורדות חוזרות ${dlSum('app_store', 'redownloads', week)}` : 'אפל מעדכנים פעם ביום')
-    + k('Google Play, 7 ימים', esc(play), lastActive != null ? `${esc(lastActive)} מכשירים עם האפליקציה` : 'גוגל מעדכנים פעם ביום')
-    + k('כניסות לאתר, 7 ימים', week.reduce((a, d) => a + visits(d), 0), `לדף ההורדה ${dlSum('site', 'get_view', week)} · מאייפון ${dlSum('site', 'get_view_ios', week)} · מאנדרואיד ${dlSum('site', 'get_view_android', week)}`)
-    + k('בקשות לבדיקה באנדרואיד', dlSum('site', 'android_requests', week), '7 ימים');
+  $('dlKpis').innerHTML = k(`App Store, ${label}`, esc(apple), dlVal('app_store', 'downloads', y) != null ? `אתמול ${esc(dlVal('app_store', 'downloads', y))} · הורדות חוזרות ${dlSum('app_store', 'redownloads', week)}` : 'אפל מעדכנים פעם ביום')
+    + k(`Google Play, ${label}`, esc(play), lastActive != null ? `${esc(lastActive)} מכשירים עם האפליקציה` : 'גוגל מעדכנים פעם ביום')
+    + k(`כניסות לאתר, ${label}`, week.reduce((a, d) => a + visits(d), 0), `לדף ההורדה ${dlSum('site', 'get_view', week)} · מאייפון ${dlSum('site', 'get_view_ios', week)} · מאנדרואיד ${dlSum('site', 'get_view_android', week)}`)
+    + k('בקשות לבדיקה באנדרואיד', dlSum('site', 'android_requests', week), label);
+  $('dlSrcTitle').textContent = `מאיפה הגיעו לאתר, ${label}`;
   const m = meta.downloads;
   $('dlLine').textContent = [storeState('App Store', m?.apple), storeState('Google Play', m?.google),
     m?.at ? `נמשך ${new Date(m.at).toLocaleString('he-IL', {day:'numeric', month:'numeric', hour:'2-digit', minute:'2-digit'})}` : ''].filter(Boolean).join(' · ');
@@ -895,7 +911,7 @@ async function load() {
       sb.from('admin_items').select('*').order('happened_at', {ascending: false}).limit(300),
       sb.from('admin_meta').select('key, value'),
       sb.from('social_items').select('*').order('scheduled_at', {ascending: true, nullsFirst: true}).limit(600),
-      sb.from('store_daily').select('source, day, metric, value').gte('day', new Date(Date.now() - 70 * 86400000).toISOString().slice(0, 10)).limit(10000),
+      sb.from('store_daily').select('source, day, metric, value').gte('day', '2026-10-01').limit(10000),
       sb.from('agent_items').select('*').order('id', {ascending: false}).limit(300),
       sb.from('reply_templates').select('*').order('id'),
     ]);
@@ -1110,6 +1126,7 @@ document.addEventListener('click', async (e) => {
   else if (b.dataset.retry) ok = await changePost(id, {status: 'approved'});
   if (ok) { renderSocial(); renderBoard(); renderJunior(); } else b.disabled = false;
 });
+$('dlRange').addEventListener('click', (e) => { const b = e.target.closest('[data-range]'); if (b) setDlRange(b.dataset.range); });
 $('socChips').addEventListener('click', (e) => {
   const b = e.target.closest('[data-show]'); if (!b) return;
   socShow = b.dataset.show; renderSocial();
