@@ -1,5 +1,10 @@
 [
  {
+  "name": "friend-invites",
+  "title": "חבר מביא חבר",
+  "stamp": "20261115192347"
+ },
+ {
   "name": "calendar-fix",
   "title": "תיקון גרירה ביומן",
   "stamp": "20261115155650"
