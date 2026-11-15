@@ -36,8 +36,8 @@
   <div class="card">
     <h1>הזמנה לבית משותף</h1>
     <div class="rail" aria-hidden="true"><i></i><i></i><i></i></div>
-    <p>בן או בת הזוג מזמינים אותך לגור יחד בעיר של SkyTasks.</p>
-    <ul>
+    <p id="who">בן או בת הזוג מזמינים אותך לגור יחד בעיר של SkyTasks.</p>
+    <ul id="points">
       <li><b>✓</b><span><strong>משותף:</strong> "הבית שלנו" ורשימת הקניות.</span></li>
       <li><b>✓</b><span><strong>נשאר רק שלך:</strong> העבודה, הבריאות וכל שאר העיר.</span></li>
       <li><b>✓</b><span>כשמישהו נותן לך משימה, מגיעה התראה.</span></li>
@@ -49,26 +49,42 @@
     <p class="hint" id="hint">אין לך עדיין את האפליקציה? אחרי ההתקנה: הגדרות ← הבית שלנו ← "יש לי קוד".</p>
     <p class="hint"><a id="play" href="https://play.google.com/store/apps/details?id=com.skywatchcom.skytasks">SkyTasks בגוגל פליי</a></p>
   </div>
-  <p class="en">An invite to a shared home in SkyTasks. Open the app, or continue in the browser; "Our home" and its shopping list are shared, the rest of your city stays yours. The code is good for 24 hours.</p>
+  <p class="en" id="en">An invite to a shared home in SkyTasks. Open the app, or continue in the browser; "Our home" and its shopping list are shared, the rest of your city stays yours. The code is good for 24 hours.</p>
 </main>
 <script>
 (function () {
-  var code = (new URLSearchParams(location.search).get('c') || '').replace(/\D/g, '').slice(0, 6);
+  var q = new URLSearchParams(location.search);
+  // A team invite (salami 1.11) carries ?t= and 8 digits; a home invite ?c= and 6.
+  var teamCode = (q.get('t') || '').replace(/\D/g, '').slice(0, 8);
+  var isTeam = teamCode.length === 8;
+  var code = isTeam ? teamCode : (q.get('c') || '').replace(/\D/g, '').slice(0, 6);
+  var n = isTeam ? 8 : 6;
   var box = document.getElementById('code');
-  if (code.length !== 6) {
+  if (isTeam) {
+    document.title = 'SkyTasks · הזמנה לצוות';
+    document.querySelector('h1').textContent = 'הזמנה לצוות';
+    document.getElementById('who').textContent = 'הצוות מזמין אותך להצטרף ל־SkyTasks.';
+    document.getElementById('points').innerHTML =
+      '<li><b>✓</b><span><strong>משותף:</strong> משימות הצוות ייכנסו ליום וליומן שלך, עם תגית.</span></li>' +
+      '<li><b>✓</b><span><strong>נשאר רק שלך:</strong> העיר, המשימות והיומן האישיים. המנהלים רואים רק משימות צוות.</span></li>' +
+      '<li><b>✓</b><span>מנהל יאשר את ההצטרפות.</span></li>';
+    document.getElementById('hint').textContent = 'אין לך עדיין את האפליקציה? אחרי ההתקנה: הגדרות ← צוות ← "יש לי קוד הצטרפות".';
+    document.getElementById('en').textContent = 'An invite to a team in SkyTasks. Open the app, or continue in the browser; the team’s tasks come into your day with a tag, and managers see team tasks only. The code is good for 7 days.';
+  }
+  if (code.length !== n) {
     box.innerHTML = '<span style="width:auto;padding:0 12px;font-size:15px">הקישור חסר קוד</span>';
   } else {
-    for (var i = 0; i < 6; i++) {
-      if (i === 3) box.appendChild(document.createElement('i'));
+    for (var i = 0; i < n; i++) {
+      if (i === n / 2) box.appendChild(document.createElement('i'));
       var s = document.createElement('span'); s.textContent = code[i]; box.appendChild(s);
     }
   }
-  var app = 'skytasks://join?c=' + code;
-  var web = '../?join=' + code;
+  var app = isTeam ? 'skytasks://join?t=' + code : 'skytasks://join?c=' + code;
+  var web = isTeam ? '../?team=' + code : '../?join=' + code;
   document.getElementById('open').href = app;
   document.getElementById('web').href = web;
   // On a phone, try the app at once; the page stays for the buttons if nothing opens it.
-  if (code.length === 6 && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
+  if (code.length === n && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
     setTimeout(function () { location.href = app; }, 300);
   }
 })();

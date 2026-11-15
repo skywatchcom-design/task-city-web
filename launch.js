@@ -17,6 +17,8 @@ window.SKY = {
   // stays false and Android visitors get the tester form; true sends them straight to Google Play.
   androidLive: true,
   testerRequest: 'https://wlsvwtvinopzuodpmqsj.supabase.co/functions/v1/tester-request',
+  // A business asks to open a team on /teams/ (salami 1.11); the owner approves it on the admin page.
+  teamRequest: 'https://wlsvwtvinopzuodpmqsj.supabase.co/functions/v1/team-request',
   visits: 'https://wlsvwtvinopzuodpmqsj.supabase.co/functions/v1/downloads'
 };
 
@@ -84,11 +86,21 @@ window.SKY.inApp = function () {
 // Counts one visit for the admin page's downloads tab: the page, the kind of phone, and where the visitor came from
 // (SKY.source). A guide or a tool for Google passes its own code too (g12, t1). Only counts reach the server; nothing
 // about the visitor is sent or kept.
+// Owner, 12.11.2026: link checkers (Facebook's preview and safety scans, headless browsers) were counted as visits, even
+// for group posts still waiting for an admin. So a browser driven by a robot is not counted, and one device counts once a
+// day for the same page and code (remembered only in this browser).
+window.SKY.bot = function () {
+  var ua = navigator.userAgent || '';
+  return !!navigator.webdriver || /bot|crawl|spider|slurp|facebookexternalhit|facebookcatalog|meta-external|HeadlessChrome|Lighthouse|PageSpeed|preview|Inspection/i.test(ua);
+};
 window.SKY.hit = function (page, code) {
   try {
+    if (window.SKY.bot()) return;
     var ua = navigator.userAgent || '';
     var os = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? 'ios' : /Android/.test(ua) ? 'android' : 'other';
     var src = window.SKY.source();
+    var once = 'sky_hit_' + page + '_' + (src || '') + '_' + (code || '') + '_' + new Date().toISOString().slice(0, 10);
+    try { if (localStorage.getItem(once)) return; localStorage.setItem(once, '1'); } catch (e) { /* no storage: count anyway */ }
     var body = JSON.stringify({ action: 'hit', page: page, os: os, src: src || undefined, code: code || undefined });
     if (navigator.sendBeacon) navigator.sendBeacon(window.SKY.visits, new Blob([body], { type: 'text/plain' }));
     else fetch(window.SKY.visits, { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'text/plain' } });

@@ -53,6 +53,9 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset
 .heroimg{position:relative}
 /* The loop's background is pure white; multiply turns it into the page color whatever the browser's video color handling. */
 .heroimg video{width:100%;height:auto;display:block;mix-blend-mode:multiply}
+.press .in{padding-block:0 40px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:baseline;color:var(--sub);font-size:16px}
+.press b{color:var(--ink,#1D2B55)}
+.press a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 .watch .in{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;padding-block:16px 64px}
 .watch h2{font-size:clamp(26px,3.6vw,36px)}
 .watch p{margin-top:16px;color:var(--sub);max-width:36ch}
@@ -109,6 +112,13 @@ a.store{text-decoration:none;cursor:pointer}a.store:hover{filter:brightness(1.12
   </div>
   <!-- The live city from the app's first screen, recorded as a seamless 13s loop (owner, 31.10: "a city that moves"). -->
   <div class="heroimg"><video id="city" src="city-loop.mp4" poster="city-loop.webp" width="1136" height="816" autoplay muted loop playsinline disablepictureinpicture aria-hidden="true"></video></div>
+</div></section>
+<!-- Press (owner, 15.11): GameTech picked SkyTasks as the main tasks and calendar app in both 2026 lists. -->
+<section class="press"><div class="in">
+  <b data-he="כתבו עלינו:" data-en="In the press:"></b>
+  <span data-he="GameTech, ההמלצה הראשית למשימות ויומן ב־2026" data-en="GameTech (Hebrew), top pick for tasks and calendar in 2026"></span>
+  <a href="https://gametech.co.il/%D7%90%D7%A4%D7%9C%D7%99%D7%A7%D7%A6%D7%99%D7%95%D7%AA-%D7%9C%D7%90%D7%99%D7%99%D7%A4%D7%95%D7%9F-2026/" rel="noopener" data-he="אייפון" data-en="iPhone"></a>
+  <a href="https://gametech.co.il/%D7%90%D7%A4%D7%9C%D7%99%D7%A7%D7%A6%D7%99%D7%95%D7%AA-%D7%9C%D7%90%D7%A0%D7%93%D7%A8%D7%95%D7%90%D7%99%D7%93-2026/" rel="noopener" data-he="אנדרואיד" data-en="Android"></a>
 </div></section>
 <section class="watch"><div class="in">
   <div class="watchtext">

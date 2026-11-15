@@ -445,6 +445,7 @@ details.jmore .oguide{margin:0;border:0;background:none;padding:0}
       <button class="link" data-tab="social" type="button">רשתות <span class="n" id="nSocial"></span></button>
       <button class="link" data-tab="stores" type="button">חנויות</button>
       <button class="link" data-tab="users" type="button">משתמשים</button>
+      <button class="link" data-tab="teams" type="button">צוותים <span class="n" id="nTeams"></span></button>
       <button class="link" data-tab="calendar" type="button">יומן ומשימות</button>
       <a href="../stats/">כל המספרים</a>
     </div>
@@ -603,6 +604,20 @@ details.jmore .oguide{margin:0;border:0;background:none;padding:0}
         <div class="tw"><table><thead><tr><th>יום</th><th>פעילים</th><th>חדשים</th><th>משימות שנוספו</th><th>שבוצעו</th></tr></thead><tbody id="dayRows"></tbody></table></div>
       </section>
     </section>
+    <section class="tab" data-tab="teams" hidden>
+      <section class="sec">
+        <h2><span class="h">הצוותים</span><span id="teamsCount"></span></h2>
+        <div class="tw"><table><thead><tr><th>צוות</th><th>אנשים</th><th>משימות</th><th>נפתח</th><th>פעילות</th><th class="act"></th></tr></thead><tbody id="teamsRows"></tbody></table></div>
+        <div class="empty" id="teamsEmpty" hidden>עוד אין צוותים.</div>
+        <p class="note">מ־11.11 כל אחד פותח צוות לבד, מתוך האפליקציה. כאן רואים רק את השם, הסוג ומספרים, לא אנשים ולא משימות. "לסגור" מוחק את הצוות ואת המשימות שלו.</p>
+      </section>
+      <section class="sec" style="margin-top:28px">
+        <h2><span class="h">בקשות ישנות לפתוח צוות</span><span id="teamCount"></span></h2>
+        <div class="tw"><table><thead><tr><th>עסק</th><th>מייל</th><th>אנשים</th><th>מתי</th><th class="act"></th></tr></thead><tbody id="teamRows"></tbody></table></div>
+        <div class="empty" id="teamEmpty" hidden>עוד אין בקשות. הקישור לעסקים: skytasks.pages.dev/teams/</div>
+      </section>
+      <p class="note">הבקשות מהטופס הישן. "לאשר" עדיין שולח קוד, אבל מאז 11.11 לא צריך אותו כדי לפתוח צוות.</p>
+    </section>
     <section class="tab" data-tab="calendar" hidden>
       <section class="sec"><h2><span class="h">היום</span><span id="todayCount"></span></h2><div id="todayList"></div></section>
       <section class="sec" style="margin-top:28px">
@@ -641,7 +656,7 @@ const SOURCES = {mail:'מייל', bug:'באגים', store:'חנות', calendar:'
 const PRIMARY = {mail:['draft_reply','טיוטת תשובה'], bug:['fix_task','למשימת תיקון'], store:['add_task','הוסף משימה'], calendar:['add_task','הוסף משימה'], task:['add_task','הוסף משימה']};
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch {} } };
 
-let items = [], meta = {}, stats = null, posts = [];
+let items = [], meta = {}, stats = null, posts = [], teamReqs = [];
 const rtf = new Intl.RelativeTimeFormat('he', {numeric: 'auto'});
 
 function ago(iso) {
@@ -676,7 +691,7 @@ function rowHtml(i) {
 
 // ---- Tabs (sketch 30, direction A "לוח", 31.10): an overview of small tables, and one tab per area.
 // ג'וניור DM is first and opens by default (owner, 3.11: "שם יהיה לי הכי נגיש").
-const TABS = ['junior', 'overview', 'downloads', 'mail', 'bug', 'social', 'stores', 'users', 'calendar'];
+const TABS = ['junior', 'overview', 'downloads', 'mail', 'bug', 'social', 'stores', 'users', 'teams', 'calendar'];
 let tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'junior';
 
 function showTab(next, push = true) {
@@ -746,8 +761,70 @@ function render() {
     : '<div class="empty">עוד לא התעדכן.</div>';
   renderUsers();
   renderDownloads();
+  renderTeams();
   renderBoard();
 }
+
+// ---- Teams (11.11): every team, opened alone in the app. Names, kinds and counts only (admin_teams).
+let teamsAll = [];
+async function loadTeams() {
+  const r = await sb.rpc('admin_teams');
+  teamsAll = r.error ? [] : (r.data || []);
+  const week = teamsAll.filter((t) => Date.now() - new Date(t.created_at) < 7 * 86400000).length;
+  $('teamsCount').textContent = teamsAll.length ? `${teamsAll.length} צוותים${week ? ` · ${week} חדשים השבוע` : ''}` : '';
+  $('teamsEmpty').hidden = teamsAll.length > 0;
+  $('teamsRows').innerHTML = teamsAll.map((t) => `<tr>
+    <td>${esc(t.name)}<span class="sumline">${esc(BIZ[t.kind] || t.kind || '')}</span></td>
+    <td>${Number(t.people)}</td><td>${Number(t.tasks)}</td><td class="when">${esc(ago(t.created_at))}</td>
+    <td class="when">${t.active_at ? esc(ago(t.active_at)) : ''}</td>
+    <td class="act"><button class="btn ghost sm" type="button" data-close-team="${esc(t.id)}">לסגור</button></td></tr>`).join('');
+}
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-close-team]');
+  if (!b) return;
+  const t = teamsAll.find((x) => x.id === b.dataset.closeTeam);
+  if (!t || !confirm(`לסגור את הצוות "${t.name}"? הצוות וכל המשימות שלו יימחקו, ואי אפשר לבטל.`)) return;
+  b.disabled = true;
+  const r = await sb.rpc('admin_close_team', {p_team: t.id});
+  if (r.error) { b.disabled = false; alert('לא הצלחתי: ' + r.error.message); return; }
+  await loadTeams();
+});
+
+// ---- Teams (salami 1.11): requests to open a team, from /teams/. Approving sends the business its opening code.
+const BIZ = {"hitech": "הייטק ותוכנה", "office": "משרד", "accounting": "הנהלת חשבונות ורו\"ח", "law": "משרד עורכי דין", "marketing": "שיווק ופרסום", "realestate": "נדל\"ן", "insurance": "ביטוח ופיננסים", "design": "עיצוב ואדריכלות", "renovation": "שיפוצים", "construction": "בנייה", "electric": "חשמל ואינסטלציה", "cleaning": "ניקיון", "delivery": "הובלות ושליחויות", "garage": "מוסך", "salon": "מספרה וטיפוח", "clinic": "קליניקה ומרפאה", "fitness": "כושר וסטודיו", "restaurant": "מסעדה ובית קפה", "catering": "קייטרינג ואירועים", "shop": "חנות", "ecommerce": "חנות אונליין", "education": "חינוך והדרכה", "kindergarten": "גן ילדים", "nonprofit": "עמותה", "agriculture": "חקלאות", "other": "אחר"};
+function renderTeams() {
+  loadTeams();
+  const open = teamReqs.filter((r) => r.status === 'new');
+  $('nTeams').textContent = open.length || '';
+  $('teamCount').textContent = open.length ? `${open.length} מחכות` : '';
+  $('teamEmpty').hidden = teamReqs.length > 0;
+  $('teamRows').innerHTML = teamReqs.map((r) => `<tr>
+    <td><span class="dot ${r.status === 'new' ? 'a' : r.status === 'approved' ? 'g' : ''}"></span>${esc(r.business)}<span class="sumline">${esc(BIZ[r.kind] || r.kind || '')}${r.note ? ' · ' + esc(r.note) : ''}</span></td>
+    <td class="src" dir="ltr">${esc(r.email)}</td><td>${esc(r.people ?? '')}</td><td class="when">${esc(ago(r.created_at))}</td>
+    <td class="act">${r.status === 'new'
+      ? `<button class="btn pri sm" type="button" data-team="approve" data-id="${Number(r.id)}">לאשר</button><button class="btn ghost sm" type="button" data-team="decline" data-id="${Number(r.id)}">לא</button>`
+      : `<span class="wait">${r.status === 'approved' ? 'אושר, הקוד נשלח' : 'נדחה'}</span>`}</td></tr>`).join('');
+}
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-team]');
+  if (!b) return;
+  b.disabled = true;
+  const { data } = await sb.auth.getSession();
+  try {
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/team-request`, {method: 'POST',
+      headers: {'Content-Type': 'application/json', Authorization: `Bearer ${data.session.access_token}`, apikey: SUPABASE_KEY},
+      body: JSON.stringify({action: b.dataset.team, id: Number(b.dataset.id)})});
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || r.status);
+    if (j.mailed === false && j.code) alert('המייל לא נשלח. הקוד לשליחה ידנית: ' + j.code);
+    const t = await sb.from('team_requests').select('*').order('created_at', {ascending: false}).limit(100);
+    teamReqs = t.error ? teamReqs : t.data;
+    renderTeams();
+  } catch (err) {
+    b.disabled = false;
+    alert('לא הצלחתי: ' + err.message);
+  }
+});
 
 function renderBoard() {
   const never = !meta.digest;
@@ -907,13 +984,14 @@ async function load() {
   const h = new Date().getHours();
   $('hello').textContent = h < 5 ? 'לילה טוב' : h < 12 ? 'בוקר טוב' : h < 18 ? 'צהריים טובים' : 'ערב טוב';
   try {
-    const [a, m, p, dd, ag, tp] = await Promise.all([
+    const [a, m, p, dd, ag, tp, tr] = await Promise.all([
       sb.from('admin_items').select('*').order('happened_at', {ascending: false}).limit(300),
       sb.from('admin_meta').select('key, value'),
       sb.from('social_items').select('*').order('scheduled_at', {ascending: true, nullsFirst: true}).limit(600),
       sb.from('store_daily').select('source, day, metric, value').gte('day', '2026-10-01').limit(10000),
       sb.from('agent_items').select('*').order('id', {ascending: false}).limit(300),
       sb.from('reply_templates').select('*').order('id'),
+      sb.from('team_requests').select('*').order('created_at', {ascending: false}).limit(100),
     ]);
     if (a.error || m.error) throw new Error((a.error || m.error).message);
     items = a.data; meta = Object.fromEntries(m.data.map((r) => [r.key, r.value]));
@@ -921,6 +999,7 @@ async function load() {
     dl = dd.error ? [] : dd.data;
     agent = ag.error ? [] : ag.data;
     templates = tp.error ? [] : tp.data;
+    teamReqs = tr.error ? [] : tr.data;
     await loadOffice(false);
     render(); renderSocial(); renderJunior(); renderOffice();
   } catch (e) {
