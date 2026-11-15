@@ -6,8 +6,8 @@
 set -euo pipefail
 rm -rf cf
 mkdir cf
-# Teams and the 11.11 privacy policy wait for the owner (15.11), like tools/cloudflare_pages.sh.
-cp -r soon get ios android about favicon.png launch.js privacy.html terms.html delete-account.html cf/
+# Teams and the full privacy policy are live since 15.11 (owner), like tools/cloudflare_pages.sh.
+cp -r soon get ios android about teams favicon.png launch.js privacy.html terms.html delete-account.html cf/
 [[ -f privacy.live.html ]] && cp privacy.live.html cf/privacy.html
 # The landing page at the root too: its relative links (../launch.js, ../get/) resolve to the same files from there.
 cp -r soon/. cf/

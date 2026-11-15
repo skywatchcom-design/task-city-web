@@ -47,6 +47,14 @@
   $('bHe').onclick = function () { set('he'); };
   $('bEn').onclick = function () { set('en'); };
 
+  // A friend's invite: say what waits, and on anything but Android (no install referrer) show the code to type.
+  var friend = S.friend ? S.friend() : '';
+  if (friend) {
+    $('friend').hidden = false;
+    $('friendIos').hidden = android;
+    $('friendCode').textContent = friend;
+  }
+
   // The buttons.
   var appUrl = S.store ? S.store('get') : S.appStore;
   var playUrl = S.play ? S.play('get') : S.androidStore;
@@ -69,7 +77,8 @@
 
   // A phone goes straight on to its store.
   var target = '';
-  if (apple && showIos && !showPlay) target = appUrl;
+  // An invited iPhone stays on the page a moment: it needs the code, which Apple cannot carry into the app.
+  if (apple && showIos && !showPlay && !friend) target = appUrl;
   else if (android && showPlay && !showIos) target = playGo;
   if (target) {
     // Inside an app's browser the hint also says how to leave it.

@@ -92,6 +92,12 @@ button.btn[disabled]{opacity:.6;cursor:default}
   <h1 data-he="המשימות שלך, והעיר שהן בונות" data-en="Your tasks, and the city they build"></h1>
   <div class="rail"><i></i><i></i><i></i></div>
   <p class="lead" id="lead" data-he="בחרו את הטלפון שלכם." data-en="Pick your phone."></p>
+  <!-- A friend's invite (salami 15.11): what waits for them, and on an iPhone the code to type after signing up. -->
+  <section class="card" id="friend" hidden>
+    <h2 data-he="חבר הזמין אותך 🎉" data-en="A friend invited you 🎉"></h2>
+    <p data-he="מחכה לך בריכה בעיר שלך, ולחבר שלך נבנה מבנה מיוחד כשתסגרו משימה ראשונה." data-en="A pool is waiting in your city, and your friend gets a special building once you finish a first task."></p>
+    <p id="friendIos" hidden><span data-he="באייפון, אחרי ההרשמה: הגדרות ← להזמין חבר ← יש לי קוד מחבר. הקוד:" data-en="On an iPhone, after signing up: Settings › Invite a friend › I have a code from a friend. The code:"></span> <b id="friendCode" dir="ltr"></b></p>
+  </section>
 
   <div class="stuck" id="stuck" role="status" hidden>
     <b data-he="החנות לא נפתחה? לחצו על הכפתור" data-en="The store did not open? Tap the button"></b>
@@ -141,7 +147,7 @@ button.btn[disabled]{opacity:.6;cursor:default}
     <span dir="ltr">skywatchcom@gmail.com</span>
   </div>
 </div>
-<script src="../launch.js?v=2"></script>
-<script src="get.js?v=1" data-up="../"></script>
+<script src="../launch.js?v=3"></script>
+<script src="get.js?v=2" data-up="../"></script>
 </body>
 </html>

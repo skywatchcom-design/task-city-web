@@ -59,7 +59,20 @@ window.SKY.store = function (page) {
 // The Google Play link for a page, tagged with utm_source=<source> and utm_campaign=<page> in the install referrer, so
 // Play Console shows where installs came from (Acquisition reports).
 window.SKY.playRef = function (page) {
-  return 'utm_source=' + (window.SKY.source() || 'direct') + '&utm_campaign=' + page;
+  var f = window.SKY.friend();
+  var e = '';
+  try { e = (new URLSearchParams(location.search).get('e') || '').toLowerCase(); } catch (x) {}
+  if (!/^[a-z0-9]{8}$/.test(e)) e = '';
+  return 'utm_source=' + (window.SKY.source() || 'direct') + '&utm_campaign=' + page + (f ? '&f=' + f : '') + (e ? '&e=' + e : '');
+};
+
+// A friend's invite code from the link (?f=abc234, salami 15.11): it rides into Google Play's install referrer, so the
+// app knows who invited after it is installed. Six letters and digits, or nothing.
+window.SKY.friend = function () {
+  try {
+    var f = (new URLSearchParams(location.search).get('f') || '').toLowerCase();
+    return /^[a-z0-9]{6}$/.test(f) ? f : '';
+  } catch (e) { return ''; }
 };
 window.SKY.play = function (page) {
   var S = window.SKY;
