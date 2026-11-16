@@ -34,7 +34,14 @@ SkyTasks היא אפליקציה חינמית לניהול משימות, יומ�
 Contact: skywatchcom@gmail.com
 
 <!-- guides: written by tools/junior.py publish -->
+## Guides (English)
+- [How to stop procrastinating on homework: start with a five-minute first step](https://skytasks.pages.dev/guides/stop-procrastinating-homework/)
+- [How to make a study plan for finals when you have one week](https://skytasks.pages.dev/guides/study-plan-finals-one-week/)
+
 ## Guides (Hebrew)
+- [TickTick או SkyTasks: איזו אפליקציית משימות מתאימה לכם](https://skytasks.pages.dev/guides/ticktick-vs-skytasks/)
+- [Todoist בעברית: האם יש, ומה החלופה](https://skytasks.pages.dev/guides/todoist-hebrew-alternative/)
+- [תוכנית למידה לבגרות החורף: איך מחלקים את החומר לימים](https://skytasks.pages.dev/guides/bagrut-winter-study-plan/)
 - [איך מוסיפים תזכורת בקול ממסך הנעילה של האייפון, בלי לפתוח אפליקציה](https://skytasks.pages.dev/guides/iphone-voice-reminder-lock-screen/)
 - [ווידג'ט משימות לאייפון: המשימות של היום על מסך הבית ועל מסך הנעילה](https://skytasks.pages.dev/guides/iphone-tasks-widget/)
 - [אפליקציה למשימות משותפות לזוג ולבית: מי קונה, מי מתקשר, ומה כבר נעשה](https://skytasks.pages.dev/guides/shared-tasks-couples/)

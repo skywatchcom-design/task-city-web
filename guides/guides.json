@@ -68,5 +68,45 @@
   "description": "כפתור אחד במסך הנעילה או במרכז הבקרה, אומרים את המשימה בעברית, והיא נכנסת עם יום, שעה ותזכורת. בלי לפתוח את האפליקציה.",
   "code": "g63",
   "date": "2026-11-06"
+ },
+ {
+  "slug": "study-plan-finals-one-week",
+  "title": "How to make a study plan for finals when you have one week",
+  "description": "A one-week study plan for finals: count back from the exam, one short session a day, past papers last. With an example from SkyTasks, a free student planner.",
+  "code": "g162",
+  "date": "2026-11-16",
+  "lang": "en"
+ },
+ {
+  "slug": "bagrut-winter-study-plan",
+  "title": "תוכנית למידה לבגרות החורף: איך מחלקים את החומר לימים",
+  "description": "תוכנית למידה לבגרות החורף בחמישה צעדים: סופרים אחורה מהמבחן, נושא אחד ביום, ובגרויות קודמות בסוף. עם דוגמה מ־SkyTasks, אפליקציה חינמית לתלמידים.",
+  "code": "g163",
+  "date": "2026-11-16",
+  "lang": "he"
+ },
+ {
+  "slug": "stop-procrastinating-homework",
+  "title": "How to stop procrastinating on homework: start with a five-minute first step",
+  "description": "Procrastinating on homework usually means the task is too big to start. Write the first five-minute step instead, and set a short timer. How SkyTasks does it.",
+  "code": "g164",
+  "date": "2026-11-16",
+  "lang": "en"
+ },
+ {
+  "slug": "todoist-hebrew-alternative",
+  "title": "Todoist בעברית: האם יש, ומה החלופה",
+  "description": "Todoist לא תומכת בעברית ולא מבינה תאריכים בעברית. השוואה הוגנת מול SkyTasks: שפה, מחיר, יומן ולימודים, ולמי כל אחת מתאימה. נבדק בנובמבר 2026.",
+  "code": "g175",
+  "date": "2026-11-16",
+  "lang": "he"
+ },
+ {
+  "slug": "ticktick-vs-skytasks",
+  "title": "TickTick או SkyTasks: איזו אפליקציית משימות מתאימה לכם",
+  "description": "השוואה הוגנת בין TickTick ל־SkyTasks: עברית, מחיר והגבלות בחינם, יומן, לימודים, פומודורו והרגלים, ולמי כל אחת מתאימה. נבדק בנובמבר 2026.",
+  "code": "g176",
+  "date": "2026-11-16",
+  "lang": "he"
  }
 ]
