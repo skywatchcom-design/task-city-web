@@ -1,5 +1,10 @@
 [
  {
+  "name": "plus",
+  "title": "SkyTasks+ סבב 2",
+  "stamp": "20261117191429"
+ },
+ {
   "name": "calendar-elegant",
   "title": "שאר היומן",
   "stamp": "20261117131752"
@@ -53,10 +58,5 @@
   "name": "next-ui",
   "title": "ממשק ועיר",
   "stamp": "20261108134253"
- },
- {
-  "name": "city-reacts",
-  "title": "העיר מגיבה",
-  "stamp": "20261104212137"
  }
 ]
