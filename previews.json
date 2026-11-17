@@ -1,5 +1,10 @@
 [
  {
+  "name": "calendar-elegant",
+  "title": "יומן אלגנטי",
+  "stamp": "20261117113528"
+ },
+ {
   "name": "team-explain",
   "title": "הסבר על הצוות",
   "stamp": "20261116120831"
@@ -53,10 +58,5 @@
   "name": "city-reacts",
   "title": "העיר מגיבה",
   "stamp": "20261104212137"
- },
- {
-  "name": "real3d",
-  "title": "עיר תלת־ממד",
-  "stamp": "20261104102756"
  }
 ]
