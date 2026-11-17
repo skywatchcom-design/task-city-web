@@ -1807,7 +1807,7 @@ function renderOffice() {
   $('oStoppedText').textContent = s.stopped ? `הכול עצור ${ago(s.stopped_at)}: אף ריצה לא מתחילה, ושום דבר לא עולה לבד.` : '';
   const officeTok = usageOf('office'), allTok = (office.usage || []).filter((u) => u.day === ilDay()).reduce((n, u) => n + tokAll(u), 0);
   $('oTokens').textContent = allTok ? `טוקנים היום בכל המשרד: ${fmtTok(allTok)}${officeTok ? `, מתוכם ${fmtTok(tokAll(officeTok))} בישיבות עצמן` : ''}` : '';
-  $('oModeNote').textContent = 'הם נפגשים ב־08:00, 13:00, 18:00 ו־23:00, ורק מי שיש לו עבודה עובד. ב־08:00 וב־18:00 ג'וניור שולח לך סיכום ושאלות בצ'אט ב־Claude. הם עובדים כשהמחשב דלוק ו־Claude פתוח. מה שעולה לבד עולה מהשרת גם כשהמחשב כבוי.';
+  $('oModeNote').textContent = 'הם נפגשים ב־08:00, 13:00, 18:00 ו־23:00, ורק מי שיש לו עבודה עובד. ב־08:00 וב־18:00 ג׳וניור שולח לך סיכום ושאלות בצ׳אט ב־Claude. הם עובדים כשהמחשב דלוק ו־Claude פתוח. מה שעולה לבד עולה מהשרת גם כשהמחשב כבוי.';
   renderWeekBoard(desks, mine);
   renderMeeting();
   const STATE = {work: ['עובד', 's-work'], ask: ['מבקש להתחיל', 's-wait'], soon: ['מחכה לישיבה', 's-wait'], bad: ['נכשל', 's-bad'], rest: [s.stopped ? 'עצור' : 'בהפסקה', 's-rest']};
