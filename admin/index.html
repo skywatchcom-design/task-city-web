@@ -427,6 +427,13 @@ details.jmore .oguide{margin:0;border:0;background:none;padding:0}
   .sec,.goal{padding:14px 14px}
   .mini.waitc{grid-column:auto}
 }
+/* 17.11 (owner): the agents are run only from the chat with ג'וניור. The marketing and social tabs only show. */
+.ro #oUrgent,.ro #oStop,.ro #oResume,.ro #oMeet,.ro #oPanel,.ro #jApproveWeek,.ro #cAll,
+.ro [data-ok],.ro [data-ask],.ro [data-no],.ro [data-undo],.ro [data-retry],.ro [data-send],
+.ro [data-aok],.ro [data-aask],.ro [data-ano],.ro [data-aundo],.ro [data-aretry],.ro [data-asent],.ro [data-asend],
+.ro [data-tok],.ro [data-toff],.ro [data-approve-day],.ro [data-ogo],.ro [data-ono],.ro [data-dyes],.ro [data-dno],
+.ro [data-oagent],.ro [data-onow],.ro [data-oorder],.ro #oOrder,.ro label[for="oOrder"]{display:none!important}
+.robar{background:#EEF1F7;border:1px solid #D5DBE8;border-radius:0 14px 14px 14px;padding:10px 14px;margin:0 0 12px;color:var(--ink);font-size:15px}
 </style>
 </head>
 <body>
@@ -456,8 +463,9 @@ details.jmore .oguide{margin:0;border:0;background:none;padding:0}
       <button class="btn" id="refresh" type="button">לבקש רענון</button>
     </div>
     <p class="err" id="err" hidden></p>
-    <section class="tab" data-tab="junior" aria-label="ג'וניור DM">
+    <section class="tab ro" data-tab="junior" aria-label="ג'וניור DM">
       <!-- Sketch 49 A (8.11): what waits for the owner first, every thing once, in plain words, the rest folded. -->
+      <p class="robar">את הסוכנים מנהלים מעכשיו רק בצ'אט עם ג'וניור ב־Claude: הוראות, אישורים, "עצור" ושאלות. כאן רק רואים מה קורה.</p>
       <section id="office" class="jx" aria-labelledby="oTitle">
         <div class="ohead">
           <h2 class="jh" id="oTitle">ג'וניור DM</h2>
@@ -501,7 +509,7 @@ details.jmore .oguide{margin:0;border:0;background:none;padding:0}
               <span>אחראי על התשובות בעמודים (שאלות עונה לבד), ועל תגובות בקבוצות וברדיט.</span>
               <ul><li>עוברים פעם ביום על "הרשימה של הקהילן", ואפשר "לאשר הכול".</li><li>את התגובות לרדיט מעתיקים ומפרסמים מהחשבון שלך.</li></ul></div>
             <div class="g"><b style="color:var(--ink)">הישיבה</b>
-              <span>ב־08:00, 13:00, 18:00 ו־23:00 הם נפגשים, ורק מי שיש לו עבודה עובד. ב־08:00 וב־18:00 הישיבה מחכה לך עד 10 דקות.</span></div>
+              <span>ב־08:00, 13:00, 18:00 ו־23:00 הם נפגשים, ורק מי שיש לו עבודה עובד. ב־08:00 וב־18:00 ג'וניור שולח לך סיכום ושאלות בצ'אט ב־Claude.</span></div>
           </div></div>
         </div></details>
       </section>
@@ -560,7 +568,7 @@ details.jmore .oguide{margin:0;border:0;background:none;padding:0}
       <div class="tw"><table><thead><tr><th>נושא</th><th>מקור</th><th>מתי</th><th class="act"></th></tr></thead><tbody class="items" data-sources="bug"></tbody></table></div>
       <div class="empty" data-empty="bug" hidden></div>
     </section>
-    <section class="tab" data-tab="social" hidden>
+    <section class="tab ro" data-tab="social" hidden>
       <div class="kpis" id="socKpis"></div>
       <section class="sec" aria-labelledby="st">
         <h2><span id="st" class="h">פייסבוק, אינסטגרם ויוטיוב</span><span id="sCount"></span></h2>
@@ -1799,7 +1807,7 @@ function renderOffice() {
   $('oStoppedText').textContent = s.stopped ? `הכול עצור ${ago(s.stopped_at)}: אף ריצה לא מתחילה, ושום דבר לא עולה לבד.` : '';
   const officeTok = usageOf('office'), allTok = (office.usage || []).filter((u) => u.day === ilDay()).reduce((n, u) => n + tokAll(u), 0);
   $('oTokens').textContent = allTok ? `טוקנים היום בכל המשרד: ${fmtTok(allTok)}${officeTok ? `, מתוכם ${fmtTok(tokAll(officeTok))} בישיבות עצמן` : ''}` : '';
-  $('oModeNote').textContent = 'הם נפגשים ב־08:00, 13:00, 18:00 ו־23:00, ורק מי שיש לו עבודה עובד. ב־08:00 וב־18:00 הישיבה מחכה לך עד 10 דקות, ותקבל התראה. הם עובדים כשהמחשב דלוק ו־Claude פתוח. מה שעולה לבד עולה מהשרת גם כשהמחשב כבוי.';
+  $('oModeNote').textContent = 'הם נפגשים ב־08:00, 13:00, 18:00 ו־23:00, ורק מי שיש לו עבודה עובד. ב־08:00 וב־18:00 ג'וניור שולח לך סיכום ושאלות בצ'אט ב־Claude. הם עובדים כשהמחשב דלוק ו־Claude פתוח. מה שעולה לבד עולה מהשרת גם כשהמחשב כבוי.';
   renderWeekBoard(desks, mine);
   renderMeeting();
   const STATE = {work: ['עובד', 's-work'], ask: ['מבקש להתחיל', 's-wait'], soon: ['מחכה לישיבה', 's-wait'], bad: ['נכשל', 's-bad'], rest: [s.stopped ? 'עצור' : 'בהפסקה', 's-rest']};
@@ -2282,6 +2290,16 @@ setInterval(() => { if (!document.hidden && !$('app').hidden && tab === 'junior'
 
 setInterval(() => { if (!document.hidden && !$('app').hidden) load(); }, 5 * 60 * 1000);
 load();
+</script>
+<script>
+/* 17.11: the marketing and social tabs only show. Their text boxes are read only, and their action buttons do nothing. */
+(() => {
+  const lock = () => document.querySelectorAll('.ro textarea, .ro input:not([type=checkbox]):not([type=radio])').forEach((t) => { t.readOnly = true; });
+  new MutationObserver(lock).observe(document.body, {childList: true, subtree: true});
+  const act = '#oUrgent,#oStop,#oResume,#jApproveWeek,#cAll,[data-ok],[data-ask],[data-no],[data-undo],[data-retry],[data-send],[data-aok],[data-aask],[data-ano],[data-aundo],[data-aretry],[data-asent],[data-asend],[data-tok],[data-toff],[data-approve-day],[data-ogo],[data-ono],[data-dyes],[data-dno],[data-onow],[data-oorder]';
+  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest(act); if (b && b.closest('.ro')) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  lock();
+})();
 </script>
 </body>
 </html>
