@@ -57,6 +57,24 @@ button.btn[disabled]{opacity:.6;cursor:default}
 .note{font-size:14px;color:var(--sub);margin-top:14px}
 .foot{margin-top:28px;font-size:14px;color:var(--sub);display:flex;flex-wrap:wrap;gap:14px}
 .foot a{color:var(--sub)}
+
+.hero{display:block;width:100%;height:auto;margin:20px 0 0;border:1px solid var(--line);border-radius:22px 22px 22px 6px}
+[dir="ltr"] .hero{border-radius:22px 22px 6px 22px}
+section{margin-top:30px}
+section h2,.who h2{font:800 23px/1.25 var(--f-head);margin:0 0 8px}
+section p,.who p{margin:0 0 8px}
+.who{margin-top:30px;background:#1D2B55;color:#fff;border-radius:22px 22px 22px 6px;padding:20px}
+[dir="ltr"] .who{border-radius:22px 22px 6px 22px}
+.how{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.how li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+.how b{display:flex;align-items:center;justify-content:center;height:34px;background:var(--sun);color:#1D2B55;border-radius:12px 12px 12px 3px;font-family:var(--f-head)}
+.feat{display:grid;gap:10px}
+.feat b{font-weight:700}
+.btn.ghost{background:none;color:var(--ink);border:2px solid var(--ink)}
+.card .sub{color:var(--sub);margin:-6px 0 4px}
+[hidden]{display:none!important}
+@media (prefers-color-scheme:dark){.msg{color:#FF9B8E}input[aria-invalid="true"]{border-color:#FF9B8E}}
+@media (min-width:700px){.in{max-width:680px}}
 </style>
 </head>
 <body>
@@ -66,26 +84,78 @@ button.btn[disabled]{opacity:.6;cursor:default}
     <div class="lang"><button id="bHe" type="button" aria-pressed="true">עברית</button><button id="bEn" type="button" aria-pressed="false">English</button></div>
   </div>
 
-  <h1 data-he="המשימות של הצוות, במקום אחד" data-en="Your team's tasks, in one place">המשימות של הצוות, במקום אחד</h1>
+  <h1 data-he="כמה פעמים שאלת היום &quot;עשית את זה?&quot;" data-en="How many times did you ask &quot;did you do it?&quot; today?">כמה פעמים שאלת היום "עשית את זה?"</h1>
   <div class="rail" aria-hidden="true"><i></i><i></i><i></i></div>
-  <p class="lead" data-he="לצוותים קטנים, עד 15 אנשים: במקום משימות בוואטסאפ, כל אחד רואה מה שלו היום, והמנהל רואה מה בוצע." data-en="For small teams, up to 15 people: instead of tasks over WhatsApp, everyone sees what is theirs today, and the manager sees what got done.">לצוותים קטנים, עד 15 אנשים: במקום משימות בוואטסאפ, כל אחד רואה מה שלו היום, והמנהל רואה מה בוצע.</p>
-  <ul class="points">
-    <li><span data-he="משימה במשפט אחד: &quot;דני להתקשר לספק מחר ב־10&quot;." data-en="A task in one sentence: &quot;Dani call the supplier tomorrow at 10&quot;.">משימה במשפט אחד: "דני להתקשר לספק מחר ב־10".</span></li>
-    <li><span data-he="אישור אחרי ביצוע, או החזרה עם הערה. ומשימות קבועות שחוזרות לבד." data-en="Approve when done, or send back with a note. And recurring tasks that come back on their own.">אישור אחרי ביצוע, או החזרה עם הערה. ומשימות קבועות שחוזרות לבד.</span></li>
-    <li><span data-he="יומן צוות: מי פנוי מתי, ומציאת זמן לפגישה." data-en="A team calendar: who is free when, and finding a time to meet.">יומן צוות: מי פנוי מתי, ומציאת זמן לפגישה.</span></li>
-    <li><span data-he="משרד מצויר: שולחן לכל אחד, והיעד של השבוע על הקיר." data-en="A drawn office: a desk for everyone, and the week's goal on the wall.">משרד מצויר: שולחן לכל אחד, והיעד של השבוע על הקיר.</span></li>
-    <li><span data-he="פרטיות: המנהל רואה רק משימות של הצוות. כל השאר נשאר של העובד." data-en="Privacy: managers see team tasks only. Everything else stays the worker's own.">פרטיות: המנהל רואה רק משימות של הצוות. כל השאר נשאר של העובד.</span></li>
-  </ul>
+  <p class="lead" data-he="לעסקים של 3 עד 15 אנשים: המשימות והיומן של הצוות במקום אחד מסודר. כל אחד יודע מה שלו היום, ואתם רואים מה נסגר, בלי לרדוף." data-en="For businesses of 3 to 15 people: the team&#x27;s tasks and calendar in one tidy place. Everyone knows what is theirs today, and you see what got done, without chasing anyone.">לעסקים של 3 עד 15 אנשים: המשימות והיומן של הצוות במקום אחד מסודר. כל אחד יודע מה שלו היום, ואתם רואים מה נסגר, בלי לרדוף.</p>
+  <a class="btn" href="#setup" data-he="נקים לכם את הצוות, בחינם" data-en="We&#x27;ll help you set up your team, free">נקים לכם את הצוות, בחינם</a>
+  <img class="hero" src="office.webp" width="1080" height="680" alt="">
+
+  <section>
+    <h2 data-he="מה זה SkyTasks?" data-en="What is SkyTasks?">מה זה SkyTasks?</h2>
+    <p data-he="מערכת משימות ויומן שבה החיים והעבודה נראים כמו עיר. כל תחום הוא שכונה, וכל משימה שסוגרים בונה אותה, ככה שרואים את הדרך ולא רק עוד רשימה." data-en="A task and calendar system where life and work look like a city. Each area is a neighbourhood, and every task you finish builds it, so you see the road you took and not just another list.">מערכת משימות ויומן שבה החיים והעבודה נראים כמו עיר. כל תחום הוא שכונה, וכל משימה שסוגרים בונה אותה, ככה שרואים את הדרך ולא רק עוד רשימה.</p>
+    <p data-he="לצוות יש משרד משותף: לכל אחד שולחן, ועל הקיר היעד של השבוע." data-en="A team gets a shared office: a desk for everyone, and the week&#x27;s goal on the wall.">לצוות יש משרד משותף: לכל אחד שולחן, ועל הקיר היעד של השבוע.</p>
+  </section>
+
+  <div class="who">
+    <h2 data-he="מי אנחנו" data-en="Who we are">מי אנחנו</h2>
+    <p data-he="SkyTasks נולדה אצל קצין משוחרר מיחידה מיוחדת. כשהשתחרר, הוא רצה להביא את מה שלמד על ניהול זמן ומשימות לאנשים ולעסקים, בכלי שנעים לחזור אליו כל יום." data-en="SkyTasks began with a former officer in a special unit. After his service he wanted to bring what he learned about managing time and tasks to people and businesses, in a tool that feels good to come back to every day.">SkyTasks נולדה אצל קצין משוחרר מיחידה מיוחדת. כשהשתחרר, הוא רצה להביא את מה שלמד על ניהול זמן ומשימות לאנשים ולעסקים, בכלי שנעים לחזור אליו כל יום.</p>
+  </div>
+
+  <section>
+    <h2 data-he="איך זה עובד ביום־יום" data-en="How it works day to day">איך זה עובד ביום־יום</h2>
+    <ol class="how">
+      <li><b aria-hidden="true">1</b><span data-he="נותנים משימה במשפט אחד: &quot;דנה להתקשר לספק מחר ב־10&quot;." data-en="Give a task in one sentence: &quot;Dana call the supplier tomorrow at 10&quot;.">נותנים משימה במשפט אחד: "דנה להתקשר לספק מחר ב־10".</span></li>
+      <li><b aria-hidden="true">2</b><span data-he="היא נכנסת ליום וליומן של דנה, עם תזכורת בזמן." data-en="It lands in Dana&#x27;s day and calendar, with a reminder on time.">היא נכנסת ליום וליומן של דנה, עם תזכורת בזמן.</span></li>
+      <li><b aria-hidden="true">3</b><span data-he="דנה מסמנת &quot;בוצע&quot;, ואתם רואים את זה בלי לשאול." data-en="Dana marks it done, and you see it without asking.">דנה מסמנת "בוצע", ואתם רואים את זה בלי לשאול.</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2 data-he="מה יש בפנים" data-en="What&#x27;s inside">מה יש בפנים</h2>
+    <div class="feat">
+      <div><b data-he="לוח מנהל." data-en="Manager board.">לוח מנהל.</b> <span data-he="מה בוצע, מה באיחור ומה מחכה לאישור." data-en="What is done, what is late and what waits for approval.">מה בוצע, מה באיחור ומה מחכה לאישור.</span></div>
+      <div><b data-he="אישור אחרי ביצוע." data-en="Approval when done.">אישור אחרי ביצוע.</b> <span data-he="מאשרים, או מחזירים עם הערה." data-en="Approve it, or send it back with a note.">מאשרים, או מחזירים עם הערה.</span></div>
+      <div><b data-he="משימות שחוזרות לבד." data-en="Tasks that repeat by themselves.">משימות שחוזרות לבד.</b> <span data-he="פתיחת יום, דוחות וסגירת יום." data-en="Opening up, reports and closing the day.">פתיחת יום, דוחות וסגירת יום.</span></div>
+      <div><b data-he="יומן צוות." data-en="Team calendar.">יומן צוות.</b> <span data-he="מי פנוי מתי, פגישות, ומציאת זמן משותף." data-en="Who is free when, meetings, and finding a shared time.">מי פנוי מתי, פגישות, ומציאת זמן משותף.</span></div>
+      <div><b data-he="סיכום שבועי." data-en="Weekly summary.">סיכום שבועי.</b> <span data-he="מה נסגר השבוע, ואיך הצוות מתקדם ליעד." data-en="What closed this week, and how the team moves toward its goal.">מה נסגר השבוע, ואיך הצוות מתקדם ליעד.</span></div>
+      <div><b data-he="בכל מכשיר." data-en="On every device.">בכל מכשיר.</b> <span data-he="אייפון, אנדרואיד ודפדפן." data-en="iPhone, Android and the browser.">אייפון, אנדרואיד ודפדפן.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-he="למי זה מתאים" data-en="Who it is for">למי זה מתאים</h2>
+    <p data-he="משרדים, קליניקות, סוכנויות, סטודיו וצוותי שטח: כל עסק קטן שהמשימות שלו מתפזרות היום בין וואטסאפ, פתקים וזיכרון. הוואטסאפ נשאר איפה שהוא. המשימות פשוט כבר לא הולכות בו לאיבוד." data-en="Offices, clinics, agencies, studios and field teams: any small business whose tasks are scattered between WhatsApp, notes and memory. WhatsApp stays where it is. The tasks just stop getting lost in it.">משרדים, קליניקות, סוכנויות, סטודיו וצוותי שטח: כל עסק קטן שהמשימות שלו מתפזרות היום בין וואטסאפ, פתקים וזיכרון. הוואטסאפ נשאר איפה שהוא. המשימות פשוט כבר לא הולכות בו לאיבוד.</p>
+  </section>
 
   <div class="card">
-    <h2 data-he="פותחים צוות בשתי דקות" data-en="Open a team in two minutes">פותחים צוות בשתי דקות</h2>
-    <ol class="steps">
-      <li data-he="מורידים את SkyTasks ונכנסים לחשבון." data-en="Get SkyTasks and sign in.">מורידים את SkyTasks ונכנסים לחשבון.</li>
-      <li data-he="הגדרות ← צוות ← לפתוח צוות: שם וסוג העסק." data-en="Settings › Team › Open a team: a name and the kind of business.">הגדרות ← צוות ← לפתוח צוות: שם וסוג העסק.</li>
-      <li data-he="שולחים לצוות קישור בוואטסאפ. מי שנוגע בו נכנס מיד." data-en="Send the team a link on WhatsApp. Whoever taps it is in at once.">שולחים לצוות קישור בוואטסאפ. מי שנוגע בו נכנס מיד.</li>
-    </ol>
-    <a class="btn" href="../get/" data-he="להורדת האפליקציה" data-en="Get the app">להורדת האפליקציה</a>
-    <p class="note" data-he="חינם. עד 15 אנשים בצוות." data-en="Free. Up to 15 people in a team.">חינם. עד 15 אנשים בצוות.</p>
+    <b data-he="הפרטי נשאר פרטי." data-en="What is private stays private.">הפרטי נשאר פרטי.</b> <span data-he="המנהל רואה רק את משימות הצוות. העיר, המשימות והיומן האישיים של העובד נשארים שלו." data-en="Managers see team tasks only. An employee&#x27;s own city, tasks and calendar stay theirs.">המנהל רואה רק את משימות הצוות. העיר, המשימות והיומן האישיים של העובד נשארים שלו.</span>
+  </div>
+
+  <section>
+    <h2 data-he="רוצים להתרשם קודם?" data-en="Want to look around first?">רוצים להתרשם קודם?</h2>
+    <p data-he="מורידים בחינם, מכניסים כמה משימות של היום, ורואים את העיר שלכם נבנית. אפשר לפתוח צוות אחר כך." data-en="Download it free, add a few tasks for today, and watch your city grow. You can open a team later.">מורידים בחינם, מכניסים כמה משימות של היום, ורואים את העיר שלכם נבנית. אפשר לפתוח צוות אחר כך.</p>
+    <a class="btn ghost" id="try" href="../get/" data-he="לנסות לבד" data-en="Try it on your own">לנסות לבד</a>
+  </section>
+
+  <div class="card" id="setup">
+    <h2 data-he="נקים לכם את הצוות" data-en="We&#x27;ll help you set up your team">נקים לכם את הצוות</h2>
+    <p class="sub" data-he="שיחה של 15 דקות, ואנחנו עוזרים לכם להקים הכול, בחינם." data-en="A 15-minute call, and we help you set everything up, free.">שיחה של 15 דקות, ואנחנו עוזרים לכם להקים הכול, בחינם.</p>
+    <form id="f" novalidate>
+      <label for="business" data-he="שם העסק" data-en="Business name">שם העסק</label>
+      <input id="business" name="business" maxlength="80" autocomplete="organization" required>
+      <label for="email" data-he="מייל" data-en="Email">מייל</label>
+      <input id="email" name="email" type="email" maxlength="120" autocomplete="email" required>
+      <label for="people" data-he="כמה אנשים בצוות" data-en="How many people in the team">כמה אנשים בצוות</label>
+      <input id="people" name="people" inputmode="numeric" maxlength="3">
+      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button class="btn" id="send" type="submit" data-he="אשמח שתחזרו אליי" data-en="Please get back to me">אשמח שתחזרו אליי</button>
+      <p class="msg" id="msg" role="alert"></p>
+    </form>
+    <div class="done" id="done" hidden>
+      <b data-he="תודה! קיבלנו." data-en="Thank you, got it.">תודה! קיבלנו.</b>
+      <p data-he="נחזור אליכם למייל בקרוב." data-en="We&#x27;ll get back to you by email soon.">נחזור אליכם למייל בקרוב.</p>
+    </div>
+    <p class="note" data-he="חינם. עד 15 אנשים בצוות. הפרטים משמשים רק כדי לחזור אליכם." data-en="Free. Up to 15 people in a team. Your details are used only to get back to you.">חינם. עד 15 אנשים בצוות. הפרטים משמשים רק כדי לחזור אליכם.</p>
   </div>
 
   <div class="foot">
@@ -96,19 +166,32 @@ button.btn[disabled]{opacity:.6;cursor:default}
 </div>
 <script>
 (function(){
-  var S=window.SKY||{},lang='he';
+  var S=window.SKY||{},lang='he',T={he:{bad:'צריך שם עסק ומייל תקין.',fail:'לא הצלחנו לשלוח. אפשר לנסות שוב, או לכתוב ל־skywatchcom@gmail.com.',title:'SkyTasks לעסקים קטנים'},en:{bad:'Please add a business name and a valid email.',fail:'That did not go through. Try again, or write to skywatchcom@gmail.com.',title:'SkyTasks for small businesses'}};
   function set(l){
     document.documentElement.lang=l;document.documentElement.dir=l==='he'?'rtl':'ltr';
     document.querySelectorAll('[data-he]').forEach(function(e){e.textContent=e.getAttribute('data-'+l)});
     document.getElementById('bHe').setAttribute('aria-pressed',l==='he');
     document.getElementById('bEn').setAttribute('aria-pressed',l==='en');
-    document.title=l==='he'?'SkyTasks לצוותים':'SkyTasks for teams';
+    document.title=T[l].title;
     lang=l;
   }
   document.getElementById('bHe').onclick=function(){set('he')};
   document.getElementById('bEn').onclick=function(){set('en')};
-  var q=new URLSearchParams(location.search).get('lang');
+  var q=new URLSearchParams(location.search).get('lang'),src=(S.source&&S.source())||'';
   set(q==='en'||q==='he'?q:(/^he|^iw/.test(navigator.language||'he')?'he':'en'));
+  if(S.hit)S.hit('tool','teams');
+  document.getElementById('try').href='../get/?s=teams';
+  var f=document.getElementById('f'),msg=document.getElementById('msg'),send=document.getElementById('send');
+  f.onsubmit=function(ev){
+    ev.preventDefault();msg.textContent='';
+    var b=f.business.value.trim(),m=f.email.value.trim(),good=/^[^\s@<>"]+@[^\s@<>"]+\.[A-Za-z]{2,}$/.test(m);
+    f.business.setAttribute('aria-invalid',!b);f.email.setAttribute('aria-invalid',!good);
+    if(!b||!good){msg.textContent=T[lang].bad;return}
+    send.disabled=true;
+    fetch(S.teamRequest,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({business:b,email:m,people:parseInt(f.people.value,10)||null,kind:'other',lang:lang,website:f.website.value,note:'setup help'+(src?' / '+src:'')})})
+      .then(function(r){if(!r.ok)throw 0;f.hidden=true;document.getElementById('done').hidden=false})
+      .catch(function(){msg.textContent=T[lang].fail;send.disabled=false});
+  };
 })();
 </script>
 </body>
