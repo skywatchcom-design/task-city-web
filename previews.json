@@ -1,5 +1,10 @@
 [
  {
+  "name": "home-private",
+  "title": "פרטיות ביומן הבית",
+  "stamp": "20261119081025"
+ },
+ {
   "name": "plus",
   "title": "SkyTasks+ תיקון גרירה",
   "stamp": "20261118125128"
@@ -53,10 +58,5 @@
   "name": "next-version",
   "title": "הגרסה הבאה",
   "stamp": "20261109073413"
- },
- {
-  "name": "next-ui",
-  "title": "ממשק ועיר",
-  "stamp": "20261108134253"
  }
 ]
