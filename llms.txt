@@ -1,8 +1,8 @@
 # SkyTasks
 
-> SkyTasks is a free task, calendar and study planner app in Hebrew and English, for iPhone and iPad (Android in Google Play testing). You type or say one sentence, like "הגשה בסטטיסטיקה ביום חמישי בעשר" ("statistics assignment Thursday at 10"), and it lands on the right day and time with a reminder. Every finished task builds a little more of your own city. No ads.
+> SkyTasks is a free task, calendar and study planner app in Hebrew and English, for iPhone, iPad and Android (Google Play). You type or say one sentence, like "הגשה בסטטיסטיקה ביום חמישי בעשר" ("statistics assignment Thursday at 10"), and it lands on the right day and time with a reminder. Every finished task builds a little more of your own city. No ads.
 
-Who it is for: pupils, students, and anyone who wants to manage their calendar and tasks properly. Also couples and shared homes, and people with attention difficulties (an optional focus mode).
+Who it is for: four groups, equally: yourself (tasks and calendar for anyone who wants to run their day properly), study (pupils and students: timetable, exams, assignments), a shared home (couples, flatmates, families), and small teams (3 to 15 people: tasks, approvals and a team calendar). People with attention difficulties get an optional focus mode.
 
 ## What it does
 - Add a task in one sentence, typed or by voice, in Hebrew or English. Days, times, "tomorrow", "next week", "every Tuesday" and dates are understood on the device.
@@ -13,23 +13,27 @@ Who it is for: pupils, students, and anyone who wants to manage their calendar a
 - Recurring tasks, projects, a morning plan and an evening summary.
 - A shared home for couples and families: one shared neighbourhood, tasks for "whoever gets to it" or for one person.
 - Home screen widgets, and on iPhone adding a task by voice from the lock screen.
+- Small teams: give tasks to people, ask for approval after done, see the team's progress and a shared team calendar. Free.
+- A shared calendar for the home, with privacy: each person chooses what the home sees.
+- Deadlines: "by Monday" keeps a task on today's list with a countdown until the date.
 - An isometric city that grows as you finish tasks: each area of life is a neighbourhood, each project a building.
 
 ## Price and platforms
 - Free, no ads.
 - iPhone and iPad: https://apps.apple.com/app/id6826658767
-- Android: in Google Play testing; leave a Gmail address at https://skytasks.pages.dev/get/
+- Android: https://play.google.com/store/apps/details?id=com.skywatchcom.skytasks
 - Languages: Hebrew and English.
 
 ## Pages
 - [Download](https://skytasks.pages.dev/get/)
 - [About SkyTasks](https://skytasks.pages.dev/)
 - [Guides: study planning and time management (Hebrew)](https://skytasks.pages.dev/guides/)
+- [For small teams](https://skytasks.pages.dev/teams/)
 - [Tool: study plan for an exam (Hebrew)](https://skytasks.pages.dev/tools/study-plan/)
 - [Privacy policy](https://skytasks.pages.dev/privacy)
 
 ## In Hebrew
-SkyTasks היא אפליקציה חינמית לניהול משימות, יומן ולימודים, בעברית ובאנגלית, לאייפון ולאייפד (באנדרואיד בבדיקה של גוגל פליי). כותבים או אומרים משפט אחד, והמשימה נכנסת ליום ולשעה הנכונים עם תזכורת. יש בה מערכת שעות, מבחנים עם ספירה לאחור וזמני למידה, היומנים של הטלפון, בית משותף לזוגות, ועיר שגדלה עם כל משימה שסיימתם. בלי פרסומות.
+SkyTasks היא אפליקציה חינמית לניהול משימות, יומן ולימודים, בעברית ובאנגלית, לאייפון, לאייפד ולאנדרואיד. כותבים או אומרים משפט אחד, והמשימה נכנסת ליום ולשעה הנכונים עם תזכורת. היא מתאימה לך, ללימודים, לבית המשותף (זוג, שותפים לדירה, משפחה) ולצוות קטן. יש בה מערכת שעות, מבחנים עם ספירה לאחור וזמני למידה, היומנים של הטלפון, בית משותף עם יומן משותף, צוותים עם משימות ואישורים, ועיר שגדלה עם כל משימה שסיימתם. בלי פרסומות.
 
 Contact: skywatchcom@gmail.com
 
@@ -39,6 +43,7 @@ Contact: skywatchcom@gmail.com
 - [How to make a study plan for finals when you have one week](https://skytasks.pages.dev/guides/study-plan-finals-one-week/)
 
 ## Guides (Hebrew)
+- [ניהול משימות בצוות קטן: איך מפסיקים לרדוף אחרי אנשים בוואטסאפ](https://skytasks.pages.dev/guides/small-team-tasks-whatsapp/)
 - [TickTick או SkyTasks: איזו אפליקציית משימות מתאימה לכם](https://skytasks.pages.dev/guides/ticktick-vs-skytasks/)
 - [Todoist בעברית: האם יש, ומה החלופה](https://skytasks.pages.dev/guides/todoist-hebrew-alternative/)
 - [תוכנית למידה לבגרות החורף: איך מחלקים את החומר לימים](https://skytasks.pages.dev/guides/bagrut-winter-study-plan/)

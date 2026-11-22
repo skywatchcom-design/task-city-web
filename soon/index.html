@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="SkyTasks: משימות ויומן לך, לבית ולצוות. משפט אחד או הקלטה הופכים למשימה עם תזכורת, מערכת שעות ומבחנים, ועיר שנבנית ממה שעשית. חינם באייפון.">
+<meta name="description" content="SkyTasks: משימות ויומן לך, לבית ולצוות. משפט אחד או הקלטה הופכים למשימה עם תזכורת, מערכת שעות ומבחנים, ועיר שנבנית ממה שעשית. חינם באייפון ובאנדרואיד.">
 <link rel="icon" href="../favicon.png">
 <title>SkyTasks: משימות ויומן, לך, לבית ולצוות</title>
 <!-- Search and share (seo-basics, 3.11): the root and /soon/ are the same page, so both point at the root. -->
@@ -78,6 +78,8 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset
 footer{border-top:1.5px solid var(--line)}
 footer .in{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between;padding-block:24px;font-size:15px;color:var(--sub)}
 footer a{color:var(--ink)}
+footer .featured{justify-content:center;gap:8px 20px;padding-block:0 20px;font-size:13px;border:0}
+footer .featured span{font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .copy{unicode-bidi:plaintext;user-select:all}
 .store{display:flex;align-items:center;gap:12px;min-width:170px;padding:12px 22px;border-radius:6px 22px 6px 6px;background:var(--brand);color:#fff}
 [dir="ltr"] .store{border-radius:22px 6px 6px 6px}
@@ -113,7 +115,7 @@ html[lang="he"] .soc[data-for="en"],html[lang="en"] .soc[data-for="he"]{display:
     <div class="rail"><i></i><i></i><i></i></div>
     <p class="lead" data-he="כותבים משפט אחד, מקבלים תזכורת בזמן, והיומנים שלך מתחברים. וכל משימה ולו&quot;ז שעומדים בהם בונים לך את העיר." data-en="Write one sentence, get reminded on time, and your calendars connect. Every task and plan you keep builds your city."></p>
     <div class="stores">
-      <div class="store" id="sAndroid"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon fill="#00A0FF" points="3,2 13.2,12 3,22"/><polygon fill="#00E676" points="3,2 16.5,9.5 13.2,12"/><polygon fill="#FFD400" points="16.5,9.5 21,12 16.5,14.5 13.2,12"/><polygon fill="#FF3D57" points="3,22 13.2,12 16.5,14.5"/></svg><span><small data-he="בקרוב" data-en="Coming soon"></small><b data-he="אנדרואיד" data-en="Android"></b></span></div>
+      <div class="store" id="sAndroid"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon fill="#00A0FF" points="3,2 13.2,12 3,22"/><polygon fill="#00E676" points="3,2 16.5,9.5 13.2,12"/><polygon fill="#FFD400" points="16.5,9.5 21,12 16.5,14.5 13.2,12"/><polygon fill="#FF3D57" points="3,22 13.2,12 16.5,14.5"/></svg><span><small data-he="להורדה ב־Google Play" data-en="Get it on Google Play"></small><b data-he="אנדרואיד" data-en="Android"></b></span></div>
       <div class="store apple" id="sApple"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg><span><small data-he="בקרוב" data-en="Coming soon"></small><b data-he="אייפון" data-en="iPhone"></b></span></div>
     </div>
   </div>
@@ -163,6 +165,11 @@ html[lang="he"] .soc[data-for="en"],html[lang="en"] .soc[data-for="he"]{display:
   <a href="../tools/study-plan/" data-he="תוכנית למידה למבחן" data-en="Exam study plan"></a>
   <a href="../privacy.html" data-he="מדיניות פרטיות" data-en="Privacy policy"></a>
   <span><span data-he="יצירת קשר: " data-en="Contact: "></span><span class="copy" dir="ltr">skywatchcom@gmail.com</span></span>
+</div>
+<div class="in featured" dir="ltr">
+  <span>Featured on</span>
+  <a href="https://findupapp.com/app/ios/6826658767" target="_blank" rel="noopener">FindUpApp</a>
+  <!-- Add each free directory here after we register (Fazier, Twelve Tools need a link back from this page). -->
 </div></footer>
 <script src="../launch.js?v=2"></script>
 <script>
