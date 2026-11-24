@@ -263,6 +263,108 @@
     }
     mesh(new T.BoxGeometry(.035, H - .12, .05), mats.mullion, -W / 2 * face, y + H / 2, zf, g, false);
   }
+  // ---------------- what makes each floor its area (owner 24.11: "money should look like money") ----------------
+  // The side walls carry the area's building from the city (stone and columns for money, brick for study, blue glass for
+  // work, white tiles and a red cross for health, warm plaster for home, bright stripes for family, an awning for
+  // shopping) with a big emblem; on the core, facing the windows, the area's one big object (a vault door, a wall of
+  // books, a big screen, a rack of weights, a living room's TV, family pictures, full shelves).
+  const emblems = {};
+  function emblemTex(id, hex, name) {
+    const key = id + hex;
+    if (emblems[key]) return emblems[key];
+    const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
+    x.fillStyle = hex; x.beginPath(); (x.roundRect ? x.roundRect(8, 8, 240, 240, 48) : x.rect(8, 8, 240, 240)); x.fill();
+    x.strokeStyle = 'rgba(255,255,255,.9)'; x.lineWidth = 8; x.stroke();
+    x.fillStyle = '#fff'; x.strokeStyle = '#fff'; x.lineWidth = 14; x.lineCap = 'round'; x.lineJoin = 'round';
+    const P = (pts, fill) => { x.beginPath(); pts.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); if (fill) x.fill(); else x.stroke(); };
+    switch (id) {
+      case 'money': x.font = '800 170px Rubik, Assistant, Arial, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('₪', 128, 138); break;
+      case 'study': P([[40, 80], [128, 100], [216, 80], [216, 190], [128, 210], [40, 190], [40, 80]]); P([[128, 100], [128, 210]]); break;
+      case 'work': x.strokeRect(50, 95, 156, 105); P([[100, 95], [100, 70], [156, 70], [156, 95]]); P([[50, 140], [206, 140]]); break;
+      case 'health': x.fillRect(103, 50, 50, 156); x.fillRect(50, 103, 156, 50); break;
+      case 'home': P([[50, 125], [128, 55], [206, 125]]); P([[72, 112], [72, 205], [184, 205], [184, 112]]); x.fillRect(112, 150, 32, 55); break;
+      case 'family': [[85, 92, 26], [171, 92, 26], [128, 128, 20]].forEach(([a, b, r]) => { x.beginPath(); x.arc(a, b, r, 0, Math.PI * 2); x.fill(); });
+        P([[60, 205], [60, 150], [110, 150], [110, 205]], true); P([[146, 205], [146, 150], [196, 150], [196, 205]], true); P([[112, 205], [112, 165], [144, 165], [144, 205]], true); break;
+      case 'shopping': P([[40, 70], [75, 70], [95, 165], [195, 165], [212, 95], [85, 95]]); x.beginPath(); x.arc(110, 195, 14, 0, Math.PI * 2); x.fill(); x.beginPath(); x.arc(180, 195, 14, 0, Math.PI * 2); x.fill(); break;
+      default: x.font = '800 130px Rubik, Assistant, Arial, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText((name || id).slice(0, 1), 128, 135);
+    }
+    const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.anisotropy = 4;
+    return (emblems[key] = new T.MeshStandardMaterial({ map: t, emissiveMap: t, emissive: new T.Color(0xffffff), emissiveIntensity: .12, roughness: .5, transparent: true }));
+  }
+  const facadeMats = {};
+  function facadeMat(id, hex) {
+    if (facadeMats[id + hex]) return facadeMats[id + hex];
+    const tex = (name, rep) => { if (!kit || !kit.tx) return null; const t = kit.tx(name).clone(); t.needsUpdate = true; t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(rep, rep * .35); return t; };
+    let m;
+    switch (id) {
+      case 'money': m = new T.MeshStandardMaterial({ map: tex('concrete_wall_008', 1.5), color: lin(0xF0E6D2), roughness: .85 }); break;
+      case 'study': m = new T.MeshStandardMaterial({ map: tex('brick_wall_005', 2.2), roughness: .9 }); break;
+      case 'work': m = new T.MeshStandardMaterial({ color: lin(0x4E79C4), roughness: .08, metalness: .55, envMapIntensity: 1.2 }); if (kit && kit.reflective) kit.reflective.push(m); break;
+      case 'health': m = new T.MeshStandardMaterial({ color: lin(0xF5F7F7), roughness: .35 }); break;
+      case 'home': m = new T.MeshStandardMaterial({ map: tex('beige_wall_001', 1.6), color: lin(0xF6DDBA), roughness: .9 }); break;
+      case 'shopping': m = new T.MeshStandardMaterial({ map: tex('grey_plaster', 1.6), color: lin(0xF3EEE6), roughness: .9 }); break;
+      default: m = new T.MeshStandardMaterial({ color: lin(hex), roughness: .6 });
+    }
+    return (facadeMats[id + hex] = m);
+  }
+  function sideFacade(g, af, y, sx) {
+    const D = SIDE - 2 * R * .6, h = H - .14, x = sx * (SIDE / 2 + .02);
+    const wall = mesh(new T.BoxGeometry(.06, h, D), facadeMat(af.id, af.color), x, y + .07 + h / 2, 0, g, true);
+    const em = new T.Mesh(new T.PlaneGeometry(.62, .62), emblemTex(af.id, af.color, af.name)); em.position.set(x + sx * .045, y + .07 + h / 2, 0); em.rotation.y = sx * Math.PI / 2; g.add(em); lit.push(em);
+    const solid = roomMats(af.color).solid;
+    switch (af.id) {
+      case 'money': // columns and a cornice, like the bank
+        for (const z of [-.95, -.55, .55, .95]) mesh(new T.CylinderGeometry(.06, .07, h - .06, 12), mats.ceil, x + sx * .1, y + .07 + h / 2, z, g);
+        mesh(new T.BoxGeometry(.1, .08, D + .1), mats.ceil, x + sx * .08, y + h + .05, 0, g, false); break;
+      case 'health': { const cr = new T.Group(); mesh(new T.BoxGeometry(.03, .1, .32), roomMats('#D4585F').strip, 0, 0, 0, cr); mesh(new T.BoxGeometry(.03, .32, .1), roomMats('#D4585F').strip, 0, 0, 0, cr); cr.position.set(x + sx * .05, y + .3, .95); g.add(cr);
+        const cr2 = cr.clone(); cr2.position.z = -.95; g.add(cr2); break; }
+      case 'home': // window boxes with plants
+        for (const z of [-.95, .95]) { mesh(new T.BoxGeometry(.12, .08, .4), solid, x + sx * .1, y + .32, z, g); for (const dz of [-.12, .02, .14]) mesh(new T.SphereGeometry(.07, 8, 6), mats.leaf, x + sx * .12, y + .41, z + dz, g, false); } break;
+      case 'family': // bright stripes
+        ['#E0A63A', '#D4645C', '#2F8F83'].forEach((cc, k) => mesh(new T.BoxGeometry(.03, .07, D - .1), roomMats(cc).solid, x + sx * .04, y + .16 + k * .09, 0, g, false)); break;
+      case 'shopping': { // a striped awning
+        for (let k = 0; k < 8; k++) { const a = mesh(new T.BoxGeometry(.32, .03, D / 8 - .01), k % 2 ? mats.ceil : solid, x + sx * .17, y + h - .02, -D / 2 + (k + .5) * D / 8, g, false); a.rotation.z = sx * -.35; } break; }
+      case 'work': // a band of window strips
+        for (const yy of [.25, .62]) mesh(new T.BoxGeometry(.03, .04, D - .1), mats.mullion, x + sx * .04, y + yy, 0, g, false); break;
+      case 'study': // arched windows either side of the emblem
+        for (const z of [-.95, .95]) { mesh(new T.BoxGeometry(.03, .34, .26), mats.mullion, x + sx * .035, y + .38, z, g, false); const ar = mesh(new T.CylinderGeometry(.13, .13, .03, 16, 1, false, 0, Math.PI), mats.ceil, x + sx * .04, y + .55, z, g, false); ar.rotation.z = Math.PI / 2; ar.rotation.y = sx > 0 ? 0 : Math.PI; } break;
+    }
+  }
+  // the area's one big object, on both sides of the core facing the windows
+  function coreFeature(g, af, y, face) {
+    const z = face * .66, gp = new T.Group(); gp.position.set(0, y + .06, z); if (face < 0) gp.rotation.y = Math.PI; g.add(gp);
+    const solid = roomMats(af.color).solid;
+    switch (af.id) {
+      case 'money': {
+        const ring = piece(gp, new T.TorusGeometry(.3, .045, 10, 32), mats.gold, 0, .42, .04); ring.castShadow = false;
+        piece(gp, new T.CylinderGeometry(.28, .28, .05, 32), mats.mullion, 0, .42, .03, false).rotation.x = Math.PI / 2;
+        for (let k = 0; k < 3; k++) { const sp = piece(gp, B(.36, .03, .03), mats.gold, 0, .42, .07, false); sp.rotation.z = k * Math.PI / 3; }
+        for (const [dx, n] of [[-.55, 5], [-.42, 3], [.45, 6], [.58, 4]]) for (let i = 0; i < n; i++) piece(gp, new T.CylinderGeometry(.06, .06, .025, 16), mats.gold, dx, .015 + i * .027, .35, false);
+        break; }
+      case 'study':
+        piece(gp, B(1.0, .78, .1), mats.desk, 0, .39, .05);
+        for (let r = 0; r < 3; r++) for (let i = 0; i < 11; i++) piece(gp, B(.07, .17 + (i * 7 % 5) * .01, .08), roomMats(BOOKS[(i + r) % 5]).solid, -.42 + i * .084, .12 + r * .25, .11, false);
+        break;
+      case 'work':
+        piece(gp, B(.9, .5, .04), screenMat(), 0, .5, .05, false); piece(gp, B(.06, .25, .06), mats.mullion, 0, .14, .05, false);
+        break;
+      case 'health':
+        piece(gp, B(.8, .6, .02), mats.glass, 0, .45, .04, false);
+        for (let i = 0; i < 4; i++) { piece(gp, new T.CylinderGeometry(.04, .04, .22, 10), mats.mullion, -.3 + i * .2, .08, .3, false).rotation.z = Math.PI / 2; for (const dx of [-.1, .1]) piece(gp, new T.CylinderGeometry(.06, .06, .05, 12), solid, -.3 + i * .2 + dx, .08, .3, false).rotation.z = Math.PI / 2; }
+        break;
+      case 'home':
+        piece(gp, B(.7, .4, .03), mats.mullion, 0, .5, .05, false); piece(gp, B(.6, .08, .2), mats.desk, 0, .12, .14);
+        piece(gp, new T.CylinderGeometry(.07, .06, .16, 8), mats.pot, .5, .08, .2, false); piece(gp, new T.SphereGeometry(.15, 8, 6), mats.leaf, .5, .3, .2, false);
+        break;
+      case 'family':
+        ['#E0A63A', '#D4645C', '#2F8F83', '#4F6DB3'].forEach((cc, i) => { piece(gp, B(.2, .16 + (i % 2) * .06, .02), mats.desk, -.36 + i * .24, .55, .04, false); piece(gp, B(.16, .12 + (i % 2) * .06, .025), roomMats(cc).solid, -.36 + i * .24, .55, .05, false); });
+        break;
+      case 'shopping':
+        for (let r = 0; r < 3; r++) { piece(gp, B(1.0, .03, .16), mats.ceil, 0, .14 + r * .24, .1, false); for (let i = 0; i < 8; i++) piece(gp, B(.09, .11, .09), roomMats(BOOKS[(i + r) % 5]).solid, -.42 + i * .12, .21 + r * .24, .1, false); }
+        break;
+    }
+  }
+
   function areaFloor(g, i, af, y, today) {
     mesh(slabGeo(SIDE + .16, R + .04, .06), mats.slab, 0, y, 0, g);
     mesh(slabGeo(SIDE + .2, R + .06, .035), roomMats(af.color).solid, 0, y - .02, 0, g, false); // the slab's edge in the area's colour
@@ -276,8 +378,9 @@
     room(g, { id: af.id, color: af.color, n }, y, 0, Math.PI * 2 - .001, i, false, false);
     dayWindows(g, af, y, i, today, 1);
     dayWindows(g, af, y, i, today, -1);
-    const lb = label(af.name || af.id, true, false); lb.position.set(SIDE / 2 + 1.35, y + H / 2, 0); g.add(lb);
-    const sw = new T.Mesh(new T.PlaneGeometry(.18, .18), roomMats(af.color).strip); sw.position.set(SIDE / 2 + .28, y + H / 2, 0); sw.rotation.y = Math.PI / 2; g.add(sw);
+    sideFacade(g, af, y, 1); sideFacade(g, af, y, -1);
+    coreFeature(g, af, y, 1); coreFeature(g, af, y, -1);
+    const lb = label(af.name || af.id, true, false); lb.position.set(SIDE / 2 + 1.5, y + H / 2, 0); g.add(lb);
   }
 
   // ---------------- around the tower ----------------
@@ -400,6 +503,7 @@
     for (const m of Object.values(roomMat)) { m.wall.emissiveIntensity = on ? .85 : .38; m.tint.emissiveIntensity = on ? .6 : .22; m.strip.emissiveIntensity = on ? 2.4 : .35; }
     if (screen) screen.emissiveIntensity = on ? 1.6 : .7;
     for (const m of Object.values(dayPane)) m.emissiveIntensity = on ? 1.9 : .35;
+    for (const m of Object.values(emblems)) m.emissiveIntensity = on ? .9 : .12;
     if (todayFrame) todayFrame.emissiveIntensity = on ? 2.0 : .6;
   }
   function startReveal() {
