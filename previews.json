@@ -1,5 +1,10 @@
 [
  {
+  "name": "reddit-fixes-2d",
+  "title": "תיקונים מרדיט (עיר מצוירת)",
+  "stamp": "20261124180343"
+ },
+ {
   "name": "reddit-fixes",
   "title": "תיקונים מרדיט",
   "stamp": "20261124180119"
@@ -53,10 +58,5 @@
   "name": "friend-invites",
   "title": "חבר מביא חבר",
   "stamp": "20261115203610"
- },
- {
-  "name": "calendar-fix",
-  "title": "תיקון גרירה ביומן",
-  "stamp": "20261115155650"
  }
 ]
