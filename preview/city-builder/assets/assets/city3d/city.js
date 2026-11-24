@@ -347,7 +347,7 @@
     if (b.stage === 'lot') { for (let i = 0; i <= 9; i++) for (const zz of [0.05, 9.95]) box(0.08, 0.8, 0.08, mats.fence, i * 1.1 + 0.05, 0.16, zz, g); for (const zz of [0.05, 9.95]) box(10, 0.05, 0.06, mats.fence, 5, 0.9, zz, g); plane(9.6, 9.6, mats.sand, 5, 0.17, 5, g, 3); for (const dx of [-1.3, 1.3]) cyl(0.05, 0.05, 2.2, mats.pole, 5 + dx, 0.16, 8.5, g, 8); signBoard(g, b.name || L.lot, 5, 2.3, 8.5, 3.0, 0.7, 0xF6F4EE, '#1D2B55'); return; }
     plane(9.6, 9.6, mats.sand, 5, 0.17, 5, g, 3); box(w + 0.6, 0.4, d + 0.6, mats.slab, x, 0.16, z, g);
     if (b.stage === 'foundation') { for (const [dx, dz] of [[-2, -1.6], [2, -1.6], [-2, 1.6], [2, 1.6]]) box(0.5, 0.9, 0.5, mats.slab, x + dx, 0.56, z + dz, g); cyl(0.12, 0.12, 9, mats.crane, 8.6, 0.16, 1.4, g, 8); const arm = box(7, 0.3, 0.3, mats.crane, 5.6, 9.1, 1.4, g); box(0.3, 0.3, 0.3, mats.crane, 8.6, 9.0, 1.4, g); cyl(0.02, 0.02, 4, mats.dark, 3.2, 5.0, 1.4, g, 6); box(0.8, 0.8, 0.8, mats.slab, 3.2, 4.6, 1.4, g); signBoard(g, b.name || L.lot, 5, 2.3, 8.9, 3.0, 0.7, 0xF6F4EE, '#1D2B55'); for (const dx of [-1.3, 1.3]) cyl(0.05, 0.05, 2.2, mats.pole, 5 + dx, 0.16, 8.9, g, 8); return; }
-    if (b.stage === 'shell') { for (let f = 0; f < 3; f++) { box(w, 0.25, d, mats.slab, x, 0.56 + f * 2.6, z, g); for (const [dx, dz] of [[-2.2, -1.9], [2.2, -1.9], [-2.2, 1.9], [2.2, 1.9], [0, -1.9], [0, 1.9]]) box(0.3, 2.6, 0.3, mats.slab, x + dx, 0.56 + f * 2.6, z + dz, g); } box(w, 0.25, d, mats.slab, x, 0.56 + 7.8, z, g); cyl(0.12, 0.12, 11, mats.crane, 8.6, 0.16, 1.4, g, 8); box(7, 0.3, 0.3, mats.crane, 5.6, 11.1, 1.4, g); return; }
+    if (b.stage === 'shell') { for (let f = 0; f < 3; f++) { box(w, 0.25, d, mats.slab, x, 0.56 + f * 2.6, z, g); for (const [dx, dz] of [[-2.2, -1.9], [2.2, -1.9], [-2.2, 1.9], [2.2, 1.9], [0, -1.9], [0, 1.9]]) box(0.3, 2.6, 0.3, mats.slab, x + dx, 0.56 + f * 2.6, z + dz, g); } box(w, 0.25, d, mats.slab, x, 0.56 + 7.8, z, g); cyl(0.12, 0.12, 11, mats.crane, 8.6, 0.16, 1.4, g, 8); box(7, 0.3, 0.3, mats.crane, 5.6, 11.1, 1.4, g); if (b.name) { signBoard(g, b.name, 5, 2.3, 9.3, 3.0, 0.7, 0xF6F4EE, '#1D2B55'); for (const dx of [-1.3, 1.3]) cyl(0.05, 0.05, 2.2, mats.pole, 5 + dx, 0.16, 9.3, g, 8); } return; }
     const two = true, h = 5.2; contact(w, d, x, z, g); box(w, h, d, mats.beige, x, 0.16, z, g); gable(g, w, d, 1.6, 0.5, x, 0.16 + h, z, mats.beige); door(g, x, z + d / 2, 1.1, 2.1); steps(g, x, z + d / 2, 2.2, 2);
     for (const y of [1.5, 4.1]) { win(g, '+z', x - 1.6, y, z + d / 2, 0.9, 1.1); win(g, '+z', x + 1.6, y, z + d / 2, 0.9, 1.1); win(g, '+x', x + w / 2, y, z, 0.9, 1.1); win(g, '-x', x - w / 2, y, z, 0.9, 1.1); }
     cyl(0.04, 0.05, 4.0, mats.metal, 8.8, 0.16, 8.8, g, 8); box(0.06, 0.5, 0.8, M({ color: col }), 8.8, 3.6, 9.2, g); if (b.alive) { tree(g, 1.2, 8.6, 0.9); hedge(g, 1.4, 1.2, 2.4, 0.6); }
@@ -419,37 +419,53 @@
     }
   }
   const LANDMARK = new Set(['office', 'house', 'school', 'bank', 'clinic', 'playground', 'supermarket', 'shop', 'studio', 'garden', 'tower', 'ourHouse']);
-  function buildRings(s, L) {
-    const b = s.builder, C = b.center, R = b.radius;
-    { const gr = new T.Mesh(new T.CircleGeometry(R + 10, 96), mats.grass); gr.rotation.x = -Math.PI / 2; gr.position.set(C, 0.15, C); gr.receiveShadow = true; root.add(gr); }
-    // a plaza round the tower
-    const pz = new T.Mesh(new T.CircleGeometry(b.first - 9.5, 48), mats.brickPave); pz.rotation.x = -Math.PI / 2; pz.position.set(C, 0.165, C); pz.receiveShadow = true; root.add(pz);
-    // each area's wedge, tinted
-    for (const w of b.wedges) {
-      const g = new T.RingGeometry(b.first - 6, R, 32, 1, w.a0, w.a1 - w.a0); g.rotateX(Math.PI / 2);
-      const m = new T.Mesh(g, new T.MeshStandardMaterial({ color: parseInt(w.color.replace('#', ''), 16), transparent: true, opacity: .32, roughness: 1, side: T.DoubleSide, depthWrite: false }));
-      m.position.set(C, 0.17, C); root.add(m);
+  // ---------------- the city that tasks build (sketch 70, A: blocks) ----------------
+  // Flutter sends every block and the area that owns it, everything standing, and each area's building site with its
+  // stage (lib/city/builder.dart). The page draws the roads round the blocks, the blocks' ground in their area's
+  // colour, the small glass tower in the middle block, the things, the sites going up and the marked lots after them.
+  const isWide = it => it.key === 'supermarket' || (it.key === 'school' && (it.level || 1) >= 3);
+  function blockOf(b, x, z) { return [Math.round((x - b.center) / b.P), Math.round((z - b.center) / b.P)]; }
+  function blockEdges(b) {
+    const cells = [[0, 0], ...b.parks, ...b.areas.flatMap(a => a.cells)], out = new Map();
+    for (const [i, j] of cells) {
+      const x0 = b.center + (i - .5) * b.P, x1 = b.center + (i + .5) * b.P, z0 = b.center + (j - .5) * b.P, z1 = b.center + (j + .5) * b.P;
+      for (const e of [[x0, z0, x1, z0], [x0, z1, x1, z1], [x0, z0, x0, z1], [x1, z0, x1, z1]]) out.set(e.map(v => Math.round(v)).join(','), e);
     }
-    // ring roads between the rings, and paths along the wedges' edges
-    for (let k = 0; k <= b.rings; k += 2) {
-      const rr = b.first - b.step / 2 + k * b.step;
-      const g = new T.RingGeometry(rr - 2.6, rr + 2.6, 120); g.rotateX(Math.PI / 2);
-      const road = new T.Mesh(g, mats.asphalt); road.material.side = T.DoubleSide; road.position.set(C, 0.172, C); road.receiveShadow = true; root.add(road);
-      for (const e of [-3.3, 3.3]) { const cg = new T.RingGeometry(rr + e - .35, rr + e + .35, 120); cg.rotateX(Math.PI / 2); const cu = new T.Mesh(cg, new T.MeshStandardMaterial({ color: 0xD8D3C6, roughness: .9, side: T.DoubleSide })); cu.position.set(C, 0.18, C); root.add(cu); }
-      for (let a = 0; a < Math.PI * 2; a += 0.5) lampPost(root, C + Math.cos(a) * (rr + 4.2), C + Math.sin(a) * (rr + 4.2));
+    return [...out.values()];
+  }
+  function lotGroup(b, x, z, rot) { const g = new T.Group(); g.position.set(b.center + x, 0, b.center + z); g.rotation.y = rot; return g; }
+  function blockGround(b, i, j, color) {
+    const cx = b.center + i * b.P, cz = b.center + j * b.P, w = b.P - 7;
+    const m = color == null ? mats.brickPave : M({ color: new T.Color(0xE7E3D8).lerp(new T.Color(parseInt(color.slice(1), 16)), .2), roughness: .95 });
+    const p = plane(w, w, m, cx, 0.162, cz, root, 3); p.receiveShadow = true;
+    return [cx, cz, w];
+  }
+  function buildBlocks(s, L) {
+    const b = s.builder, C = b.center;
+    { const gr = new T.Mesh(new T.CircleGeometry(b.radius + 60, 96), mats.grass); gr.rotation.x = -Math.PI / 2; gr.position.set(C, 0.15, C); gr.receiveShadow = true; root.add(gr); }
+    // the roads round every block: asphalt, the yellow lane marks, a lamp at every crossing
+    const edges = blockEdges(b);
+    for (const [x1, z1, x2, z2] of edges) {
+      const along = z1 === z2, len = Math.abs(along ? x2 - x1 : z2 - z1), cx = (x1 + x2) / 2, cz = (z1 + z2) / 2;
+      plane(along ? len + 7 : 7, along ? 7 : len + 7, mats.asphalt, cx, 0.16, cz, root, 3);
+      for (let k = 5; k < len - 4; k += 4) box(along ? 1.6 : 0.16, 0.012, along ? 0.16 : 1.6, mats.lane, along ? Math.min(x1, x2) + k : cx, 0.165, along ? cz : Math.min(z1, z2) + k, root);
     }
-    for (const w of b.wedges) {
-      const a = w.a0 - .02, len = R - (b.first - 9.5), mid = (b.first - 9.5 + R) / 2;
-      const p = box(2.2, 0.02, len, mats.paving, C + Math.cos(a) * mid, 0.17, C + Math.sin(a) * mid, root, 1.2); p.rotation.y = Math.atan2(Math.cos(a), Math.sin(a));
-    }
-    // the things
+    const corners = new Map(); for (const [x1, z1, x2, z2] of edges) { corners.set(Math.round(x1) + ',' + Math.round(z1), [x1, z1]); corners.set(Math.round(x2) + ',' + Math.round(z2), [x2, z2]); }
+    for (const [x, z] of corners.values()) lampPost(root, x + 4.4, z + 4.4);
+    // the middle block: the tower's plaza, with benches and trees at its corners
+    { const [cx, cz, w] = blockGround(b, 0, 0, null); for (const [dx, dz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { tree(root, cx + dx * (w / 2 - 3), cz + dz * (w / 2 - 3), 1.1, 'oak'); bench(root, cx + dx * (w / 2 - 6.5), cz + dz * (w / 2 - 3), dx > 0 ? -Math.PI / 2 : Math.PI / 2); } }
+    // blocks no area owns yet: a green park
+    for (const [i, j] of b.parks) { const cx = C + i * b.P, cz = C + j * b.P, w = b.P - 7; plane(w, w, M({ color: 0x7FB069, roughness: 1 }), cx, 0.162, cz, root, 3); for (let a = -1; a <= 1; a++) for (let c = -1; c <= 1; c++) if ((a + c) % 2 === 0) tree(root, cx + a * 12, cz + c * 12, 1.1 + ((a + 2 * c + 4) % 3) * .15, (a + c) % 4 === 0 ? 'oak' : 'cypress'); bench(root, cx + 5, cz, 0); }
+    // every area's blocks, in its colour
+    for (const a of b.areas) for (const [i, j] of a.cells) blockGround(b, i, j, a.color);
+    // the things that stand
     fresh = [];
     for (const it of b.items) {
-      const g = new T.Group(); g.position.set(C + it.x, 0, C + it.z); g.rotation.y = it.rot;
+      const g = lotGroup(b, it.x, it.z, it.rot);
       if (LANDMARK.has(it.key)) {
-        const wide = it.key === 'school' || it.key === 'supermarket', lw = wide ? 2 : 1;
+        const lw = isWide(it) ? 2 : 1;
         const inner = new T.Group(); inner.position.set(-lw * TILE / 2, 0, -TILE / 2);
-        (B[it.key] || B.house)(inner, Math.max(1, Math.min(5, it.level || 1)), L, { kind: it.key, color: it.color, name: it.name, level: it.level, stage: 'finished', landmark: true, variant: 0 });
+        (B[it.key] || B.house)(inner, Math.max(1, Math.min(5, it.level || 1)), L, { kind: it.key, color: it.color, name: it.name, level: it.level, stage: 'finished', landmark: true, variant: it.index });
         if (it.first && it.areaName) {
           const hex = String(it.color || '#1D2B55');
           for (const px of [0.7, 4.3]) box(0.16, 2.9, 0.16, mats.curb, px, 0.16, TILE - 0.6, inner);
@@ -457,60 +473,37 @@
           for (const side of [1, -1]) { const pl = new T.Mesh(new T.PlaneGeometry(3.8, 0.95), nameBoard(it.areaName, hex)); pl.position.set(2.5, 2.5, TILE - 0.6 + side * 0.065); if (side < 0) pl.rotation.y = Math.PI; inner.add(pl); }
         }
         g.add(inner);
-      } else { smallThing(g, it.key, it.color); g.scale.setScalar(1.45); g.userData.base = 1.45; }
+        // a tree by every house and building that is not a landmark: the street grows green with it
+        if (!it.first && it.index % 2 === 1) tree(g, lw * TILE / 2 - 0.6, -TILE / 2 + 0.8, 0.85, it.index % 4 === 1 ? 'cypress' : 'oak');
+      } else { smallThing(g, it.key, it.color); g.scale.setScalar(1.25); g.userData.base = 1.25; }
+      g.traverse(o => { if (o.isMesh) { o.userData.district = it.area; tappable.push(o); } });
       if (it.fresh) { g.scale.setScalar(0.001); g.userData.rise = 0; fresh.push(g); cranes.push(crane(C + it.x, C + it.z, it.rot, LANDMARK.has(it.key) ? 1 : 0.6)); } else root.add(g);
     }
+    // each area's building site, at its stage, and the two marked lots after it
+    for (const a of b.areas) {
+      const st = a.site;
+      if (st) {
+        const g = lotGroup(b, st.x, st.z, st.rot), inner = new T.Group(); inner.position.set(-TILE / 2, 0, -TILE / 2);
+        const sign = st.stage === 'lot' ? ((L.siteNext || '') + st.name) : (st.name + ' · ' + st.have + '/' + st.cost);
+        project(inner, { stage: st.stage, name: sign, color: a.color }, L);
+        g.add(inner); g.traverse(o => { if (o.isMesh) { o.userData.district = a.id; tappable.push(o); } }); root.add(g);
+      }
+      for (const [x, z, rot] of a.empties) {
+        const g = lotGroup(b, x, z, rot), col = parseInt(a.color.slice(1), 16);
+        plane(9.4, 9.4, M({ color: new T.Color(0xE7E3D8).lerp(new T.Color(col), .45), roughness: 1 }), 0, 0.172, 0, g, 3);
+        for (const [dx, dz] of [[-4.5, -4.5], [4.5, -4.5], [-4.5, 4.5], [4.5, 4.5]]) { box(0.14, 0.7, 0.14, mats.fence, dx, 0.16, dz, g); box(0.5, 0.1, 0.06, M({ color: col }), dx, 0.72, dz, g); }
+        g.traverse(o => { if (o.isMesh) { o.userData.district = a.id; tappable.push(o); } }); root.add(g);
+      }
+    }
+    // the rest of each block's lots: a lawn and a tree, so a young area is green and not bare
+    const taken = [...b.items.map(it => [it.x, it.z, isWide(it) ? 1 : 0]), ...b.areas.flatMap(a => [...(a.site ? [[a.site.x, a.site.z, 0]] : []), ...a.empties.map(e => [e[0], e[1], 0])])];
+    for (const a of b.areas) for (const [i, j] of a.cells) for (let u = -1; u <= 1; u++) for (let v = -1; v <= 1; v++) {
+      const x = i * b.P + u * b.lot, z = j * b.P + v * b.lot;
+      if (taken.some(([tx, tz, w]) => Math.hypot(tx - x, tz - z) < (w ? b.lot * 1.2 : 3))) continue;
+      plane(9.4, 9.4, M({ color: 0x8DBB73, roughness: 1 }), C + x, 0.168, C + z, root, 3);
+      tree(root, C + x + ((u + v + 3) % 3 - 1) * 2, C + z + ((u * 2 + v + 4) % 3 - 1) * 2, 1.0 + ((u + 2 * v + 6) % 3) * .15, (u + v) % 2 ? 'cypress' : 'oak');
+    }
     ringLife(b);
-  }
-  // the build moment's crane (stage 3): mast, jib, counterweight and a swinging hook; it lowers away when done
-  let cranes = [], movers = [];
-  function crane(x, z, rot, k) {
-    const c = new T.Group(); c.position.set(x, 0, z); c.rotation.y = rot + Math.PI / 4; c.scale.setScalar(k);
-    const yel = Mr({ color: 0xE0A63A, roughness: .5, metalness: .3 }), h = 16;
-    box(2.2, 0.5, 2.2, mats.stone, -6, 0.16, 0, c);
-    for (let y = 0.7; y < h; y += 1.6) { box(0.9, 1.5, 0.9, yel, -6, y, 0, c); }
-    box(14, 0.5, 0.7, yel, -1, h, 0, c); box(3, 1.0, 1.0, mats.stone, -9.5, h - 0.6, 0, c); box(1.2, 1.2, 1.2, mats.glassDark, -6, h - 1.5, 0.9, c);
-    const hook = new T.Group(); hook.position.set(3, h, 0); cyl(0.03, 0.03, 6, mats.dark, 0, -6, 0, hook, 6); box(0.5, 0.5, 0.5, mats.dark, 0, -6.4, 0, hook); c.add(hook); c.userData.hook = hook;
-    c.userData.t = 0; return c;
-  }
-  // cars round the ring roads and people round the plaza (stage 3)
-  function ringLife(b) {
-    movers = [];
-    const cols = [0xC8463C, 0x2F5D8A, 0xF6F4EE, 0x3C3C3C, 0x6E9F5A, 0xE0A63A];
-    let n = 0;
-    for (let k = 0; k <= b.rings; k += 2) {
-      const rr = b.first - b.step / 2 + k * b.step, count = 4 + Math.min(4, k);
-      for (let q = 0; q < count; q++) { const dir = q % 2 ? 1 : -1; movers.push({ kind: 'car', col: cols[n++ % cols.length], r: rr + dir * 1.3, a: q / count * Math.PI * 2 + k, v: dir * (4.5 / rr) * (0.85 + (q % 3) * 0.12) }); }
-    }
-    const shirts = [0x1D2B55, 0xC8463C, 0xE0A63A, 0x6E9F5A, 0x8C6BB1];
-    for (let q = 0; q < 8; q++) movers.push({ kind: 'person', col: shirts[q % shirts.length], r: b.first - 12 + (q % 3) * 1.2, a: q * 0.8, v: (q % 2 ? 1 : -1) * 0.05 });
-  }
-  function placeLife(b) {
-    const C = b.center;
-    for (const m of movers) {
-      m.g = m.kind === 'car' ? car(live, m.col, 0, 0, 0) : person(live, 0, 0, m.col);
-      m.g.scale.setScalar(m.kind === 'car' ? 1.8 : 1.7);
-      moveOne(m, C, 0);
-    }
-  }
-  function moveOne(m, C, dt) {
-    m.a += m.v * dt; const x = C + Math.cos(m.a) * m.r, z = C + Math.sin(m.a) * m.r;
-    m.g.position.x = x; m.g.position.z = z;
-    // cars point along the road (their nose is +x), people face where they walk (+z)
-    const tx = -Math.sin(m.a) * Math.sign(m.v), tz = Math.cos(m.a) * Math.sign(m.v);
-    m.g.rotation.y = m.kind === 'car' ? Math.atan2(-tz, tx) : Math.atan2(tx, tz);
-    if (m.kind === 'person') m.g.position.y = 0.16 + Math.abs(Math.sin(m.a * 40)) * 0.08;
-    if (m.g.userData.hl) m.g.userData.hl.emissive.setHex(night ? 0xFFE9B0 : 0x000000);
-  }
-  function tickLife(dt) {
-    const b = state && state.builder; if (!b) return;
-    for (const m of movers) if (m.g) moveOne(m, b.center, dt);
-    for (const c of cranes) {
-      if (!c.parent) continue;
-      c.userData.t += dt; const t = c.userData.t;
-      c.userData.hook.rotation.z = Math.sin(t * 2) * 0.08;
-      if (t > 2.6) { c.position.y -= dt * 14; if (c.position.y < -20) c.parent.remove(c); }
-    }
   }
   // what was just built rises out of the ground with a little bounce (sketch 69: the build moment)
   function riseFresh(dt) {
@@ -521,10 +514,65 @@
       g.scale.setScalar(Math.max(0.001, e) * (g.userData.base || 1));
     }
   }
+  // the build moment's crane (stage 3): mast, jib, counterweight and a swinging hook; it lowers away when done
+  let cranes = [], movers = [], roadNodes = [];
+  function crane(x, z, rot, k) {
+    const c = new T.Group(); c.position.set(x, 0, z); c.rotation.y = rot + Math.PI / 4; c.scale.setScalar(k);
+    const yel = Mr({ color: 0xE0A63A, roughness: .5, metalness: .3 }), h = 16;
+    box(2.2, 0.5, 2.2, mats.stone, -6, 0.16, 0, c);
+    for (let y = 0.7; y < h; y += 1.6) { box(0.9, 1.5, 0.9, yel, -6, y, 0, c); }
+    box(14, 0.5, 0.7, yel, -1, h, 0, c); box(3, 1.0, 1.0, mats.stone, -9.5, h - 0.6, 0, c); box(1.2, 1.2, 1.2, mats.glassDark, -6, h - 1.5, 0.9, c);
+    const hook = new T.Group(); hook.position.set(3, h, 0); cyl(0.03, 0.03, 6, mats.dark, 0, -6, 0, hook, 6); box(0.5, 0.5, 0.5, mats.dark, 0, -6.4, 0, hook); c.add(hook); c.userData.hook = hook;
+    c.userData.t = 0; return c;
+  }
+  // cars that drive the roads round the blocks, turning at the crossings, and people round the tower's plaza
+  function ringLife(b) {
+    movers = [];
+    const nodes = new Map(), key = (x, z) => Math.round(x) + ',' + Math.round(z), add = (x, z) => { const k = key(x, z); if (!nodes.has(k)) nodes.set(k, { x, z, nb: [] }); return nodes.get(k); };
+    for (const [x1, z1, x2, z2] of blockEdges(b)) { const p = add(x1, z1), q = add(x2, z2); p.nb.push(q); q.nb.push(p); }
+    roadNodes = [...nodes.values()];
+    const cols = [0xC8463C, 0x2F5D8A, 0xF6F4EE, 0x3C3C3C, 0x6E9F5A, 0xE0A63A, 0x8C6BB1];
+    const n = Math.min(26, Math.max(6, Math.round(roadNodes.length * .7)));
+    for (let q = 0; q < n; q++) { const from = roadNodes[(q * 7) % roadNodes.length]; movers.push({ kind: 'car', col: cols[q % cols.length], from, to: from.nb[q % from.nb.length], prev: null, t: (q * .37) % 1, v: 6 + (q % 4) * 1.2 }); }
+    const shirts = [0x1D2B55, 0xC8463C, 0xE0A63A, 0x6E9F5A, 0x8C6BB1];
+    for (let q = 0; q < 8; q++) movers.push({ kind: 'person', col: shirts[q % shirts.length], r: b.P / 2 - 7 + (q % 3) * 1.0, a: q * 0.8, v: (q % 2 ? 1 : -1) * 0.06 });
+  }
+  function placeLife(b) {
+    for (const m of movers) {
+      m.g = m.kind === 'car' ? car(live, m.col, 0, 0, 0) : person(live, 0, 0, m.col);
+      m.g.scale.setScalar(m.kind === 'car' ? 1.5 : 1.5);
+      moveOne(m, b, 0);
+    }
+  }
+  function moveOne(m, b, dt) {
+    if (m.kind === 'car') {
+      const dx = m.to.x - m.from.x, dz = m.to.z - m.from.z, len = Math.hypot(dx, dz) || 1;
+      m.t += m.v * dt / len;
+      if (m.t >= 1) { const opts = m.to.nb.filter(n => n !== m.from); const nx = opts.length ? opts[Math.floor(Math.random() * opts.length)] : m.from; m.from = m.to; m.to = nx; m.t = 0; return moveOne(m, b, 0); }
+      const ux = dx / len, uz = dz / len;
+      // keep to the right-hand lane; the car's nose is +x
+      m.g.position.set(m.from.x + dx * m.t - uz * 1.6, 0.16, m.from.z + dz * m.t + ux * 1.6); m.g.rotation.y = Math.atan2(-uz, ux);
+    } else {
+      m.a += m.v * dt; const x = b.center + Math.cos(m.a) * m.r, z = b.center + Math.sin(m.a) * m.r;
+      m.g.position.set(x, 0.16 + Math.abs(Math.sin(m.a * 40)) * 0.08, z);
+      const tx = -Math.sin(m.a) * Math.sign(m.v), tz = Math.cos(m.a) * Math.sign(m.v); m.g.rotation.y = Math.atan2(tx, tz);
+    }
+    if (m.g.userData.hl) m.g.userData.hl.emissive.setHex(night ? 0xFFE9B0 : 0x000000);
+  }
+  function tickLife(dt) {
+    const b = state && state.builder; if (!b) return;
+    for (const m of movers) if (m.g) moveOne(m, b, dt);
+    for (const c of cranes) {
+      if (!c.parent) continue;
+      c.userData.t += dt; const t = c.userData.t;
+      c.userData.hook.rotation.z = Math.sin(t * 2) * 0.08;
+      if (t > 2.6) { c.position.y -= dt * 14; if (c.position.y < -20) c.parent.remove(c); }
+    }
+  }
   function builderAreaAt(x, z) {
     const b = state && state.builder; if (!b) return null;
-    const a = Math.atan2(z - b.center, x - b.center);
-    for (const w of b.wedges) { let t = a; while (t < w.a0) t += Math.PI * 2; if (t <= w.a1 + .05) return w.id; }
+    const [i, j] = blockOf(b, x, z);
+    for (const a of b.areas) if (a.cells.some(c => c[0] === i && c[1] === j)) return a.id;
     return null;
   }
 
@@ -533,7 +581,7 @@
     const L = s.labels || {}; const W = s.cols * TILE, H = s.rows * TILE;
     // Ground: the map's grass, the far grass, and a dark edge so the map reads as a model on a table.
     land.position.set(W / 2, 0.12, H / 2); land.visible = !window.SKY_CUT; if (window.SKY_CUT) scene.fog = null; // ?cut in the demo: the city alone, for marketing pictures
-    if (s.builder) buildRings(s, L); else {
+    if (s.builder) buildBlocks(s, L); else {
     plane(W, H, mats.grass, W / 2, 0.15, H / 2, root, 3);
     // Roads with sidewalks, curbs and lane dashes.
     const roads = s.roads.slice(); if (s.rows > s.baseRows) roads.push({ alongI: true, at: s.quarterRoad, from: 0, to: s.cols }, ...(s.quarterLinks || []));
@@ -571,7 +619,7 @@
     buildTower(s);
     setNight(!!s.night);
     const ld = document.getElementById('loading'); if (ld) ld.classList.add('gone');
-    if (!view.placed) { const tv = s.tower && window.skyTower && window.skyTower.view(); if (tv) { Object.assign(view, tv); if (s.spin) { view.dist *= window.SKY_CUT ? 1.9 : 1.12; view.pitch = window.SKY_CUT ? 24 : 17; } } else top(false); view.placed = true; }
+    if (!view.placed) { const tv = !s.builder && s.tower && window.skyTower && window.skyTower.view(); if (tv) { Object.assign(view, tv); if (s.spin) { view.dist *= window.SKY_CUT ? 1.9 : 1.12; view.pitch = window.SKY_CUT ? 24 : 17; } } else top(false); view.placed = true; }
   }
   // Flat colours are written as sRGB hex; r128 takes them as linear and the page outputs sRGB, which washed every
   // colour to pastel. Each material is converted once (textures already carry sRGB and are left alone).
@@ -637,8 +685,8 @@
     const pitch = 52, t2 = 2 * Math.tan(cam.fov * Math.PI / 360);
     const need = Math.max(H * Math.sin(pitch * Math.PI / 180) * 1.12 / t2, W * 1.08 / t2 / aspect);
     // with the tower, from its emblem side, so "the city" keeps the wall with the areas' names facing you (owner 24.11)
-    const tv = state.tower && window.skyTower && window.skyTower.has() ? window.skyTower.view() : null;
-    const to = tv ? { yaw: tv.yaw, pitch, dist: need * 1.38, tx: W / 2, ty: 4, tz: H / 2 } : { yaw: 0, pitch, dist: need, tx: W / 2, ty: 1, tz: H / 2 + H * 0.04 };
+    const tv = state.tower && window.skyTower && window.skyTower.has() ? window.skyTower.view() : null, bl = !!state.builder;
+    const to = tv ? { yaw: tv.yaw, pitch, dist: need * (bl ? .95 : 1.38), tx: W / 2, ty: 4, tz: H / 2 } : { yaw: 0, pitch, dist: need, tx: W / 2, ty: 1, tz: H / 2 + H * 0.04 };
     if (animate) animateTo(to, 700); else Object.assign(view, to);
   }
   function focusTile(i, j, lw = 1) { animateTo({ tx: (i + lw / 2) * TILE, ty: 2, tz: (j + 0.5) * TILE, dist: 34, pitch: Math.min(view.pitch, 32) }, 700); }
@@ -683,7 +731,7 @@
     let best = null, bd = 49;
     for (const it of b.items) { const dx = b.center + it.x - pt.x, dz = b.center + it.z - pt.z, d = dx * dx + dz * dz; if (d < bd) { bd = d; best = it; } }
     if (!best) return false;
-    const w = b.wedges.find(x => x.id === best.area); if (!w || !w.free || !w.free.length) return false;
+    const w = b.areas.find(x => x.id === best.area); if (!w || !w.free || !w.free.length) return false;
     endMove(); moving = { area: best.area, index: best.index, free: w.free };
     moveG = new T.Group(); scene.add(moveG);
     const ring = (x, z, r0, r1, color, o) => { const g = new T.RingGeometry(r0, r1, 40); g.rotateX(-Math.PI / 2); const m = new T.Mesh(g, new T.MeshBasicMaterial({ color, transparent: true, opacity: o, depthWrite: false })); m.position.set(x, 0.3, z); m.renderOrder = 9; moveG.add(m); };
@@ -760,7 +808,7 @@
     towerLight() { if (!window.skyTower) return; towerCam(900); setNight(true); window.skyTower.light(); },
     snapshot() { place(); R.render(scene, cam); return canvas.toDataURL('image/jpeg', 0.85); },
   };
-  function handle(d) { if (!d || typeof d !== 'object') return; if (d.type === 'tower') { window.sky.tower(); return; } if (d.type === 'towerFloor') { window.sky.towerFloor(d.f); return; } if (d.type === 'towerLight') { window.sky.towerLight(); return; } if (d.type === 'built') { const b = state && state.builder; if (b) { let yw = Math.atan2(d.x, d.z) * 180 / Math.PI; while (yw - view.yaw > 180) yw -= 360; while (view.yaw - yw > 180) yw += 360; animateTo({ yaw: yw, pitch: 32, dist: 60, tx: b.center + d.x, ty: 2, tz: b.center + d.z }, 900); } return; } if (d.type === 'state') window.sky.setState(d.state); else if (d.type === 'top') window.sky.top(); else if (d.type === 'focus') window.sky.focus(d.i, d.j, d.lw); else if (d.type === 'street') window.sky.street(d.i, d.j); else if (d.type === 'night') window.sky.setNight(d.on); }
+  function handle(d) { if (!d || typeof d !== 'object') return; if (d.type === 'tower') { window.sky.tower(); return; } if (d.type === 'towerFloor') { window.sky.towerFloor(d.f); return; } if (d.type === 'towerLight') { window.sky.towerLight(); return; } if (d.type === 'site') { const b = state && state.builder, a = b && b.areas.find(x => x.id === d.area); if (a && a.site) handle({ type: 'built', x: a.site.x, z: a.site.z }); return; } if (d.type === 'built') { const b = state && state.builder; if (b) { let yw = Math.atan2(d.x, d.z) * 180 / Math.PI; while (yw - view.yaw > 180) yw -= 360; while (view.yaw - yw > 180) yw += 360; animateTo({ yaw: yw, pitch: 32, dist: 60, tx: b.center + d.x, ty: 2, tz: b.center + d.z }, 900); } return; } if (d.type === 'state') window.sky.setState(d.state); else if (d.type === 'top') window.sky.top(); else if (d.type === 'focus') window.sky.focus(d.i, d.j, d.lw); else if (d.type === 'street') window.sky.street(d.i, d.j); else if (d.type === 'night') window.sky.setNight(d.on); }
   window.sky.msg = handle;
   addEventListener('message', e => handle(e.data));
   send({ type: 'ready' });
