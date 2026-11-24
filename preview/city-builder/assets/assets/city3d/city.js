@@ -458,7 +458,58 @@
         }
         g.add(inner);
       } else { smallThing(g, it.key, it.color); g.scale.setScalar(1.45); g.userData.base = 1.45; }
-      if (it.fresh) { g.scale.setScalar(0.001); g.userData.rise = 0; fresh.push(g); } else root.add(g);
+      if (it.fresh) { g.scale.setScalar(0.001); g.userData.rise = 0; fresh.push(g); cranes.push(crane(C + it.x, C + it.z, it.rot, LANDMARK.has(it.key) ? 1 : 0.6)); } else root.add(g);
+    }
+    ringLife(b);
+  }
+  // the build moment's crane (stage 3): mast, jib, counterweight and a swinging hook; it lowers away when done
+  let cranes = [], movers = [];
+  function crane(x, z, rot, k) {
+    const c = new T.Group(); c.position.set(x, 0, z); c.rotation.y = rot + Math.PI / 4; c.scale.setScalar(k);
+    const yel = Mr({ color: 0xE0A63A, roughness: .5, metalness: .3 }), h = 16;
+    box(2.2, 0.5, 2.2, mats.stone, -6, 0.16, 0, c);
+    for (let y = 0.7; y < h; y += 1.6) { box(0.9, 1.5, 0.9, yel, -6, y, 0, c); }
+    box(14, 0.5, 0.7, yel, -1, h, 0, c); box(3, 1.0, 1.0, mats.stone, -9.5, h - 0.6, 0, c); box(1.2, 1.2, 1.2, mats.glassDark, -6, h - 1.5, 0.9, c);
+    const hook = new T.Group(); hook.position.set(3, h, 0); cyl(0.03, 0.03, 6, mats.dark, 0, -6, 0, hook, 6); box(0.5, 0.5, 0.5, mats.dark, 0, -6.4, 0, hook); c.add(hook); c.userData.hook = hook;
+    c.userData.t = 0; return c;
+  }
+  // cars round the ring roads and people round the plaza (stage 3)
+  function ringLife(b) {
+    movers = [];
+    const cols = [0xC8463C, 0x2F5D8A, 0xF6F4EE, 0x3C3C3C, 0x6E9F5A, 0xE0A63A];
+    let n = 0;
+    for (let k = 0; k <= b.rings; k += 2) {
+      const rr = b.first - b.step / 2 + k * b.step, count = 4 + Math.min(4, k);
+      for (let q = 0; q < count; q++) { const dir = q % 2 ? 1 : -1; movers.push({ kind: 'car', col: cols[n++ % cols.length], r: rr + dir * 1.3, a: q / count * Math.PI * 2 + k, v: dir * (4.5 / rr) * (0.85 + (q % 3) * 0.12) }); }
+    }
+    const shirts = [0x1D2B55, 0xC8463C, 0xE0A63A, 0x6E9F5A, 0x8C6BB1];
+    for (let q = 0; q < 8; q++) movers.push({ kind: 'person', col: shirts[q % shirts.length], r: b.first - 12 + (q % 3) * 1.2, a: q * 0.8, v: (q % 2 ? 1 : -1) * 0.05 });
+  }
+  function placeLife(b) {
+    const C = b.center;
+    for (const m of movers) {
+      m.g = m.kind === 'car' ? car(live, m.col, 0, 0, 0) : person(live, 0, 0, m.col);
+      m.g.scale.setScalar(m.kind === 'car' ? 1.8 : 1.7);
+      moveOne(m, C, 0);
+    }
+  }
+  function moveOne(m, C, dt) {
+    m.a += m.v * dt; const x = C + Math.cos(m.a) * m.r, z = C + Math.sin(m.a) * m.r;
+    m.g.position.x = x; m.g.position.z = z;
+    // cars point along the road (their nose is +x), people face where they walk (+z)
+    const tx = -Math.sin(m.a) * Math.sign(m.v), tz = Math.cos(m.a) * Math.sign(m.v);
+    m.g.rotation.y = m.kind === 'car' ? Math.atan2(-tz, tx) : Math.atan2(tx, tz);
+    if (m.kind === 'person') m.g.position.y = 0.16 + Math.abs(Math.sin(m.a * 40)) * 0.08;
+    if (m.g.userData.hl) m.g.userData.hl.emissive.setHex(night ? 0xFFE9B0 : 0x000000);
+  }
+  function tickLife(dt) {
+    const b = state && state.builder; if (!b) return;
+    for (const m of movers) if (m.g) moveOne(m, b.center, dt);
+    for (const c of cranes) {
+      if (!c.parent) continue;
+      c.userData.t += dt; const t = c.userData.t;
+      c.userData.hook.rotation.z = Math.sin(t * 2) * 0.08;
+      if (t > 2.6) { c.position.y -= dt * 14; if (c.position.y < -20) c.parent.remove(c); }
     }
   }
   // what was just built rises out of the ground with a little bounce (sketch 69: the build moment)
@@ -478,7 +529,7 @@
   }
 
   function build(s) {
-    state = s; clearRoot(); litSeed = 7; endMove();
+    state = s; clearRoot(); litSeed = 7; endMove(); cranes = [];
     const L = s.labels || {}; const W = s.cols * TILE, H = s.rows * TILE;
     // Ground: the map's grass, the far grass, and a dark edge so the map reads as a model on a table.
     land.position.set(W / 2, 0.12, H / 2); land.visible = !window.SKY_CUT; if (window.SKY_CUT) scene.fog = null; // ?cut in the demo: the city alone, for marketing pictures
@@ -514,6 +565,8 @@
     live = new T.Group(); scene.add(live);
     if (window.skyStreet && !s.builder) window.skyStreet.build(s, live, mats, window.skyParts);
     for (const g of fresh) live.add(g);
+    if (s.builder) { for (const c of cranes) live.add(c); placeLife(s.builder); } else { movers = []; }
+    cranes = cranes.filter(c => c.parent);
     linearise(live);
     buildTower(s);
     setNight(!!s.night);
@@ -678,6 +731,7 @@
     if (window.skyStreet) window.skyStreet.tick(Math.min(0.05, dt / 1000));
     if (window.skyTower) window.skyTower.tick(Math.min(0.05, dt / 1000));
     riseFresh(Math.min(0.05, dt / 1000));
+    tickLife(Math.min(0.05, dt / 1000));
     // the welcome screens: the camera goes slowly round the tower while no finger is down
     if (state && state.spin && ptr.size === 0 && !anim.to) view.yaw += dt * 0.006;
     place(); R.render(scene, cam); requestAnimationFrame(loop);
@@ -706,7 +760,7 @@
     towerLight() { if (!window.skyTower) return; towerCam(900); setNight(true); window.skyTower.light(); },
     snapshot() { place(); R.render(scene, cam); return canvas.toDataURL('image/jpeg', 0.85); },
   };
-  function handle(d) { if (!d || typeof d !== 'object') return; if (d.type === 'tower') { window.sky.tower(); return; } if (d.type === 'towerFloor') { window.sky.towerFloor(d.f); return; } if (d.type === 'towerLight') { window.sky.towerLight(); return; } if (d.type === 'built') { const b = state && state.builder; if (b) animateTo({ yaw: view.yaw, pitch: 30, dist: 70, tx: b.center + d.x, ty: 2, tz: b.center + d.z }, 900); return; } if (d.type === 'state') window.sky.setState(d.state); else if (d.type === 'top') window.sky.top(); else if (d.type === 'focus') window.sky.focus(d.i, d.j, d.lw); else if (d.type === 'street') window.sky.street(d.i, d.j); else if (d.type === 'night') window.sky.setNight(d.on); }
+  function handle(d) { if (!d || typeof d !== 'object') return; if (d.type === 'tower') { window.sky.tower(); return; } if (d.type === 'towerFloor') { window.sky.towerFloor(d.f); return; } if (d.type === 'towerLight') { window.sky.towerLight(); return; } if (d.type === 'built') { const b = state && state.builder; if (b) { let yw = Math.atan2(d.x, d.z) * 180 / Math.PI; while (yw - view.yaw > 180) yw -= 360; while (view.yaw - yw > 180) yw += 360; animateTo({ yaw: yw, pitch: 32, dist: 60, tx: b.center + d.x, ty: 2, tz: b.center + d.z }, 900); } return; } if (d.type === 'state') window.sky.setState(d.state); else if (d.type === 'top') window.sky.top(); else if (d.type === 'focus') window.sky.focus(d.i, d.j, d.lw); else if (d.type === 'street') window.sky.street(d.i, d.j); else if (d.type === 'night') window.sky.setNight(d.on); }
   window.sky.msg = handle;
   addEventListener('message', e => handle(e.data));
   send({ type: 'ready' });
