@@ -43,6 +43,7 @@
     mats.gold = new T.MeshStandardMaterial({ color: dim(0xE0A63A), roughness: .45, metalness: .2 });
     mats.wire = new T.MeshBasicMaterial({ color: lin(0x6E8FD8), wireframe: true, transparent: true, opacity: .5 });
     mats.hit = new T.MeshBasicMaterial({ visible: false });
+    mats.warm = new T.MeshBasicMaterial({ color: lin(0xFFD7A0), transparent: true, opacity: 0, side: T.DoubleSide, depthWrite: false });
     mats.strip = new T.MeshStandardMaterial({ color: lin(0xFFFFFF), emissive: lin(0xFFF4DC), emissiveIntensity: .5 });
     mats.pastGlass = reg(new T.MeshStandardMaterial({ color: dim(0xBFD4EC), roughness: .12, metalness: .55, envMapIntensity: 1.2 }));
   }
@@ -122,7 +123,7 @@
     for (const [sx, sz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) for (const off of [-.55, 0, .55]) mesh(new T.BoxGeometry(.035, H - .1, .035), mats.mullion, sx ? sx * SIDE / 2 : off, y + H / 2, sz ? sz * SIDE / 2 : off, g, false);
     mesh(bandGeo(SIDE + .03, R, .04), mats.mullion, 0, y + H / 2 + .02, 0, g, false);
     furnish(g, y, f);
-    const pl = new T.PointLight(lin(0xFFC98A), 0, 1, 2); pl.position.set(0, y + H * .72, 0); g.add(pl); floorLights.push(pl);
+    const pl = new T.Mesh(new T.CircleGeometry(1.45, 32), mats.warm); pl.rotation.x = Math.PI / 2; pl.position.y = y + H - .13; g.add(pl); floorLights.push(pl);
     fl.areas.forEach((a, k) => fin(g, { id: a.id, color: a.color, k, of: fl.areas.length }, y, a.n, f, fl.today));
     const lb = label(fl.label, fl.today, fl.today); lb.position.set(SIDE / 2 + 1.35, y + H / 2, 0); g.add(lb);
   }
@@ -241,7 +242,7 @@
     for (const h of halos) h.material.opacity = on ? .85 : 0;
     if (beam) beam.material.opacity = on ? .16 : 0;
     if (groundHalo) groundHalo.material.opacity = on ? .5 : 0;
-    for (const l of floorLights) { l.distance = SIDE * scale * 1.1; l.intensity = on ? 1.6 : 0; }
+    mats.warm.opacity = on ? .85 : 0;
   }
   function startReveal() {
     const list = lit.slice().sort((a, b) => { const pa = new T.Vector3(), pb = new T.Vector3(); a.getWorldPosition(pa); b.getWorldPosition(pb); return pa.y - pb.y; });

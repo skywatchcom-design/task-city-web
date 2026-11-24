@@ -54,7 +54,7 @@
   const HAZE_DAY = 0xD6E2E8, HAZE_NIGHT = 0x1A2238;
   scene.fog = new T.Fog(new T.Color(HAZE_DAY).convertSRGBToLinear(), 260, 1400);
   const land = new T.Mesh(new T.CircleGeometry(4000, 48), new T.MeshStandardMaterial({ color: new T.Color(0x6E8A55).convertSRGBToLinear(), roughness: 1 }));
-  land.rotation.x = -Math.PI / 2; land.position.y = -0.02; land.receiveShadow = true; scene.add(land);
+  land.rotation.x = -Math.PI / 2; land.position.y = -0.02; land.receiveShadow = true; land.visible = false; scene.add(land);
   const pmrem = new T.PMREMGenerator(R); const envOf = {};
   const reflective = [];
 
@@ -177,7 +177,6 @@
   function lampPost(g, x, z) {
     cyl(0.05, 0.08, 3.4, mats.pole, x, 0.16, z, g, 8); box(0.9, 0.06, 0.06, mats.pole, x + 0.4, 3.47, z, g);
     const h = new T.Mesh(new T.SphereGeometry(0.2, 12, 10), mats.lamp); h.position.set(x + 0.8, 3.42, z); g.add(h);
-    const l = new T.PointLight(0xFFD9A0, 0, 11, 2); l.position.set(x + 0.8, 3.2, z); g.add(l); nightOn.push(l);
   }
   function bench(g, x, z, rot = 0) { const b = new T.Group(); b.position.set(x, 0.16, z); b.rotation.y = rot; box(1.6, 0.08, 0.5, mats.wood, 0, 0.45, 0, b); box(1.6, 0.4, 0.08, mats.wood, 0, 0.55, -0.25, b); box(0.08, 0.45, 0.5, mats.pole, -0.7, 0, 0, b); box(0.08, 0.45, 0.5, mats.pole, 0.7, 0, 0, b); g.add(b); }
   function hedge(g, x, z, w, d) { box(w, 0.7, d, mats.hedge, x, 0.16, z, g); }
@@ -379,7 +378,7 @@
     state = s; clearRoot(); litSeed = 7;
     const L = s.labels || {}; const W = s.cols * TILE, H = s.rows * TILE;
     // Ground: the map's grass, the far grass, and a dark edge so the map reads as a model on a table.
-    land.position.set(W / 2, 0.12, H / 2);
+    land.position.set(W / 2, 0.12, H / 2); land.visible = true;
     plane(W, H, mats.grass, W / 2, 0.15, H / 2, root, 3);
     // Roads with sidewalks, curbs and lane dashes.
     const roads = s.roads.slice(); if (s.rows > s.baseRows) roads.push({ alongI: true, at: s.quarterRoad, from: 0, to: s.cols }, ...(s.quarterLinks || []));
@@ -412,6 +411,7 @@
     linearise(live);
     buildTower(s);
     setNight(!!s.night);
+    const ld = document.getElementById('loading'); if (ld) ld.classList.add('gone');
     if (!view.placed) { const tv = s.tower && window.skyTower && window.skyTower.view(); if (tv) Object.assign(view, tv); else top(false); view.placed = true; }
   }
   // Flat colours are written as sRGB hex; r128 takes them as linear and the page outputs sRGB, which washed every
@@ -455,7 +455,7 @@
   function setNight(on) {
     night = on; const k = on ? NIGHT : DAY;
     sun.color.set(k.sun[0]); sun.intensity = k.sun[1]; hemi.color.set(k.hemi[0]); hemi.groundColor.set(k.hemi[1]); hemi.intensity = k.hemi[2];
-    const key = on ? 'n' : 'd'; if (!envOf[key]) envOf[key] = pmrem.fromEquirectangular(on ? skyNight : skyDay).texture; for (const m of reflective) { m.envMap = envOf[key]; m.needsUpdate = true; } scene.background = on ? backNight : backDay; scene.fog.color.set(on ? HAZE_NIGHT : HAZE_DAY).convertSRGBToLinear(); land.material.color.set(on ? 0x101A12 : 0x6E8A55).convertSRGBToLinear();
+    const key = on ? 'n' : 'd'; if (!envOf[key]) envOf[key] = pmrem.fromEquirectangular(on ? skyNight : skyDay).texture; for (const m of reflective) { m.envMap = envOf[key]; m.needsUpdate = true; } scene.background = state ? (on ? backNight : backDay) : null; scene.fog.color.set(on ? HAZE_NIGHT : HAZE_DAY).convertSRGBToLinear(); land.material.color.set(on ? 0x101A12 : 0x6E8A55).convertSRGBToLinear();
     mats.glassLit.emissive.set(on ? 0xFFC46B : 0x000000); mats.glassLit.emissiveIntensity = on ? 1.1 : 0; mats.lamp.emissive.set(on ? 0xFFE2A0 : 0x000000); mats.lamp.emissiveIntensity = on ? 1.6 : 0; mats.cross.emissive.set(on ? 0xFF4040 : 0x000000); mats.cross.emissiveIntensity = on ? 1.4 : 0;
     for (const l of nightOn) { if (l.isLight) l.intensity = on ? (quality.lights ? 1.4 : 0) : 0; else { l.emissive.set(on ? 0xFFFFFF : 0x000000); l.emissiveIntensity = on ? 0.9 : 0; } }
     if (window.skyStreet) window.skyStreet.setNight(on);
