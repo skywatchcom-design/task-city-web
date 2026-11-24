@@ -28,17 +28,18 @@
   function makeMats() {
     if (mats.glass) return;
     const reg = (m) => { if (kit && kit.reflective) kit.reflective.push(m); return m; };
-    mats.slab = new T.MeshStandardMaterial({ color: dim(0xEDEBE4), roughness: .62, metalness: .05 });
+    const tex = (name, rep) => { if (!kit || !kit.tx) return null; const t = kit.tx(name).clone(); t.needsUpdate = true; t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(rep, rep); return t; };
+    mats.slab = new T.MeshStandardMaterial({ color: dim(0xD9D8D3), roughness: .78, metalness: 0 });
     mats.ceil = new T.MeshStandardMaterial({ color: lin(0xDCDAD2), roughness: .95 });
     mats.core = new T.MeshStandardMaterial({ color: dim(0x9EA3B3), roughness: .8 });
     mats.under = new T.MeshStandardMaterial({ color: lin(0x2A3045), roughness: 1 });
     mats.glass = reg(new T.MeshPhysicalMaterial({ color: lin(0x7FA6CF), roughness: .04, metalness: .1, transparent: true, opacity: .2, depthWrite: false,
-      clearcoat: 1, clearcoatRoughness: .04, envMapIntensity: .55, side: T.DoubleSide }));
+      clearcoat: 1, clearcoatRoughness: .04, envMapIntensity: 1.0, side: T.DoubleSide }));
     mats.mullion = reg(new T.MeshStandardMaterial({ color: lin(0x1C2742), roughness: .35, metalness: .6, envMapIntensity: .8 }));
     mats.desk = new T.MeshStandardMaterial({ color: dim(0xC9B99A), roughness: .7 });
     mats.pot = new T.MeshStandardMaterial({ color: lin(0x9C8B75) });
     mats.leaf = new T.MeshStandardMaterial({ color: lin(0x5E9B6A), roughness: .9 });
-    mats.stone = new T.MeshStandardMaterial({ color: lin(0xCBC6BA), roughness: .85 });
+    mats.stone = new T.MeshStandardMaterial({ color: dim(0xDAD6CC), roughness: .85 });
     mats.gold = new T.MeshStandardMaterial({ color: dim(0xE0A63A), roughness: .45, metalness: .2 });
     mats.wire = new T.MeshBasicMaterial({ color: lin(0x6E8FD8), wireframe: true, transparent: true, opacity: .5 });
     mats.hit = new T.MeshBasicMaterial({ visible: false });
@@ -77,7 +78,7 @@
     const c = document.createElement('canvas'); c.width = 256; c.height = 64; const x = c.getContext('2d');
     x.font = (bold ? '700 ' : '600 ') + '30px Assistant, Rubik, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.direction = 'rtl';
     if (today) { x.fillStyle = 'rgba(242,193,78,.95)'; x.beginPath(); x.roundRect ? x.roundRect(40, 10, 176, 44, 12) : x.rect(40, 10, 176, 44); x.fill(); x.fillStyle = '#1D2B55'; }
-    else { x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 6; x.fillStyle = '#fff'; }
+    else { x.fillStyle = 'rgba(15,22,38,.72)'; x.beginPath(); x.roundRect ? x.roundRect(40, 10, 176, 44, 12) : x.rect(40, 10, 176, 44); x.fill(); x.fillStyle = '#fff'; }
     x.fillText(text, 128, 32);
     const t = new T.CanvasTexture(c); t.minFilter = T.LinearFilter;
     const s = new T.Sprite(new T.SpriteMaterial({ map: t, transparent: true, depthTest: false })); s.scale.set(2.2, .55, 1); s.renderOrder = 5; return s;
@@ -174,6 +175,7 @@
     const n = t.floors.length, today = t.today;
     // the plinth and its steps
     mesh(slabGeo(SIDE + .7, R + .3, .32), mats.stone, 0, 0, 0, inner);
+    if (kit && kit.aoMat) { const ao = new T.Mesh(new T.PlaneGeometry(SIDE * 1.9, SIDE * 1.9), kit.aoMat); ao.rotation.x = -Math.PI / 2; ao.position.y = .012; inner.add(ao); }
     const base = .33;
     for (let f = 0; f <= today; f++) floor(inner, f, t.floors[f], base + f * H);
     const top = base + (today + 1) * H;
@@ -233,7 +235,7 @@
     if (!mats.glass) return;
     mats.glass.color.copy(lin(on ? 0x2E4878 : 0x7FA6CF)); mats.glass.opacity = on ? .14 : .2;
     mats.core.emissive.copy(lin(on ? 0x5A3E12 : 0x000000)); mats.core.emissiveIntensity = on ? .9 : 0;
-    mats.slab.color.copy(on ? dim(0xC9CBD6, .7) : dim(0xEDEBE4)); mats.core.color.copy(on ? dim(0xAEB2C4, .6) : dim(0x9EA3B3));
+    mats.slab.color.copy(on ? dim(0xC9CBD6, .7) : dim(0xD9D8D3)); mats.core.color.copy(on ? dim(0xAEB2C4, .6) : dim(0x9EA3B3));
     mats.strip.emissiveIntensity = on ? 1.2 : .5;
     for (const c of lit) { c.material.emissiveIntensity = on ? 3.4 : .95; }
     for (const h of halos) h.material.opacity = on ? .85 : 0;
