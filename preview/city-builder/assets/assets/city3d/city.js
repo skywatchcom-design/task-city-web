@@ -478,7 +478,7 @@
   }
 
   function build(s) {
-    state = s; clearRoot(); litSeed = 7;
+    state = s; clearRoot(); litSeed = 7; endMove();
     const L = s.labels || {}; const W = s.cols * TILE, H = s.rows * TILE;
     // Ground: the map's grass, the far grass, and a dark edge so the map reads as a model on a table.
     land.position.set(W / 2, 0.12, H / 2); land.visible = !window.SKY_CUT; if (window.SKY_CUT) scene.fog = null; // ?cut in the demo: the city alone, for marketing pictures
@@ -594,8 +594,9 @@
 
   // Gestures: one finger orbits, two pinch to zoom, and a quick touch without movement is a tap.
   const ptr = new Map(); let lastPinch = 0, moved = 0, downAt = 0, downPos = null;
-  canvas.addEventListener('pointerdown', e => { canvas.setPointerCapture(e.pointerId); ptr.set(e.pointerId, [e.clientX, e.clientY]); if (ptr.size === 1) { moved = 0; downAt = performance.now(); downPos = [e.clientX, e.clientY]; anim.to = null; } });
-  function up(e) { ptr.delete(e.pointerId); lastPinch = 0; if (ptr.size === 0 && downPos && moved < 8 && performance.now() - downAt < 450) tap(downPos[0], downPos[1]); downPos = null; }
+  let pressTimer = null, pressed = false;
+  canvas.addEventListener('pointerdown', e => { canvas.setPointerCapture(e.pointerId); ptr.set(e.pointerId, [e.clientX, e.clientY]); if (ptr.size === 1) { moved = 0; downAt = performance.now(); downPos = [e.clientX, e.clientY]; anim.to = null; pressed = false; clearTimeout(pressTimer); if (state && state.builder) pressTimer = setTimeout(() => { if (ptr.size === 1 && moved < 8 && downPos) { pressed = startMove(downPos[0], downPos[1]); } }, 520); } else clearTimeout(pressTimer); });
+  function up(e) { ptr.delete(e.pointerId); lastPinch = 0; clearTimeout(pressTimer); if (ptr.size === 0 && downPos && moved < 8 && !pressed && performance.now() - downAt < 450) tap(downPos[0], downPos[1]); downPos = null; }
   canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up);
   canvas.addEventListener('pointermove', e => {
     if (!ptr.has(e.pointerId)) return; const prev = ptr.get(e.pointerId); ptr.set(e.pointerId, [e.clientX, e.clientY]); moved += Math.abs(e.clientX - prev[0]) + Math.abs(e.clientY - prev[1]);
@@ -615,7 +616,39 @@
   canvas.addEventListener('wheel', e => { e.preventDefault(); view.dist = Math.max(10, Math.min(260, view.dist * (1 + e.deltaY * 0.0012))); }, { passive: false });
   canvas.addEventListener('contextmenu', e => e.preventDefault());
   const ray = new T.Raycaster();
+  // ---------------- moving a building (salami 24.11: a long press on it) ----------------
+  let moving = null, moveG = null;
+  function groundAt(px, py) {
+    const r = canvas.getBoundingClientRect(); const v = new T.Vector2(((px - r.left) / r.width) * 2 - 1, -((py - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(v, cam); const gp = new T.Plane(new T.Vector3(0, 1, 0), -0.16), pt = new T.Vector3();
+    return ray.ray.intersectPlane(gp, pt) ? pt : null;
+  }
+  function endMove() { moving = null; if (moveG) { scene.remove(moveG); moveG = null; } const h = document.getElementById('moveHint'); if (h) h.style.display = 'none'; }
+  function startMove(px, py) {
+    const b = state && state.builder; if (!b) return false;
+    const pt = groundAt(px, py); if (!pt) return false;
+    let best = null, bd = 49;
+    for (const it of b.items) { const dx = b.center + it.x - pt.x, dz = b.center + it.z - pt.z, d = dx * dx + dz * dz; if (d < bd) { bd = d; best = it; } }
+    if (!best) return false;
+    const w = b.wedges.find(x => x.id === best.area); if (!w || !w.free || !w.free.length) return false;
+    endMove(); moving = { area: best.area, index: best.index, free: w.free };
+    moveG = new T.Group(); scene.add(moveG);
+    const ring = (x, z, r0, r1, color, o) => { const g = new T.RingGeometry(r0, r1, 40); g.rotateX(-Math.PI / 2); const m = new T.Mesh(g, new T.MeshBasicMaterial({ color, transparent: true, opacity: o, depthWrite: false })); m.position.set(x, 0.3, z); m.renderOrder = 9; moveG.add(m); };
+    ring(b.center + best.x, b.center + best.z, 5.2, 6.2, 0xF2C14E, .95);
+    for (const f of w.free) { ring(b.center + f[0], b.center + f[1], 3.2, 4.2, 0xFFFFFF, .9); ring(b.center + f[0], b.center + f[1], 0, 3.2, 0xF2C14E, .25); }
+    const h = document.getElementById('moveHint'); if (h) { h.textContent = (state.labels && state.labels.moveHint) || ''; h.style.display = ''; }
+    if (navigator.vibrate) navigator.vibrate(15);
+    return true;
+  }
+  function finishMove(px, py) {
+    const b = state && state.builder, mv = moving; endMove(); if (!b || !mv) return;
+    const pt = groundAt(px, py); if (!pt) return;
+    let best = null, bd = 36;
+    for (const f of mv.free) { const dx = b.center + f[0] - pt.x, dz = b.center + f[1] - pt.z, d = dx * dx + dz * dz; if (d < bd) { bd = d; best = f; } }
+    if (best) send({ type: 'move', area: mv.area, index: mv.index, slot: best[2] });
+  }
   function tap(px, py) {
+    if (moving) { finishMove(px, py); return; }
     const r = canvas.getBoundingClientRect(); const v = new T.Vector2(((px - r.left) / r.width) * 2 - 1, -((py - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(v, cam);
     if (window.skyStreet && ray.intersectObjects(window.skyStreet.meTap, false)[0]) { send({ type: 'tap', me: true }); return; }
@@ -652,12 +685,13 @@
   requestAnimationFrame(loop);
 
   // ---------------- public API ----------------
-  const btnTop = document.getElementById('btnTop'), btnStreet = document.getElementById('btnStreet'), btnTower = document.getElementById('btnTower');
+  const btnTop = document.getElementById('btnTop'), btnStreet = document.getElementById('btnStreet'), btnTower = document.getElementById('btnTower'), btnPlans = document.getElementById('btnPlans');
+  if (btnPlans) btnPlans.addEventListener('click', () => send({ type: 'tap', plans: true }));
   function towerCam(ms = 800) { const tv = window.skyTower && window.skyTower.view(); if (tv) animateTo(tv, ms); }
   if (btnTower) btnTower.addEventListener('click', () => { towerCam(); send({ type: 'camera', tower: true }); });
   if (btnTop) btnTop.addEventListener('click', () => { top(true); send({ type: 'camera', top: true }); });
   if (btnStreet) btnStreet.addEventListener('click', () => { if (!state) return; const W = state.cols * TILE, H = state.rows * TILE; animateTo({ tx: view.tx, ty: 1.5, tz: view.tz, pitch: 12, dist: Math.min(view.dist, 26) }, 800); send({ type: 'camera', street: true }); });
-  function labels(s) { const pl = document.querySelector('.pills'); if (pl) pl.style.display = s.spin ? 'none' : ''; if (btnTower) { btnTower.style.display = s.tower ? '' : 'none'; if (s.labels && s.labels.camTower) btnTower.lastChild.textContent = s.labels.camTower; } if (btnTop && s.labels && s.labels.camTop) btnTop.lastChild.textContent = s.labels.camTop; if (btnStreet && s.labels && s.labels.camStreet) btnStreet.lastChild.textContent = s.labels.camStreet; if (btnStreet) btnStreet.style.display = s.street === false ? 'none' : ''; document.body.classList.toggle('night', !!s.night); document.body.dir = s.rtl === false ? 'ltr' : 'rtl'; }
+  function labels(s) { const pl = document.querySelector('.pills'); if (pl) pl.style.display = s.spin ? 'none' : ''; if (btnPlans) { btnPlans.style.display = s.builder ? '' : 'none'; if (s.labels && s.labels.camPlans) btnPlans.lastChild.textContent = s.labels.camPlans; } if (btnTower) { btnTower.style.display = s.tower ? '' : 'none'; if (s.labels && s.labels.camTower) btnTower.lastChild.textContent = s.labels.camTower; } if (btnTop && s.labels && s.labels.camTop) btnTop.lastChild.textContent = s.labels.camTop; if (btnStreet && s.labels && s.labels.camStreet) btnStreet.lastChild.textContent = s.labels.camStreet; if (btnStreet) btnStreet.style.display = s.street === false ? 'none' : ''; document.body.classList.toggle('night', !!s.night); document.body.dir = s.rtl === false ? 'ltr' : 'rtl'; }
   window.sky = {
     setState(s) { if (typeof s === 'string') s = JSON.parse(s);
       const key = JSON.stringify(Object.assign({}, s, { me: null, night: null, quality: null, tower: null }));
