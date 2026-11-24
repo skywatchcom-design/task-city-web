@@ -412,7 +412,7 @@
     buildTower(s);
     setNight(!!s.night);
     const ld = document.getElementById('loading'); if (ld) ld.classList.add('gone');
-    if (!view.placed) { const tv = s.tower && window.skyTower && window.skyTower.view(); if (tv) Object.assign(view, tv); else top(false); view.placed = true; }
+    if (!view.placed) { const tv = s.tower && window.skyTower && window.skyTower.view(); if (tv) { Object.assign(view, tv); if (s.spin) { view.dist *= 1.12; view.pitch = 17; } } else top(false); view.placed = true; }
   }
   // Flat colours are written as sRGB hex; r128 takes them as linear and the page outputs sRGB, which washed every
   // colour to pastel. Each material is converted once (textures already carry sRGB and are left alone).
@@ -535,6 +535,8 @@
     if (state) { frames++; tAcc += dt; if (dt > 40) slow++; if (tAcc > 3000) { if (slow > frames * 0.4 && quality.level > 1 && quality.auto !== false) { quality.level--; applyQuality(); } slow = 0; frames = 0; tAcc = 0; } }
     if (window.skyStreet) window.skyStreet.tick(Math.min(0.05, dt / 1000));
     if (window.skyTower) window.skyTower.tick(Math.min(0.05, dt / 1000));
+    // the welcome screens: the camera goes slowly round the tower while no finger is down
+    if (state && state.spin && ptr.size === 0 && !anim.to) view.yaw += dt * 0.006;
     place(); R.render(scene, cam); requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
@@ -545,7 +547,7 @@
   if (btnTower) btnTower.addEventListener('click', () => { towerCam(); send({ type: 'camera', tower: true }); });
   if (btnTop) btnTop.addEventListener('click', () => { top(true); send({ type: 'camera', top: true }); });
   if (btnStreet) btnStreet.addEventListener('click', () => { if (!state) return; const W = state.cols * TILE, H = state.rows * TILE; animateTo({ tx: view.tx, ty: 1.5, tz: view.tz, pitch: 12, dist: Math.min(view.dist, 26) }, 800); send({ type: 'camera', street: true }); });
-  function labels(s) { if (btnTower) { btnTower.style.display = s.tower ? '' : 'none'; if (s.labels && s.labels.camTower) btnTower.lastChild.textContent = s.labels.camTower; } if (btnTop && s.labels && s.labels.camTop) btnTop.lastChild.textContent = s.labels.camTop; if (btnStreet && s.labels && s.labels.camStreet) btnStreet.lastChild.textContent = s.labels.camStreet; if (btnStreet) btnStreet.style.display = s.street === false ? 'none' : ''; document.body.classList.toggle('night', !!s.night); document.body.dir = s.rtl === false ? 'ltr' : 'rtl'; }
+  function labels(s) { const pl = document.querySelector('.pills'); if (pl) pl.style.display = s.spin ? 'none' : ''; if (btnTower) { btnTower.style.display = s.tower ? '' : 'none'; if (s.labels && s.labels.camTower) btnTower.lastChild.textContent = s.labels.camTower; } if (btnTop && s.labels && s.labels.camTop) btnTop.lastChild.textContent = s.labels.camTop; if (btnStreet && s.labels && s.labels.camStreet) btnStreet.lastChild.textContent = s.labels.camStreet; if (btnStreet) btnStreet.style.display = s.street === false ? 'none' : ''; document.body.classList.toggle('night', !!s.night); document.body.dir = s.rtl === false ? 'ltr' : 'rtl'; }
   window.sky = {
     setState(s) { if (typeof s === 'string') s = JSON.parse(s);
       const key = JSON.stringify(Object.assign({}, s, { me: null, night: null, quality: null, tower: null }));
