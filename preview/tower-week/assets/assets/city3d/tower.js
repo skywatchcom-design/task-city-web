@@ -294,10 +294,10 @@
   const names = {};
   function nameTex(text) {
     if (names[text]) return names[text];
-    const c = document.createElement('canvas'); c.width = 512; c.height = 144; const x = c.getContext('2d');
-    x.fillStyle = 'rgba(255,255,255,.94)'; x.beginPath(); (x.roundRect ? x.roundRect(6, 10, 500, 124, 30) : x.rect(6, 10, 500, 124)); x.fill();
-    x.fillStyle = '#1D2B55'; x.font = '800 78px Rubik, Assistant, Arial, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.direction = 'rtl';
-    x.fillText(text, 256, 76);
+    const c = document.createElement('canvas'); c.width = 500; c.height = 200; const x = c.getContext('2d');
+    x.fillStyle = 'rgba(255,255,255,.96)'; x.beginPath(); (x.roundRect ? x.roundRect(6, 8, 488, 184, 40) : x.rect(6, 8, 488, 184)); x.fill();
+    x.fillStyle = '#1D2B55'; x.font = '800 ' + (text.length > 6 ? 92 : 112) + 'px Rubik, Assistant, Arial, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.direction = 'rtl';
+    x.fillText(text, 250, 106, 460);
     const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.anisotropy = 4;
     return (names[text] = new T.MeshStandardMaterial({ map: t, transparent: true, roughness: .5, emissiveMap: t, emissive: new T.Color(0xffffff), emissiveIntensity: .1 }));
   }
@@ -321,8 +321,8 @@
     const D = SIDE - 2 * R * .6, h = H - .14, x = sx * (SIDE / 2 + .02);
     const wall = mesh(new T.BoxGeometry(.06, h, D), facadeMat(af.id, af.color), x, y + .07 + h / 2, 0, g, true);
     // the emblem on the right as Hebrew reads (seen from outside this wall), the name written beside it
-    const em = new T.Mesh(new T.PlaneGeometry(.5, .5), emblemTex(af.id, af.color, af.name)); em.position.set(x + sx * .045, y + .07 + h / 2, -.5 * sx); em.rotation.y = sx * Math.PI / 2; g.add(em); lit.push(em);
-    const nm = new T.Mesh(new T.PlaneGeometry(1.4, .4), nameTex(af.name || af.id)); nm.position.set(x + sx * .045, y + .07 + h / 2, .42 * sx); nm.rotation.y = sx * Math.PI / 2; g.add(nm);
+    const em = new T.Mesh(new T.PlaneGeometry(.66, .66), emblemTex(af.id, af.color, af.name)); em.position.set(x + sx * .045, y + .07 + h / 2, -.62 * sx); em.rotation.y = sx * Math.PI / 2; g.add(em); lit.push(em);
+    const nm = new T.Mesh(new T.PlaneGeometry(1.3, .52), nameTex(af.name || af.id)); nm.position.set(x + sx * .045, y + .07 + h / 2, .36 * sx); nm.rotation.y = sx * Math.PI / 2; g.add(nm);
     const solid = roomMats(af.color).solid;
     switch (af.id) {
       case 'money': // columns and a cornice, like the bank
@@ -547,7 +547,7 @@
   function view() {
     if (!spot) return null;
     const top = (.33 + (built + 1) * H + 3.4) * scale;
-    return { tx: spot[0] * TILE, ty: top * .45, tz: spot[1] * TILE, dist: top * 1.75 + 14, pitch: 13, yaw: 64 };
+    return { tx: spot[0] * TILE, ty: top * .45, tz: spot[1] * TILE, dist: top * 1.38 + 9, pitch: 12, yaw: 64 };
   }
   function floorView(f) {
     if (!spot) return null;

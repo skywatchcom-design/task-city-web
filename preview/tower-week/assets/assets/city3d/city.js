@@ -495,7 +495,9 @@
     if (!state) return; const W = state.cols * TILE, H = state.rows * TILE; const aspect = cam.aspect || 1;
     const pitch = 52, t2 = 2 * Math.tan(cam.fov * Math.PI / 360);
     const need = Math.max(H * Math.sin(pitch * Math.PI / 180) * 1.12 / t2, W * 1.08 / t2 / aspect);
-    const to = { yaw: 0, pitch, dist: need, tx: W / 2, ty: 1, tz: H / 2 + H * 0.04 };
+    // with the tower, from its emblem side, so "the city" keeps the wall with the areas' names facing you (owner 24.11)
+    const tv = state.tower && window.skyTower && window.skyTower.has() ? window.skyTower.view() : null;
+    const to = tv ? { yaw: tv.yaw, pitch, dist: need * 1.38, tx: W / 2, ty: 4, tz: H / 2 } : { yaw: 0, pitch, dist: need, tx: W / 2, ty: 1, tz: H / 2 + H * 0.04 };
     if (animate) animateTo(to, 700); else Object.assign(view, to);
   }
   function focusTile(i, j, lw = 1) { animateTo({ tx: (i + lw / 2) * TILE, ty: 2, tz: (j + 0.5) * TILE, dist: 34, pitch: Math.min(view.pitch, 32) }, 700); }
