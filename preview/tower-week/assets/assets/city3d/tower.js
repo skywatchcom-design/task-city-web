@@ -33,8 +33,8 @@
     mats.slab = new T.MeshStandardMaterial({ color: dim(0xD9D8D3), roughness: .78, metalness: 0 });
     mats.ceil = new T.MeshStandardMaterial({ color: lin(0xDCDAD2), roughness: .95 });
     mats.core = new T.MeshStandardMaterial({ color: dim(0x9EA3B3), roughness: .8 });
-    mats.under = new T.MeshStandardMaterial({ color: lin(0x2A3045), roughness: 1 });
-    mats.glass = reg(new T.MeshPhysicalMaterial({ color: lin(0x7FA6CF), roughness: .04, metalness: .1, transparent: true, opacity: .15, depthWrite: false,
+    mats.under = new T.MeshStandardMaterial({ color: lin(0xE4E2DC), roughness: 1 });
+    mats.glass = reg(new T.MeshPhysicalMaterial({ color: lin(0x7FA6CF), roughness: .04, metalness: .1, transparent: true, opacity: .09, depthWrite: false,
       clearcoat: 1, clearcoatRoughness: .04, envMapIntensity: 1.0, side: T.DoubleSide }));
     mats.mullion = reg(new T.MeshStandardMaterial({ color: lin(0x1C2742), roughness: .35, metalness: .6, envMapIntensity: .8 }));
     mats.desk = new T.MeshStandardMaterial({ color: dim(0xC9B99A), roughness: .7 });
@@ -97,8 +97,8 @@
     const c = lin(hex);
     const m = {
       solid: new T.MeshStandardMaterial({ color: c, roughness: .55 }),
-      wall: new T.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: .18, roughness: .7, side: T.DoubleSide }),
-      tint: new T.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: .12, roughness: .9, transparent: true, opacity: .85 }),
+      wall: new T.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: .38, roughness: .7, side: T.DoubleSide }),
+      tint: new T.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: .22, roughness: .9 }),
       strip: new T.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: .35, roughness: .5 }),
     };
     return (roomMat[hex] = m);
@@ -156,6 +156,7 @@
   }
   function room(g, area, y, a0, a1, f, isToday) {
     const m = roomMats(area.color);
+    y += .06; // on top of the slab, which rises .06 from the floor's base
     const span = a1 - a0, mid = (a0 + a1) / 2;
     // the room's floor, and its wall on the core
     const rg = new T.RingGeometry(RIN, ROUT, 20, 1, a0, span); rg.rotateX(Math.PI / 2);
@@ -171,7 +172,7 @@
     const sets = Math.max(1, Math.round(span * RMID / .78));
     for (let i = 0; i < sets; i++) {
       const an = a0 + (i + .5) * span / sets; const [x, z] = polar(an, RMID);
-      const k = kitFor(area.id, m); k.position.set(x, y + .02, z); k.rotation.y = Math.PI / 2 - an; g.add(k);
+      const k = kitFor(area.id, m); k.scale.setScalar(1.3); k.position.set(x, y + .02, z); k.rotation.y = Math.PI / 2 - an; g.add(k);
     }
     // a golden cube for every task, stacked by the glass in the middle of the room
     const shown = Math.min(area.n, 9);
@@ -205,8 +206,8 @@
     mesh(new T.CylinderGeometry(.6, .6, H - .1, 28), mats.core, 0, y + H / 2, 0, g);
     mesh(new T.BoxGeometry(.3, .5, .02), mats.mullion, 0, y + .3, .61, g, false);
     for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) mesh(new T.BoxGeometry(.05, H - .1, .05), mats.mullion, sx * (SIDE / 2 - R * .52), y + H / 2, sz * (SIDE / 2 - R * .52), g, false);
-    for (const [sx, sz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) for (const off of [-.55, 0, .55]) mesh(new T.BoxGeometry(.035, H - .1, .035), mats.mullion, sx ? sx * SIDE / 2 : off, y + H / 2, sz ? sz * SIDE / 2 : off, g, false);
-    mesh(bandGeo(SIDE + .03, R, .04), mats.mullion, 0, y + H / 2 + .02, 0, g, false);
+    for (const [sx, sz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) for (const off of [0]) mesh(new T.BoxGeometry(.03, H - .1, .03), mats.mullion, sx ? sx * SIDE / 2 : off, y + H / 2, sz ? sz * SIDE / 2 : off, g, false);
+    { const fr = plan(SIDE + .03, R); fr.holes.push(plan(SIDE - .05, R - .04)); const fg = new T.ExtrudeGeometry(fr, { depth: .035, bevelEnabled: false, curveSegments: 10 }); fg.rotateX(-Math.PI / 2); mesh(fg, mats.mullion, 0, y + H / 2 + .02, 0, g, false); }
     const pl = new T.Mesh(new T.CircleGeometry(1.45, 32), mats.warm); pl.rotation.x = Math.PI / 2; pl.position.y = y + H - .13; g.add(pl); floorLights.push(pl);
     const total = fl.areas.reduce((s, a) => s + a.n, 0);
     if (!total) furnish(g, y, f);
@@ -324,7 +325,7 @@
   function setNight(on) {
     night = on;
     if (!mats.glass) return;
-    mats.glass.color.copy(lin(on ? 0x2E4878 : 0x7FA6CF)); mats.glass.opacity = on ? .12 : .15;
+    mats.glass.color.copy(lin(on ? 0x2E4878 : 0x7FA6CF)); mats.glass.opacity = on ? .1 : .09;
     mats.core.emissive.copy(lin(on ? 0x5A3E12 : 0x000000)); mats.core.emissiveIntensity = on ? .9 : 0;
     mats.slab.color.copy(on ? dim(0xC9CBD6, .7) : dim(0xD9D8D3)); mats.core.color.copy(on ? dim(0xAEB2C4, .6) : dim(0x9EA3B3));
     mats.strip.emissiveIntensity = on ? 1.2 : .5;
@@ -333,7 +334,7 @@
     if (beam) beam.material.opacity = on ? .16 : 0;
     if (groundHalo) groundHalo.material.opacity = on ? .5 : 0;
     mats.warm.opacity = on ? .85 : 0;
-    for (const m of Object.values(roomMat)) { m.wall.emissiveIntensity = on ? .75 : .18; m.tint.emissiveIntensity = on ? .55 : .12; m.strip.emissiveIntensity = on ? 2.4 : .35; }
+    for (const m of Object.values(roomMat)) { m.wall.emissiveIntensity = on ? .85 : .38; m.tint.emissiveIntensity = on ? .6 : .22; m.strip.emissiveIntensity = on ? 2.4 : .35; }
     if (screen) screen.emissiveIntensity = on ? 1.6 : .7;
   }
   function startReveal() {
