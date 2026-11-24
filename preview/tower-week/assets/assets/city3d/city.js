@@ -50,10 +50,11 @@
     gr.addColorStop(0, top); gr.addColorStop(.55, mid); gr.addColorStop(1, low); g.fillStyle = gr; g.fillRect(0, 0, 4, 512);
     const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; return t;
   }
-  const backDay = skyBack('#3F7FC6', '#9EC4E6', '#D6E2E8'), backNight = skyBack('#070B16', '#111A33', '#232C48');
-  const HAZE_DAY = 0xD6E2E8, HAZE_NIGHT = 0x1A2238;
+  // a white world round the map, like the app's pages (owner 24.11: "a white background, not green")
+  const backDay = skyBack('#F2F1EC', '#F7F7F4', '#FBFBF9'), backNight = skyBack('#070B16', '#111A33', '#232C48');
+  const HAZE_DAY = 0xF7F7F4, HAZE_NIGHT = 0x1A2238;
   scene.fog = new T.Fog(new T.Color(HAZE_DAY).convertSRGBToLinear(), 260, 1400);
-  const land = new T.Mesh(new T.CircleGeometry(4000, 48), new T.MeshStandardMaterial({ color: new T.Color(0x6E8A55).convertSRGBToLinear(), roughness: 1 }));
+  const land = new T.Mesh(new T.CircleGeometry(4000, 48), new T.MeshStandardMaterial({ color: new T.Color(0xF1EFEA).convertSRGBToLinear(), roughness: 1 }));
   land.rotation.x = -Math.PI / 2; land.position.y = -0.02; land.receiveShadow = true; land.visible = false; scene.add(land);
   const pmrem = new T.PMREMGenerator(R); const envOf = {};
   const reflective = [];
@@ -199,6 +200,15 @@
   let towerG = null; // the glass tower (sketch 67): its own layer, rebuilt without touching the merged city
   function buildTower(s) { if (!window.skyTower) return; if (!towerG) { towerG = new T.Group(); scene.add(towerG); } window.skyTower.build(towerG, s.tower || null, s.tower ? s.tower.k : 1); }
   function person(g, x, z, shirt, rot = 0) { const p = new T.Group(); p.position.set(x, 0.16, z); p.rotation.y = rot; cyl(0.12, 0.14, 0.42, mats.pants, 0, 0, 0, p, 8); cyl(0.17, 0.2, 0.5, M({ color: shirt }), 0, 0.42, 0, p, 10); const h = new T.Mesh(new T.SphereGeometry(0.17, 12, 10), mats.skin); h.position.y = 1.1; h.castShadow = true; p.add(h); g.add(p); return p; }
+  const boards = {};
+  function nameBoard(text, hex) {
+    const key = text + hex; if (boards[key]) return boards[key];
+    const c = document.createElement('canvas'); c.width = 512; c.height = 128; const q = c.getContext('2d');
+    q.fillStyle = hex; q.fillRect(0, 0, 512, 128); q.fillStyle = '#ffffff'; q.font = '800 72px Rubik, Assistant, Arial, sans-serif'; q.textAlign = 'center'; q.textBaseline = 'middle'; q.direction = 'rtl'; q.fillText(text, 256, 68);
+    const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.anisotropy = 4;
+    const m = new T.MeshStandardMaterial({ map: t, roughness: .5, emissive: 0x000000, emissiveMap: t }); nightOn.push(m);
+    return (boards[key] = m);
+  }
   function signBoard(g, text, x, y, z, w = 2.4, h = 0.6, bg = 0x1D2B55, fg = '#ffffff', rot = 0) {
     const c = document.createElement('canvas'); c.width = 512; c.height = 128; const q = c.getContext('2d');
     q.fillStyle = '#' + bg.toString(16).padStart(6, '0'); q.fillRect(0, 0, 512, 128); q.fillStyle = fg; q.font = 'bold 64px Assistant, Rubik, Arial, sans-serif'; q.textAlign = 'center'; q.textBaseline = 'middle'; q.direction = 'rtl'; q.fillText(text, 256, 68);
@@ -370,6 +380,14 @@
     const bb = Object.assign({}, b, { color: d.color, name: b.name || d.name });
     if (b.stage === 'finished' || b.stage === 'alive') { if (b.landmark) (B[b.kind] || B.house)(inner, Math.max(1, Math.min(5, b.level || 1)), L, bb); else project(inner, Object.assign({}, bb, { alive: b.stage === 'alive' }), L); }
     else project(inner, bb, L);
+    // the neighbourhood's name on a standing sign at the front of its landmark (owner 24.11: so one knows which is which)
+    if (b.landmark && d.name) {
+      const hex = String(d.color || '#1D2B55');
+      for (const px of [0.7, 4.3]) box(0.16, 2.9, 0.16, mats.curb, px, 0.16, TILE - 0.6, inner);
+      box(4.0, 1.1, 0.12, M({ color: parseInt(hex.replace('#', ''), 16) || 0x1D2B55 }), 2.5, 1.95, TILE - 0.6, inner);
+      // the name on both faces of the board, so it reads from the street and from the garden
+      for (const side of [1, -1]) { const pl = new T.Mesh(new T.PlaneGeometry(3.8, 0.95), nameBoard(d.name, hex)); pl.position.set(2.5, 2.5, TILE - 0.6 + side * 0.065); if (side < 0) pl.rotation.y = Math.PI; inner.add(pl); }
+    }
     g.add(inner); g.position.set(cx, 0, cz); g.rotation.y = yaw;
     g.traverse(o => { if (o.isMesh) { o.userData.district = d.id; o.userData.building = b; tappable.push(o); } });
     root.add(g);
@@ -455,7 +473,7 @@
   function setNight(on) {
     night = on; const k = on ? NIGHT : DAY;
     sun.color.set(k.sun[0]); sun.intensity = k.sun[1]; hemi.color.set(k.hemi[0]); hemi.groundColor.set(k.hemi[1]); hemi.intensity = k.hemi[2];
-    const key = on ? 'n' : 'd'; if (!envOf[key]) envOf[key] = pmrem.fromEquirectangular(on ? skyNight : skyDay).texture; for (const m of reflective) { m.envMap = envOf[key]; m.needsUpdate = true; } scene.background = state && !window.SKY_CUT ? (on ? backNight : backDay) : null; if (scene.fog) scene.fog.color.set(on ? HAZE_NIGHT : HAZE_DAY).convertSRGBToLinear(); land.material.color.set(on ? 0x101A12 : 0x6E8A55).convertSRGBToLinear();
+    const key = on ? 'n' : 'd'; if (!envOf[key]) envOf[key] = pmrem.fromEquirectangular(on ? skyNight : skyDay).texture; for (const m of reflective) { m.envMap = envOf[key]; m.needsUpdate = true; } scene.background = state && !window.SKY_CUT ? (on ? backNight : backDay) : null; if (scene.fog) scene.fog.color.set(on ? HAZE_NIGHT : HAZE_DAY).convertSRGBToLinear(); land.material.color.set(on ? 0x101A12 : 0xF1EFEA).convertSRGBToLinear();
     mats.glassLit.emissive.set(on ? 0xFFC46B : 0x000000); mats.glassLit.emissiveIntensity = on ? 1.1 : 0; mats.lamp.emissive.set(on ? 0xFFE2A0 : 0x000000); mats.lamp.emissiveIntensity = on ? 1.6 : 0; mats.cross.emissive.set(on ? 0xFF4040 : 0x000000); mats.cross.emissiveIntensity = on ? 1.4 : 0;
     for (const l of nightOn) { if (l.isLight) l.intensity = on ? (quality.lights ? 1.4 : 0) : 0; else { l.emissive.set(on ? 0xFFFFFF : 0x000000); l.emissiveIntensity = on ? 0.9 : 0; } }
     if (window.skyStreet) window.skyStreet.setNight(on);

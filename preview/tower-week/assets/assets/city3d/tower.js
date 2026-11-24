@@ -291,6 +291,16 @@
     const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.anisotropy = 4;
     return (emblems[key] = new T.MeshStandardMaterial({ map: t, emissiveMap: t, emissive: new T.Color(0xffffff), emissiveIntensity: .12, roughness: .5, transparent: true }));
   }
+  const names = {};
+  function nameTex(text) {
+    if (names[text]) return names[text];
+    const c = document.createElement('canvas'); c.width = 512; c.height = 144; const x = c.getContext('2d');
+    x.fillStyle = 'rgba(255,255,255,.94)'; x.beginPath(); (x.roundRect ? x.roundRect(6, 10, 500, 124, 30) : x.rect(6, 10, 500, 124)); x.fill();
+    x.fillStyle = '#1D2B55'; x.font = '800 78px Rubik, Assistant, Arial, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.direction = 'rtl';
+    x.fillText(text, 256, 76);
+    const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.anisotropy = 4;
+    return (names[text] = new T.MeshStandardMaterial({ map: t, transparent: true, roughness: .5, emissiveMap: t, emissive: new T.Color(0xffffff), emissiveIntensity: .1 }));
+  }
   const facadeMats = {};
   function facadeMat(id, hex) {
     if (facadeMats[id + hex]) return facadeMats[id + hex];
@@ -310,24 +320,26 @@
   function sideFacade(g, af, y, sx) {
     const D = SIDE - 2 * R * .6, h = H - .14, x = sx * (SIDE / 2 + .02);
     const wall = mesh(new T.BoxGeometry(.06, h, D), facadeMat(af.id, af.color), x, y + .07 + h / 2, 0, g, true);
-    const em = new T.Mesh(new T.PlaneGeometry(.62, .62), emblemTex(af.id, af.color, af.name)); em.position.set(x + sx * .045, y + .07 + h / 2, 0); em.rotation.y = sx * Math.PI / 2; g.add(em); lit.push(em);
+    // the emblem on the right as Hebrew reads (seen from outside this wall), the name written beside it
+    const em = new T.Mesh(new T.PlaneGeometry(.5, .5), emblemTex(af.id, af.color, af.name)); em.position.set(x + sx * .045, y + .07 + h / 2, -.5 * sx); em.rotation.y = sx * Math.PI / 2; g.add(em); lit.push(em);
+    const nm = new T.Mesh(new T.PlaneGeometry(1.4, .4), nameTex(af.name || af.id)); nm.position.set(x + sx * .045, y + .07 + h / 2, .42 * sx); nm.rotation.y = sx * Math.PI / 2; g.add(nm);
     const solid = roomMats(af.color).solid;
     switch (af.id) {
       case 'money': // columns and a cornice, like the bank
-        for (const z of [-.95, -.55, .55, .95]) mesh(new T.CylinderGeometry(.06, .07, h - .06, 12), mats.ceil, x + sx * .1, y + .07 + h / 2, z, g);
+        for (const z of [-1.28, -1.06, 1.06, 1.28]) mesh(new T.CylinderGeometry(.06, .07, h - .06, 12), mats.ceil, x + sx * .1, y + .07 + h / 2, z, g);
         mesh(new T.BoxGeometry(.1, .08, D + .1), mats.ceil, x + sx * .08, y + h + .05, 0, g, false); break;
-      case 'health': { const cr = new T.Group(); mesh(new T.BoxGeometry(.03, .1, .32), roomMats('#D4585F').strip, 0, 0, 0, cr); mesh(new T.BoxGeometry(.03, .32, .1), roomMats('#D4585F').strip, 0, 0, 0, cr); cr.position.set(x + sx * .05, y + .3, .95); g.add(cr);
-        const cr2 = cr.clone(); cr2.position.z = -.95; g.add(cr2); break; }
+      case 'health': { const cr = new T.Group(); mesh(new T.BoxGeometry(.03, .1, .32), roomMats('#D4585F').strip, 0, 0, 0, cr); mesh(new T.BoxGeometry(.03, .32, .1), roomMats('#D4585F').strip, 0, 0, 0, cr); cr.position.set(x + sx * .05, y + .45, 1.18); g.add(cr);
+        const cr2 = cr.clone(); cr2.position.z = -1.18; g.add(cr2); break; }
       case 'home': // window boxes with plants
-        for (const z of [-.95, .95]) { mesh(new T.BoxGeometry(.12, .08, .4), solid, x + sx * .1, y + .32, z, g); for (const dz of [-.12, .02, .14]) mesh(new T.SphereGeometry(.07, 8, 6), mats.leaf, x + sx * .12, y + .41, z + dz, g, false); } break;
+        for (const z of [-1.18, 1.18]) { mesh(new T.BoxGeometry(.12, .08, .3), solid, x + sx * .1, y + .32, z, g); for (const dz of [-.09, .0, .09]) mesh(new T.SphereGeometry(.06, 8, 6), mats.leaf, x + sx * .12, y + .4, z + dz, g, false); } break;
       case 'family': // bright stripes
-        ['#E0A63A', '#D4645C', '#2F8F83'].forEach((cc, k) => mesh(new T.BoxGeometry(.03, .07, D - .1), roomMats(cc).solid, x + sx * .04, y + .16 + k * .09, 0, g, false)); break;
+        ['#E0A63A', '#D4645C', '#2F8F83'].forEach((cc, k) => mesh(new T.BoxGeometry(.03, .05, D - .1), roomMats(cc).solid, x + sx * .04, y + .12 + k * .06, 0, g, false)); break;
       case 'shopping': { // a striped awning
         for (let k = 0; k < 8; k++) { const a = mesh(new T.BoxGeometry(.32, .03, D / 8 - .01), k % 2 ? mats.ceil : solid, x + sx * .17, y + h - .02, -D / 2 + (k + .5) * D / 8, g, false); a.rotation.z = sx * -.35; } break; }
       case 'work': // a band of window strips
-        for (const yy of [.25, .62]) mesh(new T.BoxGeometry(.03, .04, D - .1), mats.mullion, x + sx * .04, y + yy, 0, g, false); break;
+        for (const yy of [.16, .78]) mesh(new T.BoxGeometry(.03, .04, D - .1), mats.mullion, x + sx * .04, y + yy, 0, g, false); break;
       case 'study': // arched windows either side of the emblem
-        for (const z of [-.95, .95]) { mesh(new T.BoxGeometry(.03, .34, .26), mats.mullion, x + sx * .035, y + .38, z, g, false); const ar = mesh(new T.CylinderGeometry(.13, .13, .03, 16, 1, false, 0, Math.PI), mats.ceil, x + sx * .04, y + .55, z, g, false); ar.rotation.z = Math.PI / 2; ar.rotation.y = sx > 0 ? 0 : Math.PI; } break;
+        for (const z of [-1.18, 1.18]) { mesh(new T.BoxGeometry(.03, .34, .22), mats.mullion, x + sx * .035, y + .38, z, g, false); const ar = mesh(new T.CylinderGeometry(.11, .11, .03, 16, 1, false, 0, Math.PI), mats.ceil, x + sx * .04, y + .55, z, g, false); ar.rotation.z = Math.PI / 2; ar.rotation.y = sx > 0 ? 0 : Math.PI; } break;
     }
   }
   // the area's one big object, on both sides of the core facing the windows
@@ -380,7 +392,6 @@
     dayWindows(g, af, y, i, today, -1);
     sideFacade(g, af, y, 1); sideFacade(g, af, y, -1);
     coreFeature(g, af, y, 1); coreFeature(g, af, y, -1);
-    const lb = label(af.name || af.id, true, false); lb.position.set(SIDE / 2 + 1.5, y + H / 2, 0); g.add(lb);
   }
 
   // ---------------- around the tower ----------------
@@ -468,7 +479,7 @@
     const e = SIDE / 2 + .22, xs = [-1.62, -1.32, -1.02, 1.02, 1.32, 1.62];
     const spots = [...xs.map(x => [x, e]), ...xs.map(x => [x, -e])].filter(p => !(t.home && p[0] > 1 && p[1] > 0));
     past.forEach((total, i) => { if (i < spots.length) weekTower(inner, total, spots[i][0], spots[i][1]); });
-    if (t.older > 0) { const lb = label('+' + t.older, true, false); lb.position.set(-1.62, 1.3, -e); lb.scale.set(1.0, .25, 1); inner.add(lb); }
+    if (t.older > 0) { const lb = label('+' + t.older, true, false); lb.position.set(-1.62, .55, -e - .35); lb.scale.set(.8, .2, 1); inner.add(lb); }
     // open projects at the sides
     (t.annexes || []).slice(0, 2).forEach((a, i) => annex(inner, a, i === 0 ? -(SIDE / 2 + .25) : SIDE / 2 + .25, i === 0 ? .3 : -.3, top));
     // the shared home's tower at the front corner
@@ -504,6 +515,7 @@
     if (screen) screen.emissiveIntensity = on ? 1.6 : .7;
     for (const m of Object.values(dayPane)) m.emissiveIntensity = on ? 1.9 : .35;
     for (const m of Object.values(emblems)) m.emissiveIntensity = on ? .9 : .12;
+    for (const m of Object.values(names)) m.emissiveIntensity = on ? .8 : .1;
     if (todayFrame) todayFrame.emissiveIntensity = on ? 2.0 : .6;
   }
   function startReveal() {
@@ -535,7 +547,7 @@
   function view() {
     if (!spot) return null;
     const top = (.33 + (built + 1) * H + 3.4) * scale;
-    return { tx: spot[0] * TILE, ty: top * .45, tz: spot[1] * TILE, dist: top * 1.75 + 14, pitch: 13, yaw: 28 };
+    return { tx: spot[0] * TILE, ty: top * .45, tz: spot[1] * TILE, dist: top * 1.75 + 14, pitch: 13, yaw: 64 };
   }
   function floorView(f) {
     if (!spot) return null;
