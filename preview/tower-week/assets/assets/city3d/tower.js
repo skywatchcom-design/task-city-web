@@ -19,6 +19,7 @@
   const halos = [];
   const hits = [];         // invisible boxes, one per floor, for taps
   const floorLights = [];  // a warm light inside each built floor, on at night
+  const roomLights = [];   // each room's light strip and floor, in its area's colour, brighter at night (sketch 68, A)
   let beam = null, groundHalo = null, logo = null, hook = null, cable = null, craneTop = 0;
   let reveal = null;       // { list, i, t } while the end of the day lights the tower
   let prevCounts = {};     // floor:area -> cubes, to pop the new ones
@@ -33,7 +34,7 @@
     mats.ceil = new T.MeshStandardMaterial({ color: lin(0xDCDAD2), roughness: .95 });
     mats.core = new T.MeshStandardMaterial({ color: dim(0x9EA3B3), roughness: .8 });
     mats.under = new T.MeshStandardMaterial({ color: lin(0x2A3045), roughness: 1 });
-    mats.glass = reg(new T.MeshPhysicalMaterial({ color: lin(0x7FA6CF), roughness: .04, metalness: .1, transparent: true, opacity: .2, depthWrite: false,
+    mats.glass = reg(new T.MeshPhysicalMaterial({ color: lin(0x7FA6CF), roughness: .04, metalness: .1, transparent: true, opacity: .15, depthWrite: false,
       clearcoat: 1, clearcoatRoughness: .04, envMapIntensity: 1.0, side: T.DoubleSide }));
     mats.mullion = reg(new T.MeshStandardMaterial({ color: lin(0x1C2742), roughness: .35, metalness: .6, envMapIntensity: .8 }));
     mats.desk = new T.MeshStandardMaterial({ color: dim(0xC9B99A), roughness: .7 });
@@ -86,18 +87,102 @@
   }
 
   // ---------------- one floor ----------------
-  function fin(g, area, y, count, f, isToday) {
-    const ang = area.k / Math.max(area.of, 3) * Math.PI * 2 + Math.PI / 5;
-    const fg = new T.Group();
-    const finMesh = new T.Mesh(new T.BoxGeometry(.9, H - .2, .07), finMat(area.color)); finMesh.castShadow = true; fg.add(finMesh);
-    const shown = Math.min(count, 6);
+  // Sketch 68, direction A (owner 24.11): a room for every area the day had, round the core, as wide as its share of the
+  // day's tasks. The room has a wall on the core in the area's colour, a tinted floor, a light strip that glows in the
+  // area's colour at night, its own furniture (books for study, screens for work, a sofa at home, a treadmill for health,
+  // a dining table for family, a safe for money, shelves for shopping) and a golden cube for every task by the glass.
+  const roomMat = {};
+  function roomMats(hex) {
+    if (roomMat[hex]) return roomMat[hex];
+    const c = lin(hex);
+    const m = {
+      solid: new T.MeshStandardMaterial({ color: c, roughness: .55 }),
+      wall: new T.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: .18, roughness: .7, side: T.DoubleSide }),
+      tint: new T.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: .12, roughness: .9, transparent: true, opacity: .85 }),
+      strip: new T.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: .35, roughness: .5 }),
+    };
+    return (roomMat[hex] = m);
+  }
+  const RIN = .66, ROUT = 1.6, RMID = 1.12;
+  const polar = (a, r) => [Math.cos(a) * r, Math.sin(a) * r];
+  function piece(g, geo, mat, x, y, z, cast = true) { const m = new T.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = cast; m.receiveShadow = true; g.add(m); return m; }
+  const B = (w, h, d) => new T.BoxGeometry(w, h, d);
+  const BOOKS = ['#4F6DB3', '#2F8F83', '#E48A3A', '#D4585F', '#8B77C9'];
+  let screen = null;
+  function screenMat() { return screen || (screen = new T.MeshStandardMaterial({ color: lin(0x1D2B55), emissive: lin(0x7FB0FF), emissiveIntensity: .7, roughness: .3 })); }
+  // one set of furniture, its back to the core (-z) and its front to the glass (+z)
+  function kitFor(id, m) {
+    const g = new T.Group();
+    switch (id) {
+      case 'study':
+        piece(g, B(.42, .6, .1), mats.desk, 0, .3, -.3);
+        BOOKS.forEach((b, i) => piece(g, B(.06, .16, .08), roomMats(b).solid, -.15 + i * .075, .5, -.27, false));
+        BOOKS.slice(0, 4).forEach((b, i) => piece(g, B(.06, .14, .08), roomMats(b).solid, -.12 + i * .08, .24, -.27, false));
+        piece(g, B(.42, .04, .24), mats.desk, 0, .34, .08); piece(g, B(.18, .03, .13), mats.ceil, -.05, .37, .08, false);
+        piece(g, B(.16, .2, .16), m.solid, 0, .1, .3);
+        break;
+      case 'work':
+        piece(g, B(.46, .04, .26), mats.ceil, 0, .36, 0); piece(g, B(.04, .34, .04), mats.mullion, -.2, .17, 0, false); piece(g, B(.04, .34, .04), mats.mullion, .2, .17, 0, false);
+        piece(g, B(.3, .19, .02), screenMat(), 0, .5, -.08, false); piece(g, B(.18, .22, .18), m.solid, 0, .11, .28);
+        break;
+      case 'home':
+        piece(g, B(.62, .18, .26), m.solid, 0, .09, -.22); piece(g, B(.62, .22, .07), m.solid, 0, .26, -.34);
+        piece(g, B(.24, .04, .24), mats.desk, 0, .2, .14); piece(g, B(.04, .18, .04), mats.desk, 0, .09, .14, false);
+        piece(g, new T.CylinderGeometry(.06, .05, .14, 8), mats.pot, .28, .07, .26, false); piece(g, new T.SphereGeometry(.12, 8, 6), mats.leaf, .28, .24, .26, false);
+        break;
+      case 'health':
+        piece(g, B(.24, .06, .56), mats.mullion, -.12, .03, 0); piece(g, B(.04, .36, .04), mats.mullion, -.12, .22, -.26, false); piece(g, B(.22, .03, .1), mats.mullion, -.12, .4, -.24, false);
+        piece(g, B(.22, .015, .5), m.solid, .2, .008, .02, false);
+        break;
+      case 'family':
+        piece(g, new T.CylinderGeometry(.24, .24, .04, 20), mats.desk, 0, .34, 0); piece(g, new T.CylinderGeometry(.04, .04, .32, 8), mats.desk, 0, .16, 0, false);
+        for (let k = 0; k < 4; k++) { const an = k * Math.PI / 2 + Math.PI / 4; piece(g, B(.12, .2, .12), m.solid, Math.cos(an) * .36, .1, Math.sin(an) * .36); }
+        break;
+      case 'money': {
+        piece(g, B(.36, .42, .3), mats.mullion, 0, .21, -.22);
+        const dial = piece(g, new T.CylinderGeometry(.06, .06, .03, 16), mats.gold, 0, .24, -.06, false); dial.rotation.x = Math.PI / 2;
+        piece(g, B(.36, .04, .2), mats.desk, 0, .32, .22); piece(g, B(.12, .1, .02), m.solid, 0, .39, .2, false);
+        break;
+      }
+      case 'shopping':
+        for (let k = 0; k < 3; k++) piece(g, B(.5, .03, .16), mats.ceil, 0, .12 + k * .2, -.26, false);
+        for (let k = 0; k < 6; k++) piece(g, B(.08, .09, .08), roomMats(BOOKS[k % 5]).solid, -.17 + (k % 3) * .17, .18 + Math.floor(k / 3) * .2, -.26, false);
+        piece(g, B(.24, .2, .16), m.solid, .05, .1, .22);
+        break;
+      default:
+        piece(g, B(.4, .04, .24), mats.desk, 0, .33, 0); piece(g, B(.16, .1, .012), mats.mullion, 0, .42, -.08, false);
+    }
+    return g;
+  }
+  function room(g, area, y, a0, a1, f, isToday) {
+    const m = roomMats(area.color);
+    const span = a1 - a0, mid = (a0 + a1) / 2;
+    // the room's floor, and its wall on the core
+    const rg = new T.RingGeometry(RIN, ROUT, 20, 1, a0, span); rg.rotateX(Math.PI / 2);
+    roomLights.push(piece(g, rg, m.tint, 0, y + .012, 0, false));
+    const wg = new T.CylinderGeometry(.62, .62, H - .12, 16, 1, true, Math.PI / 2 - a1, span);
+    piece(g, wg, m.wall, 0, y + (H - .12) / 2 + .02, 0, false);
+    // a low divider where the room starts, in its colour
+    const [dx, dz] = polar(a0, (RIN + ROUT) / 2); const dv = piece(g, B(.025, .22, ROUT - RIN), m.solid, dx, y + .11, dz, false); dv.rotation.y = Math.PI / 2 - a0;
+    // the light strip under the ceiling
+    const sg = new T.TorusGeometry(1.05, .02, 6, 24, span); sg.rotateX(Math.PI / 2); sg.rotateY(-a0);
+    roomLights.push(piece(g, sg, m.strip, 0, y + H - .12, 0, false));
+    // the furniture, one set for about every .78 of arc
+    const sets = Math.max(1, Math.round(span * RMID / .78));
+    for (let i = 0; i < sets; i++) {
+      const an = a0 + (i + .5) * span / sets; const [x, z] = polar(an, RMID);
+      const k = kitFor(area.id, m); k.position.set(x, y + .02, z); k.rotation.y = Math.PI / 2 - an; g.add(k);
+    }
+    // a golden cube for every task, stacked by the glass in the middle of the room
+    const shown = Math.min(area.n, 9);
     for (let k = 0; k < shown; k++) {
-      const cb = new T.Mesh(new T.BoxGeometry(.2, .2, .2), glowMat());
-      cb.position.set((k % 3 - 1) * .22, -.22 + Math.floor(k / 3) * .3, .13); addHalo(cb, .7); fg.add(cb); lit.push(cb);
+      const cb = new T.Mesh(new T.BoxGeometry(.13, .13, .13), glowMat());
+      const an = mid + ((k % 3) - 1) * .09;
+      const [x, z] = polar(an, ROUT - .12); cb.position.set(x, y + .085 + Math.floor(k / 3) * .15, z); cb.rotation.y = Math.PI / 2 - an;
+      cb.castShadow = true; addHalo(cb, .5); g.add(cb); lit.push(cb);
       const key = f + ':' + area.id;
       if (isToday && prevCounts[key] != null && k >= prevCounts[key]) cb.userData.pop = 1;
     }
-    fg.position.set(Math.cos(ang) * 1.22, y + H / 2, Math.sin(ang) * 1.22); fg.rotation.y = -ang + Math.PI / 2; g.add(fg);
   }
   function furnish(g, y, seed) {
     for (let i = 0; i < 6; i++) {
@@ -122,9 +207,14 @@
     for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) mesh(new T.BoxGeometry(.05, H - .1, .05), mats.mullion, sx * (SIDE / 2 - R * .52), y + H / 2, sz * (SIDE / 2 - R * .52), g, false);
     for (const [sx, sz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) for (const off of [-.55, 0, .55]) mesh(new T.BoxGeometry(.035, H - .1, .035), mats.mullion, sx ? sx * SIDE / 2 : off, y + H / 2, sz ? sz * SIDE / 2 : off, g, false);
     mesh(bandGeo(SIDE + .03, R, .04), mats.mullion, 0, y + H / 2 + .02, 0, g, false);
-    furnish(g, y, f);
     const pl = new T.Mesh(new T.CircleGeometry(1.45, 32), mats.warm); pl.rotation.x = Math.PI / 2; pl.position.y = y + H - .13; g.add(pl); floorLights.push(pl);
-    fl.areas.forEach((a, k) => fin(g, { id: a.id, color: a.color, k, of: fl.areas.length }, y, a.n, f, fl.today));
+    const total = fl.areas.reduce((s, a) => s + a.n, 0);
+    if (!total) furnish(g, y, f);
+    else {
+      // the rooms start at the front and go round the core, a share of the circle each
+      let a = Math.PI / 2 - Math.PI * 2 * (fl.areas[0].n / total) / 2;
+      for (const ar of fl.areas) { const span = Math.PI * 2 * ar.n / total; room(g, { id: ar.id, color: ar.color, n: ar.n }, y, a + .02, a + span - .02, f, fl.today); a += span; }
+    }
     const lb = label(fl.label, fl.today, fl.today); lb.position.set(SIDE / 2 + 1.35, y + H / 2, 0); g.add(lb);
   }
 
@@ -166,7 +256,7 @@
     if (!group) return;
     group.parent && group.parent.remove(group);
     group.traverse(o => { if (o.geometry) o.geometry.dispose(); });
-    group = null; lit.length = 0; halos.length = 0; hits.length = 0; floorLights.length = 0;
+    group = null; lit.length = 0; halos.length = 0; hits.length = 0; floorLights.length = 0; roomLights.length = 0;
   }
   function build(parent, t, k) {
     makeMats();
@@ -225,7 +315,7 @@
     parent.add(group);
 
     prevCounts = {};
-    t.floors.forEach((fl, f) => fl.areas.forEach(a => { prevCounts[f + ':' + a.id] = Math.min(a.n, 6); }));
+    t.floors.forEach((fl, f) => fl.areas.forEach(a => { prevCounts[f + ':' + a.id] = Math.min(a.n, 9); }));
     setNight(night);
     if (reveal) startReveal();
   }
@@ -234,7 +324,7 @@
   function setNight(on) {
     night = on;
     if (!mats.glass) return;
-    mats.glass.color.copy(lin(on ? 0x2E4878 : 0x7FA6CF)); mats.glass.opacity = on ? .14 : .2;
+    mats.glass.color.copy(lin(on ? 0x2E4878 : 0x7FA6CF)); mats.glass.opacity = on ? .12 : .15;
     mats.core.emissive.copy(lin(on ? 0x5A3E12 : 0x000000)); mats.core.emissiveIntensity = on ? .9 : 0;
     mats.slab.color.copy(on ? dim(0xC9CBD6, .7) : dim(0xD9D8D3)); mats.core.color.copy(on ? dim(0xAEB2C4, .6) : dim(0x9EA3B3));
     mats.strip.emissiveIntensity = on ? 1.2 : .5;
@@ -243,6 +333,8 @@
     if (beam) beam.material.opacity = on ? .16 : 0;
     if (groundHalo) groundHalo.material.opacity = on ? .5 : 0;
     mats.warm.opacity = on ? .85 : 0;
+    for (const m of Object.values(roomMat)) { m.wall.emissiveIntensity = on ? .75 : .18; m.tint.emissiveIntensity = on ? .55 : .12; m.strip.emissiveIntensity = on ? 2.4 : .35; }
+    if (screen) screen.emissiveIntensity = on ? 1.6 : .7;
   }
   function startReveal() {
     const list = lit.slice().sort((a, b) => { const pa = new T.Vector3(), pb = new T.Vector3(); a.getWorldPosition(pa); b.getWorldPosition(pb); return pa.y - pb.y; });
