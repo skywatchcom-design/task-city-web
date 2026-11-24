@@ -511,7 +511,7 @@
     const r = canvas.getBoundingClientRect(); const v = new T.Vector2(((px - r.left) / r.width) * 2 - 1, -((py - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(v, cam);
     if (window.skyStreet && ray.intersectObjects(window.skyStreet.meTap, false)[0]) { send({ type: 'tap', me: true }); return; }
-    if (window.skyTower) { const f = window.skyTower.floorAt(ray); if (f != null) { send({ type: 'tap', floor: f }); return; } if (window.skyTower.blocks(ray)) { send({ type: 'tap', tower: true }); return; } }
+    if (window.skyTower) { const f = window.skyTower.floorAt(ray); if (f != null) { send({ type: 'tap', floor: f, area: window.skyTower.areaAt ? window.skyTower.areaAt(ray) : null }); return; } if (window.skyTower.blocks(ray)) { send({ type: 'tap', tower: true }); return; } }
     const hit = ray.intersectObjects(tappable, false)[0];
     if (hit) { send({ type: 'tap', i: Math.floor(hit.point.x / TILE), j: Math.floor(hit.point.z / TILE), y: hit.point.y }); return; }
     // the ground: which tile
