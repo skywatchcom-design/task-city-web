@@ -347,7 +347,26 @@
     if (b.stage === 'lot') { for (let i = 0; i <= 9; i++) for (const zz of [0.05, 9.95]) box(0.08, 0.8, 0.08, mats.fence, i * 1.1 + 0.05, 0.16, zz, g); for (const zz of [0.05, 9.95]) box(10, 0.05, 0.06, mats.fence, 5, 0.9, zz, g); plane(9.6, 9.6, mats.sand, 5, 0.17, 5, g, 3); for (const dx of [-1.3, 1.3]) cyl(0.05, 0.05, 2.2, mats.pole, 5 + dx, 0.16, 8.5, g, 8); signBoard(g, b.name || L.lot, 5, 2.3, 8.5, 3.0, 0.7, 0xF6F4EE, '#1D2B55'); return; }
     plane(9.6, 9.6, mats.sand, 5, 0.17, 5, g, 3); box(w + 0.6, 0.4, d + 0.6, mats.slab, x, 0.16, z, g);
     if (b.stage === 'foundation') { for (const [dx, dz] of [[-2, -1.6], [2, -1.6], [-2, 1.6], [2, 1.6]]) box(0.5, 0.9, 0.5, mats.slab, x + dx, 0.56, z + dz, g); cyl(0.12, 0.12, 9, mats.crane, 8.6, 0.16, 1.4, g, 8); const arm = box(7, 0.3, 0.3, mats.crane, 5.6, 9.1, 1.4, g); box(0.3, 0.3, 0.3, mats.crane, 8.6, 9.0, 1.4, g); cyl(0.02, 0.02, 4, mats.dark, 3.2, 5.0, 1.4, g, 6); box(0.8, 0.8, 0.8, mats.slab, 3.2, 4.6, 1.4, g); signBoard(g, b.name || L.lot, 5, 2.3, 8.9, 3.0, 0.7, 0xF6F4EE, '#1D2B55'); for (const dx of [-1.3, 1.3]) cyl(0.05, 0.05, 2.2, mats.pole, 5 + dx, 0.16, 8.9, g, 8); return; }
-    if (b.stage === 'shell') { for (let f = 0; f < 3; f++) { box(w, 0.25, d, mats.slab, x, 0.56 + f * 2.6, z, g); for (const [dx, dz] of [[-2.2, -1.9], [2.2, -1.9], [-2.2, 1.9], [2.2, 1.9], [0, -1.9], [0, 1.9]]) box(0.3, 2.6, 0.3, mats.slab, x + dx, 0.56 + f * 2.6, z + dz, g); } box(w, 0.25, d, mats.slab, x, 0.56 + 7.8, z, g); cyl(0.12, 0.12, 11, mats.crane, 8.6, 0.16, 1.4, g, 8); box(7, 0.3, 0.3, mats.crane, 5.6, 11.1, 1.4, g); if (b.name) { signBoard(g, b.name, 5, 2.3, 9.3, 3.0, 0.7, 0xF6F4EE, '#1D2B55'); for (const dx of [-1.3, 1.3]) cyl(0.05, 0.05, 2.2, mats.pole, 5 + dx, 0.16, 9.3, g, 8); } return; }
+    if (b.stage === 'shell') {
+      const k = b.kind || 'house', lv = b.level || 1, low = k === 'shop' || k === 'cafe' || k === 'kiosk' || k === 'atm';
+      const floors = k === 'house' ? (lv >= 3 ? 2 : 1) : k === 'office' ? 3 + Math.min(lv, 3) : low ? 1 : 2 + Math.min(lv, 2);
+      const fw = k === 'office' ? 4.6 : k === 'kiosk' ? 3.4 : w, fd = k === 'office' ? 4.6 : k === 'kiosk' ? 3.2 : d, fh = k === 'house' ? 2.7 : 2.9;
+      const posts = [[-fw / 2 + .15, -fd / 2 + .15], [fw / 2 - .15, -fd / 2 + .15], [-fw / 2 + .15, fd / 2 - .15], [fw / 2 - .15, fd / 2 - .15], [0, -fd / 2 + .15], [0, fd / 2 - .15]];
+      for (let f = 0; f < floors; f++) { box(fw, 0.25, fd, mats.slab, x, 0.56 + f * fh, z, g); for (const [dx, dz] of posts) box(0.3, fh, 0.3, mats.slab, x + dx, 0.56 + f * fh, z + dz, g); }
+      const top = 0.56 + floors * fh; box(fw, 0.25, fd, mats.slab, x, top, z, g);
+      if (k === 'house') {
+        // the roof going up: three trusses and the ridge beam, in wood
+        for (const tz of [-fd / 2 + .2, 0, fd / 2 - .2]) { for (const sd of [-1, 1]) { const r = box(fw / 2 * 1.16, .14, .14, mats.wood, x + sd * fw / 4, top + 0.62, z + tz, g); r.rotation.z = -sd * .58; } }
+        box(.16, .16, fd + .3, mats.wood, x, top + 1.52, z, g);
+      } else {
+        // scaffolding along the front, plank by plank
+        for (let f = 1; f <= floors; f++) box(fw + .6, .08, .7, mats.wood, x, 0.56 + f * fh - .1, z + fd / 2 + .55, g);
+        for (const dx of [-fw / 2 - .2, 0, fw / 2 + .2]) box(.08, top, .08, mats.pole, x + dx, 0.16, z + fd / 2 + .85, g);
+      }
+      const ch = top + 3.4; cyl(0.12, 0.12, ch, mats.crane, 8.6, 0.16, 1.4, g, 8); box(7, 0.3, 0.3, mats.crane, 5.6, ch + 0.1, 1.4, g); cyl(0.02, 0.02, 3, mats.dark, 3.2, ch - 2.9, 1.4, g, 6); box(0.8, 0.8, 0.8, mats.slab, 3.2, ch - 3.3, 1.4, g);
+      if (b.name) { signBoard(g, b.name, 5, 2.3, 9.3, 3.0, 0.7, 0xF6F4EE, '#1D2B55'); for (const dx of [-1.3, 1.3]) cyl(0.05, 0.05, 2.2, mats.pole, 5 + dx, 0.16, 9.3, g, 8); }
+      return;
+    }
     const two = true, h = 5.2; contact(w, d, x, z, g); box(w, h, d, mats.beige, x, 0.16, z, g); gable(g, w, d, 1.6, 0.5, x, 0.16 + h, z, mats.beige); door(g, x, z + d / 2, 1.1, 2.1); steps(g, x, z + d / 2, 2.2, 2);
     for (const y of [1.5, 4.1]) { win(g, '+z', x - 1.6, y, z + d / 2, 0.9, 1.1); win(g, '+z', x + 1.6, y, z + d / 2, 0.9, 1.1); win(g, '+x', x + w / 2, y, z, 0.9, 1.1); win(g, '-x', x - w / 2, y, z, 0.9, 1.1); }
     cyl(0.04, 0.05, 4.0, mats.metal, 8.8, 0.16, 8.8, g, 8); box(0.06, 0.5, 0.8, M({ color: col }), 8.8, 3.6, 9.2, g); if (b.alive) { tree(g, 1.2, 8.6, 0.9); hedge(g, 1.4, 1.2, 2.4, 0.6); }
@@ -484,8 +503,10 @@
       const st = a.site;
       if (st) {
         const g = lotGroup(b, st.x, st.z, st.rot), inner = new T.Group(); inner.position.set(-TILE / 2, 0, -TILE / 2);
-        const sign = st.stage === 'lot' ? ((L.siteNext || '') + st.name) : (st.name + ' · ' + st.have + '/' + st.cost);
-        project(inner, { stage: st.stage, name: sign, color: a.color }, L);
+        const sign = a.quiet ? (L.waiting || '') : st.stage === 'lot' ? ((L.siteNext || '') + st.name) : (st.name + ' · ' + st.have + '/' + st.cost);
+        project(inner, { stage: st.stage, name: sign, color: a.color, kind: st.key, level: st.level }, L);
+        // a quiet area (nothing done for five days): grass grows on the site until a task comes back
+        if (a.quiet) for (let q = 0; q < 14; q++) { const wx = 1 + ((q * 37) % 80) / 10, wz = 1 + ((q * 53) % 70) / 10, h = .5 + (q % 3) * .25; const c = new T.Mesh(new T.ConeGeometry(.28, h, 5), mats.leaf[q % 3]); c.position.set(wx, .16 + h / 2, wz); c.castShadow = true; inner.add(c); }
         g.add(inner); g.traverse(o => { if (o.isMesh) { o.userData.district = a.id; tappable.push(o); } }); root.add(g);
       }
       for (const [x, z, rot] of a.empties) {
@@ -494,6 +515,12 @@
         for (const [dx, dz] of [[-4.5, -4.5], [4.5, -4.5], [-4.5, 4.5], [4.5, 4.5]]) { box(0.14, 0.7, 0.14, mats.fence, dx, 0.16, dz, g); box(0.5, 0.1, 0.06, M({ color: col }), dx, 0.72, dz, g); }
         g.traverse(o => { if (o.isMesh) { o.userData.district = a.id; tappable.push(o); } }); root.add(g);
       }
+    }
+    for (const a of b.areas) if (a.street) for (const [i, j] of a.cells) {
+      const si = i === 0 ? 1 : Math.sign(i), sj = j === 0 ? 1 : Math.sign(j), px = C + i * b.P - si * (b.P / 2 - 5.2), pz = C + j * b.P - sj * (b.P / 2 - 5.2);
+      cyl(0.07, 0.08, 3.6, mats.pole, px, 0.16, pz, root, 8);
+      signBoard(root, a.street, px, 3.2, pz + 0.12 * sj, 3.6, 0.62, 0x2F5D8A, '#ffffff', 0);
+      signBoard(root, a.street, px + 0.12 * si, 2.4, pz, 3.6, 0.62, 0x2F5D8A, '#ffffff', Math.PI / 2);
     }
     // the rest of each block's lots: a lawn and a tree, so a young area is green and not bare
     const taken = [...b.items.map(it => [it.x, it.z, isWide(it) ? 1 : 0]), ...b.areas.flatMap(a => [...(a.site ? [[a.site.x, a.site.z, 0]] : []), ...a.empties.map(e => [e[0], e[1], 0])])];
@@ -527,7 +554,7 @@
   }
   // cars that drive the roads round the blocks, turning at the crossings, and people round the tower's plaza
   function ringLife(b) {
-    movers = [];
+    movers = []; const C = b.center;
     const nodes = new Map(), key = (x, z) => Math.round(x) + ',' + Math.round(z), add = (x, z) => { const k = key(x, z); if (!nodes.has(k)) nodes.set(k, { x, z, nb: [] }); return nodes.get(k); };
     for (const [x1, z1, x2, z2] of blockEdges(b)) { const p = add(x1, z1), q = add(x2, z2); p.nb.push(q); q.nb.push(p); }
     roadNodes = [...nodes.values()];
@@ -536,10 +563,17 @@
     for (let q = 0; q < n; q++) { const from = roadNodes[(q * 7) % roadNodes.length]; movers.push({ kind: 'car', col: cols[q % cols.length], from, to: from.nb[q % from.nb.length], prev: null, t: (q * .37) % 1, v: 6 + (q % 4) * 1.2 }); }
     const shirts = [0x1D2B55, 0xC8463C, 0xE0A63A, 0x6E9F5A, 0x8C6BB1];
     for (let q = 0; q < 8; q++) movers.push({ kind: 'person', col: shirts[q % shirts.length], r: b.P / 2 - 7 + (q % 3) * 1.0, a: q * 0.8, v: (q % 2 ? 1 : -1) * 0.06 });
+    let w = 0;
+    for (const a of b.areas) {
+      if (a.quiet) continue;
+      const n = b.items.filter(it => it.area === a.id).length, people = Math.min(6, 1 + Math.floor(n / 2));
+      for (let q = 0; q < people; q++) { const [i, j] = a.cells[q % a.cells.length], h = (b.P - 7) / 2 - 1.1; movers.push({ kind: 'walk', col: shirts[(w++) % shirts.length], cx: C + i * b.P, cz: C + j * b.P, h, s: (q * 2.7 * h) % (8 * h), v: (q % 2 ? 1 : -1) * (1.3 + (q % 3) * .25) }); }
+    }
   }
   function placeLife(b) {
     for (const m of movers) {
       m.g = m.kind === 'car' ? car(live, m.col, 0, 0, 0) : person(live, 0, 0, m.col);
+      if (m.kind === 'walk') { m.g.scale.setScalar(1.5); moveOne(m, b, 0); continue; }
       m.g.scale.setScalar(m.kind === 'car' ? 1.5 : 1.5);
       moveOne(m, b, 0);
     }
@@ -552,6 +586,14 @@
       const ux = dx / len, uz = dz / len;
       // keep to the right-hand lane; the car's nose is +x
       m.g.position.set(m.from.x + dx * m.t - uz * 1.6, 0.16, m.from.z + dz * m.t + ux * 1.6); m.g.rotation.y = Math.atan2(-uz, ux);
+    } else if (m.kind === 'walk') {
+      // round the block on its pavement, turning at each corner
+      const per = 8 * m.h; m.s = ((m.s + m.v * dt) % per + per) % per;
+      const seg = Math.floor(m.s / (2 * m.h)), t = m.s % (2 * m.h) - m.h;
+      let x, z, dx, dz;
+      if (seg === 0) { x = t; z = -m.h; dx = 1; dz = 0; } else if (seg === 1) { x = m.h; z = t; dx = 0; dz = 1; } else if (seg === 2) { x = -t; z = m.h; dx = -1; dz = 0; } else { x = -m.h; z = -t; dx = 0; dz = -1; }
+      if (m.v < 0) { dx = -dx; dz = -dz; }
+      m.g.position.set(m.cx + x, 0.16 + Math.abs(Math.sin(m.s * 2.2)) * 0.07, m.cz + z); m.g.rotation.y = Math.atan2(dx, dz);
     } else {
       m.a += m.v * dt; const x = b.center + Math.cos(m.a) * m.r, z = b.center + Math.sin(m.a) * m.r;
       m.g.position.set(x, 0.16 + Math.abs(Math.sin(m.a * 40)) * 0.08, z);
