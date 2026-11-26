@@ -342,25 +342,52 @@
     for (const dx of [-1.4, 1.4]) cyl(0.06, 0.06, 2.6, mats.wood, x + dx, 0.16, 9.9, g, 8); signBoard(g, b.name || L.ours, x, 2.5, 9.9, 2.8, 0.5, 0x7A4B2E); tree(g, 1.2, 1.6, 1.0);
   };
   // A project on a plot beside the landmark (sketch 5): sign, foundation and crane, shell, finished.
+  // What is not a building (a park, a playground, a fountain) grows piece by piece: one piece more for every task (sketch 71).
+  const BUILDS = new Set(['house', 'office', 'shop', 'clinic', 'school', 'bank', 'cafe', 'kiosk', 'studio', 'tower', 'supermarket']);
+  function growThing(g, b, have, cost, L, col) {
+    for (let i = 0; i <= 9; i++) for (const zz of [0.05, 9.95]) box(0.08, 0.8, 0.08, mats.fence, i * 1.1 + 0.05, 0.16, zz, g);
+    plane(9.6, 9.6, M({ color: 0xF1EEE6, roughness: 1 }), 5, 0.17, 5, g, 3);
+    const c = M({ color: col }), k = b.kind;
+    const pieces = k === 'playground' ? [
+      () => box(4.2, 0.3, 4.2, mats.wood, 3, 0.16, 3, g), () => box(3.8, 0.2, 3.8, mats.sand, 3, 0.3, 3, g),
+      () => { box(1.4, 2.2, 1.4, c, 6.8, 0.16, 3, g); const sl = box(0.8, 0.1, 3, M({ color: 0xFFFFFF }), 6.8, 1.2, 5.2, g); sl.rotation.x = .6; },
+      () => { for (const dx of [6, 8.4]) cyl(0.06, 0.06, 2.4, mats.pole, dx, 0.16, 7.6, g, 6); box(2.6, 0.1, 0.1, mats.pole, 7.2, 2.5, 7.6, g); },
+      () => bench(g, 1.6, 7.6, 0), () => tree(g, 1.4, 1.4, 1.0, 'oak')]
+      : k === 'fountain' ? [
+      () => cyl(2.6, 2.8, 0.5, mats.stone, 5, 0.16, 5, g, 32), () => cyl(2.3, 2.3, 0.45, mats.water, 5, 0.2, 5, g, 32),
+      () => cyl(0.3, 0.4, 1.6, mats.stone, 5, 0.2, 5, g, 12), () => cyl(0.9, 0.7, 0.12, mats.stone, 5, 1.8, 5, g, 24),
+      () => bench(g, 5, 8.6, 0), () => tree(g, 1.4, 1.4, 1.0, 'oak')]
+      : [
+      () => cyl(3.6, 3.6, 0.04, M({ color: 0xDCD8CC }), 5, 0.17, 5, g, 32), () => cyl(3.0, 3.0, 0.06, M({ color: 0xDDE6D2 }), 5, 0.18, 5, g, 32),
+      () => tree(g, 2.6, 3, 1.1, 'oak'), () => tree(g, 7.4, 3.4, 1.0, 'oak'), () => bench(g, 5, 5.2, 0), () => tree(g, 5, 7.6, .9, 'cypress')];
+    const n = Math.min(pieces.length, Math.max(1, Math.ceil(have * pieces.length / cost)));
+    for (let i = 0; i < n; i++) pieces[i]();
+    for (const dx of [-1.3, 1.3]) cyl(0.05, 0.05, 2.2, mats.pole, 5 + dx, 0.16, 9.3, g, 8); signBoard(g, b.name || L.lot, 5, 2.3, 9.3, 3.0, 0.7, 0xF6F4EE, '#1D2B55');
+  }
   function project(g, b, L) {
     const w = 5, d = 4.5, x = 5, z = 4.6, col = parseInt((b.color || '#1D2B55').slice(1), 16);
+    const have = Math.max(0, b.have || 0), cost = Math.max(1, b.cost || 1), half = Math.ceil(cost / 2);
+    if (b.kind && !BUILDS.has(b.kind) && b.stage !== 'finished' && have > 0) { growThing(g, b, have, cost, L, col); return; }
+    // the pile of building materials beside the site: one more pallet for every task
+    if (b.stage === 'foundation' || b.stage === 'shell') for (let i = 0; i < Math.min(have, 8); i++) box(0.9, 0.42, 0.9, i % 2 ? mats.wood : mats.slab, 1.0 + (i % 2) * 1.0, 0.16 + Math.floor(i / 2) * 0.44, 8.6, g);
     if (b.stage === 'lot') { for (let i = 0; i <= 9; i++) for (const zz of [0.05, 9.95]) box(0.08, 0.8, 0.08, mats.fence, i * 1.1 + 0.05, 0.16, zz, g); for (const zz of [0.05, 9.95]) box(10, 0.05, 0.06, mats.fence, 5, 0.9, zz, g); plane(9.6, 9.6, mats.sand, 5, 0.17, 5, g, 3); for (const dx of [-1.3, 1.3]) cyl(0.05, 0.05, 2.2, mats.pole, 5 + dx, 0.16, 8.5, g, 8); signBoard(g, b.name || L.lot, 5, 2.3, 8.5, 3.0, 0.7, 0xF6F4EE, '#1D2B55'); return; }
     plane(9.6, 9.6, mats.sand, 5, 0.17, 5, g, 3); box(w + 0.6, 0.4, d + 0.6, mats.slab, x, 0.16, z, g);
-    if (b.stage === 'foundation') { for (const [dx, dz] of [[-2, -1.6], [2, -1.6], [-2, 1.6], [2, 1.6]]) box(0.5, 0.9, 0.5, mats.slab, x + dx, 0.56, z + dz, g); cyl(0.12, 0.12, 9, mats.crane, 8.6, 0.16, 1.4, g, 8); const arm = box(7, 0.3, 0.3, mats.crane, 5.6, 9.1, 1.4, g); box(0.3, 0.3, 0.3, mats.crane, 8.6, 9.0, 1.4, g); cyl(0.02, 0.02, 4, mats.dark, 3.2, 5.0, 1.4, g, 6); box(0.8, 0.8, 0.8, mats.slab, 3.2, 4.6, 1.4, g); signBoard(g, b.name || L.lot, 5, 2.3, 8.9, 3.0, 0.7, 0xF6F4EE, '#1D2B55'); for (const dx of [-1.3, 1.3]) cyl(0.05, 0.05, 2.2, mats.pole, 5 + dx, 0.16, 8.9, g, 8); return; }
+    if (b.stage === 'foundation') { const posts = [[-2, -1.6], [2, -1.6], [-2, 1.6], [2, 1.6], [0, -1.6], [0, 1.6]]; for (const [dx, dz] of posts.slice(0, Math.max(1, Math.ceil(posts.length * have / half)))) box(0.5, 0.9, 0.5, mats.slab, x + dx, 0.56, z + dz, g); cyl(0.12, 0.12, 9, mats.crane, 8.6, 0.16, 1.4, g, 8); const arm = box(7, 0.3, 0.3, mats.crane, 5.6, 9.1, 1.4, g); box(0.3, 0.3, 0.3, mats.crane, 8.6, 9.0, 1.4, g); cyl(0.02, 0.02, 4, mats.dark, 3.2, 5.0, 1.4, g, 6); box(0.8, 0.8, 0.8, mats.slab, 3.2, 4.6, 1.4, g); signBoard(g, b.name || L.lot, 5, 2.3, 8.9, 3.0, 0.7, 0xF6F4EE, '#1D2B55'); for (const dx of [-1.3, 1.3]) cyl(0.05, 0.05, 2.2, mats.pole, 5 + dx, 0.16, 8.9, g, 8); return; }
     if (b.stage === 'shell') {
       const k = b.kind || 'house', lv = b.level || 1, low = k === 'shop' || k === 'cafe' || k === 'kiosk' || k === 'atm';
       const floors = k === 'house' ? (lv >= 3 ? 2 : 1) : k === 'office' ? 3 + Math.min(lv, 3) : low ? 1 : 2 + Math.min(lv, 2);
       const fw = k === 'office' ? 4.6 : k === 'kiosk' ? 3.4 : w, fd = k === 'office' ? 4.6 : k === 'kiosk' ? 3.2 : d, fh = k === 'house' ? 2.7 : 2.9;
       const posts = [[-fw / 2 + .15, -fd / 2 + .15], [fw / 2 - .15, -fd / 2 + .15], [-fw / 2 + .15, fd / 2 - .15], [fw / 2 - .15, fd / 2 - .15], [0, -fd / 2 + .15], [0, fd / 2 - .15]];
-      for (let f = 0; f < floors; f++) { box(fw, 0.25, fd, mats.slab, x, 0.56 + f * fh, z, g); for (const [dx, dz] of posts) box(0.3, fh, 0.3, mats.slab, x + dx, 0.56 + f * fh, z + dz, g); }
-      const top = 0.56 + floors * fh; box(fw, 0.25, fd, mats.slab, x, top, z, g);
-      if (k === 'house') {
+      const steps = Math.max(1, cost - half), q = Math.min(1, (have - half + 1) / steps), shown = Math.max(1, Math.ceil(floors * q));
+      for (let f = 0; f < shown; f++) { box(fw, 0.25, fd, mats.slab, x, 0.56 + f * fh, z, g); for (const [dx, dz] of posts) box(0.3, fh, 0.3, mats.slab, x + dx, 0.56 + f * fh, z + dz, g); }
+      const top = 0.56 + shown * fh; box(fw, 0.25, fd, mats.slab, x, top, z, g);
+      if (k === 'house' && q >= 1) {
         // the roof going up: three trusses and the ridge beam, in wood
         for (const tz of [-fd / 2 + .2, 0, fd / 2 - .2]) { for (const sd of [-1, 1]) { const r = box(fw / 2 * 1.16, .14, .14, mats.wood, x + sd * fw / 4, top + 0.62, z + tz, g); r.rotation.z = -sd * .58; } }
         box(.16, .16, fd + .3, mats.wood, x, top + 1.52, z, g);
-      } else {
+      } else if (k !== 'house') {
         // scaffolding along the front, plank by plank
-        for (let f = 1; f <= floors; f++) box(fw + .6, .08, .7, mats.wood, x, 0.56 + f * fh - .1, z + fd / 2 + .55, g);
+        for (let f = 1; f <= shown; f++) box(fw + .6, .08, .7, mats.wood, x, 0.56 + f * fh - .1, z + fd / 2 + .55, g);
         for (const dx of [-fw / 2 - .2, 0, fw / 2 + .2]) box(.08, top, .08, mats.pole, x + dx, 0.16, z + fd / 2 + .85, g);
       }
       const ch = top + 3.4; cyl(0.12, 0.12, ch, mats.crane, 8.6, 0.16, 1.4, g, 8); box(7, 0.3, 0.3, mats.crane, 5.6, ch + 0.1, 1.4, g); cyl(0.02, 0.02, 3, mats.dark, 3.2, ch - 2.9, 1.4, g, 6); box(0.8, 0.8, 0.8, mats.slab, 3.2, ch - 3.3, 1.4, g);
@@ -455,28 +482,55 @@
   function lotGroup(b, x, z, rot) { const g = new T.Group(); g.position.set(b.center + x, 0, b.center + z); g.rotation.y = rot; return g; }
   function blockGround(b, i, j, color) {
     const cx = b.center + i * b.P, cz = b.center + j * b.P, w = b.P - 7;
-    const m = color == null ? mats.brickPave : M({ color: new T.Color(0xE7E3D8).lerp(new T.Color(parseInt(color.slice(1), 16)), .2), roughness: .95 });
+    const m = color == null ? M({ color: 0xEDEBE5, roughness: .95 }) : M({ color: new T.Color(0xF8F7F3).lerp(new T.Color(parseInt(color.slice(1), 16)), .42), roughness: .95 });
     const p = plane(w, w, m, cx, 0.162, cz, root, 3); p.receiveShadow = true;
     return [cx, cz, w];
   }
+  const ROAD = M({ color: 0xDAD8D1, roughness: .95 }), DASH = M({ color: 0xFFFFFF, roughness: .7 });
+  function kerb(g, cx, cz, w, col) { const m = M({ color: col, roughness: .8 }); for (const [bw, bd, dx, dz] of [[w, .5, 0, -w / 2 + .25], [w, .5, 0, w / 2 - .25], [.5, w, -w / 2 + .25, 0], [.5, w, w / 2 - .25, 0]]) box(bw, .32, bd, m, cx + dx, 0.16, cz + dz, g); }
+  const groundNames = {}, areaLabels = [];
+  function groundName(text, hex) {
+    const k = text + hex; if (groundNames[k]) return groundNames[k];
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 112; const q = c.getContext('2d');
+    q.fillStyle = hex; q.font = '800 86px Rubik, Assistant, Arial, sans-serif'; q.textAlign = 'center'; q.textBaseline = 'middle'; q.direction = 'rtl'; q.fillText(text, 512, 60);
+    const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.anisotropy = 8;
+    return (groundNames[k] = new T.MeshStandardMaterial({ map: t, transparent: true, roughness: .9, depthWrite: false }));
+  }
+  function areaMark(b, a, i, j) {
+    const cx = b.center + i * b.P, cz = b.center + j * b.P, w = b.P - 7, col = parseInt(a.color.slice(1), 16);
+    kerb(root, cx, cz, w, col);
+    const dark = '#' + new T.Color(col).lerp(new T.Color(0x1D2B55), .3).getHexString();
+    const p = new T.Mesh(new T.PlaneGeometry(w - 10, (w - 10) * 112 / 1024), groundName(a.name, dark));
+    p.rotation.x = -Math.PI / 2; p.position.set(cx, 0.19, cz + w / 2 - 2.0); p.renderOrder = 2; root.add(p);
+    p.userData.district = a.id; tappable.push(p);
+    // from far, the ground name is too small to read: the name floats over the area's first block (sketch 71, A)
+    if (i === a.cells[0][0] && j === a.cells[0][1]) {
+      const c = document.createElement('canvas'); c.width = 512; c.height = 132; const q = c.getContext('2d');
+      q.fillStyle = a.color; q.beginPath(); q.roundRect ? q.roundRect(6, 6, 500, 120, 60) : q.rect(6, 6, 500, 120); q.fill();
+      q.fillStyle = '#ffffff'; q.font = '800 74px Rubik, Assistant, Arial, sans-serif'; q.textAlign = 'center'; q.textBaseline = 'middle'; q.direction = 'rtl'; q.fillText(a.name, 256, 72);
+      const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding;
+      const sp = new T.Sprite(new T.SpriteMaterial({ map: t, depthTest: false, transparent: true, sizeAttenuation: false, toneMapped: false }));
+      sp.position.set(cx, 16, cz); sp.scale.set(.15, .039, 1); sp.renderOrder = 20; scene.add(sp); areaLabels.push(sp); // outside root: the merge keeps only meshes
+    }
+  }
   function buildBlocks(s, L) {
-    const b = s.builder, C = b.center;
-    { const gr = new T.Mesh(new T.CircleGeometry(b.radius + 60, 96), mats.grass); gr.rotation.x = -Math.PI / 2; gr.position.set(C, 0.15, C); gr.receiveShadow = true; root.add(gr); }
+    const b = s.builder, C = b.center; for (const sp of areaLabels) { scene.remove(sp); sp.material.map.dispose(); sp.material.dispose(); } areaLabels.length = 0;
+    { const gr = new T.Mesh(new T.CircleGeometry(b.radius + 60, 96), M({ color: 0xF3F2EE, roughness: 1 })); gr.rotation.x = -Math.PI / 2; gr.position.set(C, 0.15, C); gr.receiveShadow = true; root.add(gr); }
     // the roads round every block: asphalt, the yellow lane marks, a lamp at every crossing
     const edges = blockEdges(b);
     for (const [x1, z1, x2, z2] of edges) {
       const along = z1 === z2, len = Math.abs(along ? x2 - x1 : z2 - z1), cx = (x1 + x2) / 2, cz = (z1 + z2) / 2;
-      plane(along ? len + 7 : 7, along ? 7 : len + 7, mats.asphalt, cx, 0.16, cz, root, 3);
-      for (let k = 5; k < len - 4; k += 4) box(along ? 1.6 : 0.16, 0.012, along ? 0.16 : 1.6, mats.lane, along ? Math.min(x1, x2) + k : cx, 0.165, along ? cz : Math.min(z1, z2) + k, root);
+      plane(along ? len + 7 : 7, along ? 7 : len + 7, ROAD, cx, 0.16, cz, root, 3);
+      for (let k = 5; k < len - 4; k += 4) box(along ? 1.6 : 0.16, 0.012, along ? 0.16 : 1.6, DASH, along ? Math.min(x1, x2) + k : cx, 0.165, along ? cz : Math.min(z1, z2) + k, root);
     }
     const corners = new Map(); for (const [x1, z1, x2, z2] of edges) { corners.set(Math.round(x1) + ',' + Math.round(z1), [x1, z1]); corners.set(Math.round(x2) + ',' + Math.round(z2), [x2, z2]); }
     for (const [x, z] of corners.values()) lampPost(root, x + 4.4, z + 4.4);
     // the middle block: the tower's plaza, with benches and trees at its corners
     { const [cx, cz, w] = blockGround(b, 0, 0, null); for (const [dx, dz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { tree(root, cx + dx * (w / 2 - 3), cz + dz * (w / 2 - 3), 1.1, 'oak'); bench(root, cx + dx * (w / 2 - 6.5), cz + dz * (w / 2 - 3), dx > 0 ? -Math.PI / 2 : Math.PI / 2); } }
     // blocks no area owns yet: a green park
-    for (const [i, j] of b.parks) { const cx = C + i * b.P, cz = C + j * b.P, w = b.P - 7; plane(w, w, M({ color: 0x7FB069, roughness: 1 }), cx, 0.162, cz, root, 3); for (let a = -1; a <= 1; a++) for (let c = -1; c <= 1; c++) if ((a + c) % 2 === 0) tree(root, cx + a * 12, cz + c * 12, 1.1 + ((a + 2 * c + 4) % 3) * .15, (a + c) % 4 === 0 ? 'oak' : 'cypress'); bench(root, cx + 5, cz, 0); }
+    for (const [i, j] of b.parks) { const cx = C + i * b.P, cz = C + j * b.P, w = b.P - 7; plane(w, w, M({ color: 0xF7F6F2, roughness: 1 }), cx, 0.162, cz, root, 3); kerb(root, cx, cz, w, 0xDDDBD3); for (let a = -1; a <= 1; a++) for (let c = -1; c <= 1; c++) if ((a + c) % 2 === 0) tree(root, cx + a * 12, cz + c * 12, 1.1 + ((a + 2 * c + 4) % 3) * .15, (a + c) % 4 === 0 ? 'oak' : 'cypress'); bench(root, cx + 5, cz, 0); }
     // every area's blocks, in its colour
-    for (const a of b.areas) for (const [i, j] of a.cells) blockGround(b, i, j, a.color);
+    for (const a of b.areas) for (const [i, j] of a.cells) { blockGround(b, i, j, a.color); areaMark(b, a, i, j); }
     // the things that stand
     fresh = [];
     for (const it of b.items) {
@@ -504,14 +558,14 @@
       if (st) {
         const g = lotGroup(b, st.x, st.z, st.rot), inner = new T.Group(); inner.position.set(-TILE / 2, 0, -TILE / 2);
         const sign = a.quiet ? (L.waiting || '') : st.stage === 'lot' ? ((L.siteNext || '') + st.name) : (st.name + ' · ' + st.have + '/' + st.cost);
-        project(inner, { stage: st.stage, name: sign, color: a.color, kind: st.key, level: st.level }, L);
+        project(inner, { stage: st.stage, name: sign, color: a.color, kind: st.key, level: st.level, have: st.have, cost: st.cost }, L);
         // a quiet area (nothing done for five days): grass grows on the site until a task comes back
         if (a.quiet) for (let q = 0; q < 14; q++) { const wx = 1 + ((q * 37) % 80) / 10, wz = 1 + ((q * 53) % 70) / 10, h = .5 + (q % 3) * .25; const c = new T.Mesh(new T.ConeGeometry(.28, h, 5), mats.leaf[q % 3]); c.position.set(wx, .16 + h / 2, wz); c.castShadow = true; inner.add(c); }
         g.add(inner); g.traverse(o => { if (o.isMesh) { o.userData.district = a.id; tappable.push(o); } }); root.add(g);
       }
       for (const [x, z, rot] of a.empties) {
         const g = lotGroup(b, x, z, rot), col = parseInt(a.color.slice(1), 16);
-        plane(9.4, 9.4, M({ color: new T.Color(0xE7E3D8).lerp(new T.Color(col), .45), roughness: 1 }), 0, 0.172, 0, g, 3);
+        plane(9.4, 9.4, M({ color: new T.Color(0xFBFAF7).lerp(new T.Color(col), .38), roughness: 1 }), 0, 0.172, 0, g, 3);
         for (const [dx, dz] of [[-4.5, -4.5], [4.5, -4.5], [-4.5, 4.5], [4.5, 4.5]]) { box(0.14, 0.7, 0.14, mats.fence, dx, 0.16, dz, g); box(0.5, 0.1, 0.06, M({ color: col }), dx, 0.72, dz, g); }
         g.traverse(o => { if (o.isMesh) { o.userData.district = a.id; tappable.push(o); } }); root.add(g);
       }
@@ -527,7 +581,7 @@
     for (const a of b.areas) for (const [i, j] of a.cells) for (let u = -1; u <= 1; u++) for (let v = -1; v <= 1; v++) {
       const x = i * b.P + u * b.lot, z = j * b.P + v * b.lot;
       if (taken.some(([tx, tz, w]) => Math.hypot(tx - x, tz - z) < (w ? b.lot * 1.2 : 3))) continue;
-      plane(9.4, 9.4, M({ color: 0x8DBB73, roughness: 1 }), C + x, 0.168, C + z, root, 3);
+      plane(9.4, 9.4, M({ color: 0xFBFAF7, roughness: 1 }), C + x, 0.168, C + z, root, 3);
       tree(root, C + x + ((u + v + 3) % 3 - 1) * 2, C + z + ((u * 2 + v + 4) % 3 - 1) * 2, 1.0 + ((u + 2 * v + 6) % 3) * .15, (u + v) % 2 ? 'cypress' : 'oak');
     }
     ringLife(b);
@@ -824,6 +878,7 @@
     tickLife(Math.min(0.05, dt / 1000));
     // the welcome screens: the camera goes slowly round the tower while no finger is down
     if (state && state.spin && ptr.size === 0 && !anim.to) view.yaw += dt * 0.006;
+    { const o = Math.max(0, Math.min(1, (view.dist - 55) / 20)); for (const sp of areaLabels) { sp.material.opacity = o; sp.visible = o > 0.02; } }
     place(); R.render(scene, cam); requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
