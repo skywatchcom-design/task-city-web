@@ -48223,7 +48223,7 @@ m=p.b
 if(m!==200)throw A.u(A.dA("version.json: "+m))
 o=A.R(t.P.a(B.N.dP(A.l2(A.kY(p.e)).c1(p.w),null)).h(0,"stamp"))
 if(o==null)o=""
-n=B.c.aB(o,"20261126121914")>0
+n=B.c.aB(o,"20261126125404")>0
 if(n)$.akt().sn(o)
 s=4
 return A.d(A.aX9(),$async$GH)
@@ -146974,7 +146974,7 @@ A.aA(this.a,!1).aX(s)
 return null},
 $S:0}
 A.aPz.prototype={
-$3(a,b,c){var s,r,q,p="20261126121914",o=this.b,n=o.kK(B.a5f,A.c("upd_check"),new A.aPx(this.a,a))
+$3(a,b,c){var s,r,q,p="20261126125404",o=this.b,n=o.kK(B.a5f,A.c("upd_check"),new A.aPx(this.a,a))
 if(A.Av()==null){s=A.c("upd_yours")
 r=A.bBW(p)
 s=A.W(s,"{v}",r)}else{s=A.c("upd_here_preview")

@@ -346,7 +346,7 @@
   const BUILDS = new Set(['house', 'office', 'shop', 'clinic', 'school', 'bank', 'cafe', 'kiosk', 'studio', 'tower', 'supermarket']);
   function growThing(g, b, have, cost, L, col) {
     for (let i = 0; i <= 9; i++) for (const zz of [0.05, 9.95]) box(0.08, 0.8, 0.08, mats.fence, i * 1.1 + 0.05, 0.16, zz, g);
-    plane(9.6, 9.6, M({ color: 0xF1EEE6, roughness: 1 }), 5, 0.17, 5, g, 3);
+    plane(9.6, 9.6, mats.sand, 5, 0.17, 5, g, 3);
     const c = M({ color: col }), k = b.kind;
     const pieces = k === 'playground' ? [
       () => box(4.2, 0.3, 4.2, mats.wood, 3, 0.16, 3, g), () => box(3.8, 0.2, 3.8, mats.sand, 3, 0.3, 3, g),
@@ -358,7 +358,7 @@
       () => cyl(0.3, 0.4, 1.6, mats.stone, 5, 0.2, 5, g, 12), () => cyl(0.9, 0.7, 0.12, mats.stone, 5, 1.8, 5, g, 24),
       () => bench(g, 5, 8.6, 0), () => tree(g, 1.4, 1.4, 1.0, 'oak')]
       : [
-      () => cyl(3.6, 3.6, 0.04, M({ color: 0xDCD8CC }), 5, 0.17, 5, g, 32), () => cyl(3.0, 3.0, 0.06, M({ color: 0xDDE6D2 }), 5, 0.18, 5, g, 32),
+      () => cyl(3.6, 3.6, 0.04, M({ color: 0xDCD8CC }), 5, 0.17, 5, g, 32), () => cyl(3.0, 3.0, 0.06, M({ color: 0x7FB069 }), 5, 0.18, 5, g, 32),
       () => tree(g, 2.6, 3, 1.1, 'oak'), () => tree(g, 7.4, 3.4, 1.0, 'oak'), () => bench(g, 5, 5.2, 0), () => tree(g, 5, 7.6, .9, 'cypress')];
     const n = Math.min(pieces.length, Math.max(1, Math.ceil(have * pieces.length / cost)));
     for (let i = 0; i < n; i++) pieces[i]();
@@ -482,11 +482,11 @@
   function lotGroup(b, x, z, rot) { const g = new T.Group(); g.position.set(b.center + x, 0, b.center + z); g.rotation.y = rot; return g; }
   function blockGround(b, i, j, color) {
     const cx = b.center + i * b.P, cz = b.center + j * b.P, w = b.P - 7;
-    const m = color == null ? M({ color: 0xEDEBE5, roughness: .95 }) : M({ color: new T.Color(0xF8F7F3).lerp(new T.Color(parseInt(color.slice(1), 16)), .42), roughness: .95 });
+    const m = color == null ? mats.brickPave : M({ color: new T.Color(0xE7E3D8).lerp(new T.Color(parseInt(color.slice(1), 16)), .25), roughness: .95 });
     const p = plane(w, w, m, cx, 0.162, cz, root, 3); p.receiveShadow = true;
     return [cx, cz, w];
   }
-  const ROAD = M({ color: 0xDAD8D1, roughness: .95 }), DASH = M({ color: 0xFFFFFF, roughness: .7 });
+  const ROAD = mats.asphalt, DASH = mats.lane;
   function kerb(g, cx, cz, w, col) { const m = M({ color: col, roughness: .8 }); for (const [bw, bd, dx, dz] of [[w, .5, 0, -w / 2 + .25], [w, .5, 0, w / 2 - .25], [.5, w, -w / 2 + .25, 0], [.5, w, w / 2 - .25, 0]]) box(bw, .32, bd, m, cx + dx, 0.16, cz + dz, g); }
   const groundNames = {}, areaLabels = [];
   function groundName(text, hex) {
@@ -515,7 +515,7 @@
   }
   function buildBlocks(s, L) {
     const b = s.builder, C = b.center; for (const sp of areaLabels) { scene.remove(sp); sp.material.map.dispose(); sp.material.dispose(); } areaLabels.length = 0;
-    { const gr = new T.Mesh(new T.CircleGeometry(b.radius + 60, 96), M({ color: 0xF3F2EE, roughness: 1 })); gr.rotation.x = -Math.PI / 2; gr.position.set(C, 0.15, C); gr.receiveShadow = true; root.add(gr); }
+    { const gr = new T.Mesh(new T.CircleGeometry(b.radius + 60, 96), mats.grass); gr.rotation.x = -Math.PI / 2; gr.position.set(C, 0.15, C); gr.receiveShadow = true; root.add(gr); }
     // the roads round every block: asphalt, the yellow lane marks, a lamp at every crossing
     const edges = blockEdges(b);
     for (const [x1, z1, x2, z2] of edges) {
@@ -528,7 +528,7 @@
     // the middle block: the tower's plaza, with benches and trees at its corners
     { const [cx, cz, w] = blockGround(b, 0, 0, null); for (const [dx, dz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { tree(root, cx + dx * (w / 2 - 3), cz + dz * (w / 2 - 3), 1.1, 'oak'); bench(root, cx + dx * (w / 2 - 6.5), cz + dz * (w / 2 - 3), dx > 0 ? -Math.PI / 2 : Math.PI / 2); } }
     // blocks no area owns yet: a green park
-    for (const [i, j] of b.parks) { const cx = C + i * b.P, cz = C + j * b.P, w = b.P - 7; plane(w, w, M({ color: 0xF7F6F2, roughness: 1 }), cx, 0.162, cz, root, 3); kerb(root, cx, cz, w, 0xDDDBD3); for (let a = -1; a <= 1; a++) for (let c = -1; c <= 1; c++) if ((a + c) % 2 === 0) tree(root, cx + a * 12, cz + c * 12, 1.1 + ((a + 2 * c + 4) % 3) * .15, (a + c) % 4 === 0 ? 'oak' : 'cypress'); bench(root, cx + 5, cz, 0); }
+    for (const [i, j] of b.parks) { const cx = C + i * b.P, cz = C + j * b.P, w = b.P - 7; plane(w, w, M({ color: 0x7FB069, roughness: 1 }), cx, 0.162, cz, root, 3); for (let a = -1; a <= 1; a++) for (let c = -1; c <= 1; c++) if ((a + c) % 2 === 0) tree(root, cx + a * 12, cz + c * 12, 1.1 + ((a + 2 * c + 4) % 3) * .15, (a + c) % 4 === 0 ? 'oak' : 'cypress'); bench(root, cx + 5, cz, 0); }
     // every area's blocks, in its colour
     for (const a of b.areas) for (const [i, j] of a.cells) { blockGround(b, i, j, a.color); areaMark(b, a, i, j); }
     // the things that stand
@@ -565,7 +565,7 @@
       }
       for (const [x, z, rot] of a.empties) {
         const g = lotGroup(b, x, z, rot), col = parseInt(a.color.slice(1), 16);
-        plane(9.4, 9.4, M({ color: new T.Color(0xFBFAF7).lerp(new T.Color(col), .38), roughness: 1 }), 0, 0.172, 0, g, 3);
+        plane(9.4, 9.4, M({ color: new T.Color(0xE7E3D8).lerp(new T.Color(col), .45), roughness: 1 }), 0, 0.172, 0, g, 3);
         for (const [dx, dz] of [[-4.5, -4.5], [4.5, -4.5], [-4.5, 4.5], [4.5, 4.5]]) { box(0.14, 0.7, 0.14, mats.fence, dx, 0.16, dz, g); box(0.5, 0.1, 0.06, M({ color: col }), dx, 0.72, dz, g); }
         g.traverse(o => { if (o.isMesh) { o.userData.district = a.id; tappable.push(o); } }); root.add(g);
       }
@@ -581,7 +581,7 @@
     for (const a of b.areas) for (const [i, j] of a.cells) for (let u = -1; u <= 1; u++) for (let v = -1; v <= 1; v++) {
       const x = i * b.P + u * b.lot, z = j * b.P + v * b.lot;
       if (taken.some(([tx, tz, w]) => Math.hypot(tx - x, tz - z) < (w ? b.lot * 1.2 : 3))) continue;
-      plane(9.4, 9.4, M({ color: 0xFBFAF7, roughness: 1 }), C + x, 0.168, C + z, root, 3);
+      plane(9.4, 9.4, M({ color: 0x8DBB73, roughness: 1 }), C + x, 0.168, C + z, root, 3);
       tree(root, C + x + ((u + v + 3) % 3 - 1) * 2, C + z + ((u * 2 + v + 4) % 3 - 1) * 2, 1.0 + ((u + 2 * v + 6) % 3) * .15, (u + v) % 2 ? 'cypress' : 'oak');
     }
     ringLife(b);
