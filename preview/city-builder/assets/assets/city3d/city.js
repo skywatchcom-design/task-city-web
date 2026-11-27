@@ -488,7 +488,7 @@
   }
   const ROAD = mats.asphalt, DASH = mats.lane;
   function kerb(g, cx, cz, w, col) { const m = M({ color: col, roughness: .8 }); for (const [bw, bd, dx, dz] of [[w, .5, 0, -w / 2 + .25], [w, .5, 0, w / 2 - .25], [.5, w, -w / 2 + .25, 0], [.5, w, w / 2 - .25, 0]]) box(bw, .32, bd, m, cx + dx, 0.16, cz + dz, g); }
-  const groundNames = {}, areaLabels = [];
+  const groundNames = {}, areaLabels = [], openSigns = [];
   function groundName(text, hex) {
     const k = text + hex; if (groundNames[k]) return groundNames[k];
     const c = document.createElement('canvas'); c.width = 1024; c.height = 112; const q = c.getContext('2d');
@@ -514,7 +514,7 @@
     }
   }
   function buildBlocks(s, L) {
-    const b = s.builder, C = b.center; for (const sp of areaLabels) { scene.remove(sp); sp.material.map.dispose(); sp.material.dispose(); } areaLabels.length = 0;
+    const b = s.builder, C = b.center; for (const sp of [...areaLabels, ...openSigns]) { scene.remove(sp); sp.material.map.dispose(); sp.material.dispose(); } areaLabels.length = 0; openSigns.length = 0;
     { const gr = new T.Mesh(new T.CircleGeometry(b.radius + 60, 96), mats.grass); gr.rotation.x = -Math.PI / 2; gr.position.set(C, 0.15, C); gr.receiveShadow = true; root.add(gr); }
     // the roads round every block: asphalt, the yellow lane marks, a lamp at every crossing
     const edges = blockEdges(b);
@@ -549,8 +549,9 @@
         // a tree by every house and building that is not a landmark: the street grows green with it
         if (!it.first && it.index % 2 === 1) tree(g, lw * TILE / 2 - 0.6, -TILE / 2 + 0.8, 0.85, it.index % 4 === 1 ? 'cypress' : 'oak');
       } else { smallThing(g, it.key, it.color); g.scale.setScalar(1.25); g.userData.base = 1.25; }
+      for (let q = 0; q < Math.min(it.life || 0, 6); q++) { if (q % 2) tree(g, -3.4 + (q % 3) * 1.4, 4.2, .7, 'oak'); else person(g, 3.4 - q * .6, 4.2, [0xE0A63A, 0x4F86D9, 0xD96C9B][q % 3]); }
       g.traverse(o => { if (o.isMesh) { o.userData.district = it.area; tappable.push(o); } });
-      if (it.fresh) { g.scale.setScalar(0.001); g.userData.rise = 0; fresh.push(g); cranes.push(crane(C + it.x, C + it.z, it.rot, LANDMARK.has(it.key) ? 1 : 0.6)); } else root.add(g);
+      if (it.fresh) { g.scale.setScalar(0.001); g.userData.rise = 0; fresh.push(g); dust(C + it.x, C + it.z, it.color); floatName(it.name, C + it.x, C + it.z, it.big ? 13 : 9); } else root.add(g);
     }
     // each area's building site, at its stage, and the two marked lots after it
     for (const a of b.areas) {
@@ -563,12 +564,25 @@
         if (a.quiet) for (let q = 0; q < 14; q++) { const wx = 1 + ((q * 37) % 80) / 10, wz = 1 + ((q * 53) % 70) / 10, h = .5 + (q % 3) * .25; const c = new T.Mesh(new T.ConeGeometry(.28, h, 5), mats.leaf[q % 3]); c.position.set(wx, .16 + h / 2, wz); c.castShadow = true; inner.add(c); }
         g.add(inner); g.traverse(o => { if (o.isMesh) { o.userData.district = a.id; tappable.push(o); } }); root.add(g);
       }
-      for (const [x, z, rot] of a.empties) {
+      for (const [x, z, rot] of (a.empties || [])) {
         const g = lotGroup(b, x, z, rot), col = parseInt(a.color.slice(1), 16);
         plane(9.4, 9.4, M({ color: new T.Color(0xE7E3D8).lerp(new T.Color(col), .45), roughness: 1 }), 0, 0.172, 0, g, 3);
         for (const [dx, dz] of [[-4.5, -4.5], [4.5, -4.5], [-4.5, 4.5], [4.5, 4.5]]) { box(0.14, 0.7, 0.14, mats.fence, dx, 0.16, dz, g); box(0.5, 0.1, 0.06, M({ color: col }), dx, 0.72, dz, g); }
         g.traverse(o => { if (o.isMesh) { o.userData.district = a.id; tappable.push(o); } }); root.add(g);
       }
+    }
+    for (const a of b.areas) for (const o of (a.opens || [])) {
+      const g = lotGroup(b, o.x, o.z, o.rot), col = parseInt(a.color.slice(1), 16);
+      plane(9.2, 9.2, M({ color: new T.Color(0xEFE9DC).lerp(new T.Color(col), .6), roughness: 1 }), 0, 0.174, 0, g, 3);
+      for (const [dx, dz] of [[-4.4, -4.4], [4.4, -4.4], [-4.4, 4.4], [4.4, 4.4]]) box(0.6, 0.3, 0.6, M({ color: col }), dx, 0.16, dz, g);
+      cyl(0.1, 0.1, 4.8, M({ color: col }), 0, 0.16, 0, g, 8);
+      // the sign with the task's name always faces the camera, so it reads from every side (outside root: the merge keeps only meshes)
+      { const c = document.createElement('canvas'); c.width = 560; c.height = 150; const q = c.getContext('2d');
+        q.fillStyle = '#ffffff'; q.beginPath(); if (q.roundRect) q.roundRect(4, 4, 552, 142, 28); else q.rect(4, 4, 552, 142); q.fill(); q.lineWidth = 10; q.strokeStyle = a.color; q.stroke();
+        q.fillStyle = '#1D2B55'; q.textAlign = 'center'; q.textBaseline = 'middle'; q.direction = 'rtl'; let fs = 60; q.font = '800 ' + fs + 'px Rubik, Assistant, Arial, sans-serif'; while (q.measureText(o.name).width > 500 && fs > 24) { fs -= 2; q.font = '800 ' + fs + 'px Rubik, Assistant, Arial, sans-serif'; } q.fillText(o.name, 280, 80);
+        const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.anisotropy = 4;
+        const sp = new T.Sprite(new T.SpriteMaterial({ map: t, toneMapped: false })); sp.position.set(C + o.x, 6.2, C + o.z); sp.scale.set(10.5, 2.8, 1); scene.add(sp); openSigns.push(sp); }
+      g.traverse(m => { if (m.isMesh) { m.userData.district = a.id; tappable.push(m); } }); root.add(g);
     }
     for (const a of b.areas) if (a.street) for (const [i, j] of a.cells) {
       const si = i === 0 ? 1 : Math.sign(i), sj = j === 0 ? 1 : Math.sign(j), px = C + i * b.P - si * (b.P / 2 - 5.2), pz = C + j * b.P - sj * (b.P / 2 - 5.2);
@@ -577,7 +591,7 @@
       signBoard(root, a.street, px + 0.12 * si, 2.4, pz, 3.6, 0.62, 0x2F5D8A, '#ffffff', Math.PI / 2);
     }
     // the rest of each block's lots: a lawn and a tree, so a young area is green and not bare
-    const taken = [...b.items.map(it => [it.x, it.z, isWide(it) ? 1 : 0]), ...b.areas.flatMap(a => [...(a.site ? [[a.site.x, a.site.z, 0]] : []), ...a.empties.map(e => [e[0], e[1], 0])])];
+    const taken = [...b.items.map(it => [it.x, it.z, isWide(it) ? 1 : 0]), ...b.areas.flatMap(a => [...(a.site ? [[a.site.x, a.site.z, 0]] : []), ...(a.empties || []).map(e => [e[0], e[1], 0]), ...(a.opens || []).map(o => [o.x, o.z, 0])])];
     for (const a of b.areas) for (const [i, j] of a.cells) for (let u = -1; u <= 1; u++) for (let v = -1; v <= 1; v++) {
       const x = i * b.P + u * b.lot, z = j * b.P + v * b.lot;
       if (taken.some(([tx, tz, w]) => Math.hypot(tx - x, tz - z) < (w ? b.lot * 1.2 : 3))) continue;
@@ -587,6 +601,23 @@
     ringLife(b);
   }
   // what was just built rises out of the ground with a little bounce (sketch 69: the build moment)
+  const puffs = [], names = [];
+  function dust(x, z, color) {
+    const c = new T.Color(parseInt(String(color || '#E0A63A').replace('#', ''), 16) || 0xE0A63A);
+    for (let i = 0; i < 12; i++) { const m = new T.Mesh(new T.SphereGeometry(0.9, 8, 6), new T.MeshBasicMaterial({ color: i % 3 ? new T.Color(0xF4EFE6) : c.clone().lerp(new T.Color(0xffffff), .5), transparent: true, opacity: .85, depthWrite: false })); const a = i / 12 * Math.PI * 2; m.position.set(x + Math.cos(a) * 3, 1.2, z + Math.sin(a) * 3); scene.add(m); puffs.push({ m, a, t: 0 }); }
+  }
+  function floatName(text, x, z, y) {
+    const c = document.createElement('canvas'); c.width = 640; c.height = 140; const q = c.getContext('2d');
+    q.fillStyle = '#1D2B55'; q.beginPath(); if (q.roundRect) q.roundRect(4, 4, 632, 132, 66); else q.rect(4, 4, 632, 132); q.fill();
+    q.fillStyle = '#fff'; q.textAlign = 'center'; q.textBaseline = 'middle'; q.direction = 'rtl'; let fs = 64; q.font = '800 ' + fs + 'px Rubik, Assistant, Arial, sans-serif'; while (q.measureText(text).width > 590 && fs > 26) { fs -= 2; q.font = '800 ' + fs + 'px Rubik, Assistant, Arial, sans-serif'; } q.fillText(text, 320, 74);
+    const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding;
+    const s = new T.Sprite(new T.SpriteMaterial({ map: t, depthTest: false, transparent: true, sizeAttenuation: false, toneMapped: false, opacity: 0 }));
+    s.position.set(x, y, z); s.scale.set(.24, .052, 1); s.renderOrder = 30; scene.add(s); names.push({ s, t: 0 });
+  }
+  function tickBuildFx(dt) {
+    for (let i = puffs.length - 1; i >= 0; i--) { const p = puffs[i]; p.t += dt; if (p.t < .25) continue; const k = (p.t - .25) / 1.2; p.m.position.x += Math.cos(p.a) * dt * 5; p.m.position.z += Math.sin(p.a) * dt * 5; p.m.position.y += dt * 1.6; p.m.scale.setScalar(1 + k * 1.8); p.m.material.opacity = Math.max(0, .85 * (1 - k)); if (k >= 1) { scene.remove(p.m); p.m.geometry.dispose(); p.m.material.dispose(); puffs.splice(i, 1); } }
+    for (let i = names.length - 1; i >= 0; i--) { const n = names[i]; n.t += dt; n.s.material.opacity = n.t < .8 ? 0 : n.t < 1.1 ? (n.t - .8) / .3 : n.t > 3.8 ? Math.max(0, 1 - (n.t - 3.8) * 2.5) : 1; n.s.position.y += dt * .6; if (n.t > 4.3) { scene.remove(n.s); n.s.material.map.dispose(); n.s.material.dispose(); names.splice(i, 1); } }
+  }
   function riseFresh(dt) {
     for (const g of fresh) {
       if (g.userData.rise == null || g.userData.rise >= 1) continue;
@@ -850,7 +881,17 @@
     ray.setFromCamera(v, cam);
     if (window.skyStreet && ray.intersectObjects(window.skyStreet.meTap, false)[0]) { send({ type: 'tap', me: true }); return; }
     if (window.skyTower) { const f = window.skyTower.floorAt(ray); if (f != null) { send({ type: 'tap', floor: f, area: window.skyTower.areaAt ? window.skyTower.areaAt(ray) : null }); return; } if (window.skyTower.blocks(ray)) { send({ type: 'tap', tower: true }); return; } }
-    if (state && state.builder) { const gp = new T.Plane(new T.Vector3(0, 1, 0), -0.16), pt = new T.Vector3(); if (ray.ray.intersectPlane(gp, pt)) { const id = builderAreaAt(pt.x, pt.z); if (id) { send({ type: 'tap', plan: id }); return; } } }
+    if (state && state.builder) {
+      const b = state.builder, C = b.center, hit = ray.intersectObjects(tappable, false)[0];
+      const at = hit ? hit.point : (() => { const gp = new T.Plane(new T.Vector3(0, 1, 0), -0.16), pt = new T.Vector3(); return ray.ray.intersectPlane(gp, pt) ? pt : null; })();
+      if (at) {
+        let best = null, bd = 6.5;
+        for (const it of b.items) if (it.id) { const d = Math.hypot(C + it.x - at.x, C + it.z - at.z); if (d < bd) { bd = d; best = { type: 'tap', item: it.id }; } }
+        for (const a of b.areas) for (const o of (a.opens || [])) { const d = Math.hypot(C + o.x - at.x, C + o.z - at.z); if (d < bd) { bd = d; best = { type: 'tap', open: o.id }; } }
+        if (best) { send(best); return; }
+        const id = builderAreaAt(at.x, at.z); if (id) { send({ type: 'tap', plan: id }); return; }
+      }
+    }
     const hit = ray.intersectObjects(tappable, false)[0];
     if (hit) { send({ type: 'tap', i: Math.floor(hit.point.x / TILE), j: Math.floor(hit.point.z / TILE), y: hit.point.y }); return; }
     // the ground: which tile
@@ -874,7 +915,7 @@
     if (state) { frames++; tAcc += dt; if (dt > 40) slow++; if (tAcc > 3000) { if (slow > frames * 0.4 && quality.level > 1 && quality.auto !== false) { quality.level--; applyQuality(); } slow = 0; frames = 0; tAcc = 0; } }
     if (window.skyStreet) window.skyStreet.tick(Math.min(0.05, dt / 1000));
     if (window.skyTower) window.skyTower.tick(Math.min(0.05, dt / 1000));
-    riseFresh(Math.min(0.05, dt / 1000));
+    riseFresh(Math.min(0.05, dt / 1000)); tickBuildFx(Math.min(0.05, dt / 1000));
     tickLife(Math.min(0.05, dt / 1000));
     // the welcome screens: the camera goes slowly round the tower while no finger is down
     if (state && state.spin && ptr.size === 0 && !anim.to) view.yaw += dt * 0.006;
@@ -890,7 +931,7 @@
   if (btnTower) btnTower.addEventListener('click', () => { towerCam(); send({ type: 'camera', tower: true }); });
   if (btnTop) btnTop.addEventListener('click', () => { top(true); send({ type: 'camera', top: true }); });
   if (btnStreet) btnStreet.addEventListener('click', () => { if (!state) return; const W = state.cols * TILE, H = state.rows * TILE; animateTo({ tx: view.tx, ty: 1.5, tz: view.tz, pitch: 12, dist: Math.min(view.dist, 26) }, 800); send({ type: 'camera', street: true }); });
-  function labels(s) { const pl = document.querySelector('.pills'); if (pl) pl.style.display = s.spin ? 'none' : ''; if (btnPlans) { btnPlans.style.display = s.builder ? '' : 'none'; if (s.labels && s.labels.camPlans) btnPlans.lastChild.textContent = s.labels.camPlans; } if (btnTower) { btnTower.style.display = s.tower ? '' : 'none'; if (s.labels && s.labels.camTower) btnTower.lastChild.textContent = s.labels.camTower; } if (btnTop && s.labels && s.labels.camTop) btnTop.lastChild.textContent = s.labels.camTop; if (btnStreet && s.labels && s.labels.camStreet) btnStreet.lastChild.textContent = s.labels.camStreet; if (btnStreet) btnStreet.style.display = s.street === false ? 'none' : ''; document.body.classList.toggle('night', !!s.night); document.body.dir = s.rtl === false ? 'ltr' : 'rtl'; }
+  function labels(s) { const pl = document.querySelector('.pills'); if (pl) pl.style.display = s.spin ? 'none' : ''; if (btnPlans) { btnPlans.style.display = 'none'; if (s.labels && s.labels.camPlans) btnPlans.lastChild.textContent = s.labels.camPlans; } if (btnTower) { btnTower.style.display = s.tower ? '' : 'none'; if (s.labels && s.labels.camTower) btnTower.lastChild.textContent = s.labels.camTower; } if (btnTop && s.labels && s.labels.camTop) btnTop.lastChild.textContent = s.labels.camTop; if (btnStreet && s.labels && s.labels.camStreet) btnStreet.lastChild.textContent = s.labels.camStreet; if (btnStreet) btnStreet.style.display = s.street === false ? 'none' : ''; document.body.classList.toggle('night', !!s.night); document.body.dir = s.rtl === false ? 'ltr' : 'rtl'; }
   window.sky = {
     setState(s) { if (typeof s === 'string') s = JSON.parse(s);
       const key = JSON.stringify(Object.assign({}, s, { me: null, night: null, quality: null, tower: null }));
